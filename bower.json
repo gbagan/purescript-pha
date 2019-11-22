@@ -1,0 +1,24 @@
+{
+    "name": "purescript-pha",
+    "license": [
+        "MIT"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/gbagan/purescript-pha.git"
+    },
+    "ignore": [
+        "**/.*",
+        "examples",
+        "node_modules",
+        "bower_components",
+        "output"
+    ],
+    "dependencies": {
+        "purescript-console": "^v4.2.0",
+        "purescript-effect": "^v2.0.1",
+        "purescript-profunctor-lenses": "^v6.2.0",
+        "purescript-psci-support": "^v4.0.0",
+        "purescript-run": "^v3.0.1"
+    }
+}

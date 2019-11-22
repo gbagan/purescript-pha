@@ -1735,7 +1735,7 @@ var PS = {};
   }
 
   const createNode = function(vnode, listener, isSvg, decorator) {
-      decorator = !decorator ? vnode.decorator : vnode.decorator ? (x => vnode.decorator(decorator(x))) : decorator; 
+      const decorator2 = !decorator ? vnode.decorator : vnode.decorator ? (x => vnode.decorator(decorator(x))) : decorator; 
     var node =
       vnode.type === TEXT_NODE
         ? document.createTextNode(vnode.name)
@@ -1745,7 +1745,7 @@ var PS = {};
     var props = vnode.props
 
     for (var k in props) {
-      patchProperty(node, k, null, props[k], listener, isSvg, decorator)
+      patchProperty(node, k, null, props[k], listener, isSvg, decorator2)
     }
 
     for (var i = 0, len = vnode.children.length; i < len; i++) {
@@ -1754,7 +1754,7 @@ var PS = {};
           (vnode.children[i] = getVNode(vnode.children[i])),
           listener,
           isSvg,
-          decorator
+          decorator2
         )
       )
     }
@@ -1766,7 +1766,7 @@ var PS = {};
 
   const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decorator) {
      //decorator = newVNode.decorator || decorator;
-     decorator = !decorator ? newVNode.decorator : newVNode.decorator ? (x => newVNode.decorator(decorator(x))) : decorator; 
+     decorator2 = !decorator ? newVNode.decorator : newVNode.decorator ? (x => newVNode.decorator(decorator(x))) : decorator; 
     if (oldVNode === newVNode) {
     } else if (
       oldVNode != null &&
@@ -1776,7 +1776,7 @@ var PS = {};
       if (oldVNode.name !== newVNode.name) node.nodeValue = newVNode.name
     } else if (oldVNode == null || oldVNode.name !== newVNode.name) {
       node = parent.insertBefore(
-        createNode((newVNode = getVNode(newVNode)), listener, isSvg, decorator),
+        createNode((newVNode = getVNode(newVNode)), listener, isSvg, decorator2),
         node
       )
       if (oldVNode != null) {
@@ -1808,7 +1808,7 @@ var PS = {};
             ? node[i]
             : oldVProps[i]) !== newVProps[i]
         ) {
-          patchProperty(node, i, oldVProps[i], newVProps[i], listener, isSvg, decorator)
+          patchProperty(node, i, oldVProps[i], newVProps[i], listener, isSvg, decorator2)
         }
       }
 
@@ -1830,7 +1830,7 @@ var PS = {};
           )),
           listener,
           isSvg,
-          decorator
+          decorator2
         )
       }
 
@@ -1852,7 +1852,7 @@ var PS = {};
           )),
           listener,
           isSvg,
-          decorator
+          decorator2
         )
       }
 
@@ -1863,7 +1863,7 @@ var PS = {};
               (newVKids[newHead] = getVNode(newVKids[newHead++])),
               listener,
               isSvg,
-              decorator
+              decorator2
             ),
             (oldVKid = oldVKids[oldHead]) && oldVKid.node
           )
@@ -1905,7 +1905,7 @@ var PS = {};
                 newVKids[newHead],
                 listener,
                 isSvg,
-                decorator
+                decorator2
               )
               newHead++
             }
@@ -1918,7 +1918,8 @@ var PS = {};
                 oldVKid,
                 newVKids[newHead],
                 listener,
-                isSvg
+                isSvg,
+                decorator2
               )
               newKeyed[newKey] = true
               oldHead++
@@ -1930,7 +1931,8 @@ var PS = {};
                   tmpVKid,
                   newVKids[newHead],
                   listener,
-                  isSvg
+                  isSvg,
+                  decorator2
                 )
                 newKeyed[newKey] = true
               } else {
@@ -1940,7 +1942,8 @@ var PS = {};
                   null,
                   newVKids[newHead],
                   listener,
-                  isSvg
+                  isSvg,
+                  decorator2
                 )
               }
             }

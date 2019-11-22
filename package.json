@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "purescript": "^0.13.5",
+    "spago": "^0.12.1",
+    "yarn": "^1.19.1"
+  },
+  "scripts": {
+    "init": "spago init",
+    "build-example": "spago bundle-app -m Example.Main --to examples/dist/bundle.js"
+  }
+}

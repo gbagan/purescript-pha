@@ -18,14 +18,11 @@ const merge = function(a, b) {
   return out
 }
 
-const patchProperty = function(node, key, oldValue, newValue, listener, isSvg) {
+const patchProperty = function(node, key, oldValue, newValue, listener, isSvg, decorator) {
   if (key === "key") {
   } else if (key === "style") {
     for (var k in merge(oldValue, newValue)) {
       oldValue = newValue == null || newValue[k] == null ? "" : newValue[k]
-      //if (oldValue === "")
-      //  node[key].removeProperty(k);
-      // else
       if (k[0] === "-") {
         node[key].setProperty(k, oldValue)
       } else {
@@ -36,7 +33,7 @@ const patchProperty = function(node, key, oldValue, newValue, listener, isSvg) {
     if (
       !((node.actions || (node.actions = {}))[
         (key = key.slice(2).toLowerCase())
-      ] = newValue)
+      ] = decorator ? decorator(newValue) : newValue)
     ) {
       node.removeEventListener(key, listener)
     } else if (!oldValue) {
@@ -55,7 +52,8 @@ const patchProperty = function(node, key, oldValue, newValue, listener, isSvg) {
   }
 }
 
-const createNode = function(vnode, listener, isSvg) {
+const createNode = function(vnode, listener, isSvg, decorator) {
+    decorator = !decorator ? vnode.decorator : vnode.decorator ? (x => vnode.decorator(decorator(x))) : decorator; 
   var node =
     vnode.type === TEXT_NODE
       ? document.createTextNode(vnode.name)
@@ -65,7 +63,7 @@ const createNode = function(vnode, listener, isSvg) {
   var props = vnode.props
 
   for (var k in props) {
-    patchProperty(node, k, null, props[k], listener, isSvg)
+    patchProperty(node, k, null, props[k], listener, isSvg, decorator)
   }
 
   for (var i = 0, len = vnode.children.length; i < len; i++) {
@@ -73,7 +71,8 @@ const createNode = function(vnode, listener, isSvg) {
       createNode(
         (vnode.children[i] = getVNode(vnode.children[i])),
         listener,
-        isSvg
+        isSvg,
+        decorator
       )
     )
   }
@@ -83,7 +82,9 @@ const createNode = function(vnode, listener, isSvg) {
 
 const getKey = vnode => vnode == null ? null : vnode.key;
 
-const patch = function(parent, node, oldVNode, newVNode, listener, isSvg) {
+const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decorator) {
+   //decorator = newVNode.decorator || decorator;
+   decorator = !decorator ? newVNode.decorator : newVNode.decorator ? (x => newVNode.decorator(decorator(x))) : decorator; 
   if (oldVNode === newVNode) {
   } else if (
     oldVNode != null &&
@@ -93,7 +94,7 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg) {
     if (oldVNode.name !== newVNode.name) node.nodeValue = newVNode.name
   } else if (oldVNode == null || oldVNode.name !== newVNode.name) {
     node = parent.insertBefore(
-      createNode((newVNode = getVNode(newVNode)), listener, isSvg),
+      createNode((newVNode = getVNode(newVNode)), listener, isSvg, decorator),
       node
     )
     if (oldVNode != null) {
@@ -125,7 +126,7 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg) {
           ? node[i]
           : oldVProps[i]) !== newVProps[i]
       ) {
-        patchProperty(node, i, oldVProps[i], newVProps[i], listener, isSvg)
+        patchProperty(node, i, oldVProps[i], newVProps[i], listener, isSvg, decorator)
       }
     }
 
@@ -146,7 +147,8 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg) {
           oldVKids[oldHead++]
         )),
         listener,
-        isSvg
+        isSvg,
+        decorator
       )
     }
 
@@ -167,7 +169,8 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg) {
           oldVKids[oldTail--]
         )),
         listener,
-        isSvg
+        isSvg,
+        decorator
       )
     }
 
@@ -177,7 +180,8 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg) {
           createNode(
             (newVKids[newHead] = getVNode(newVKids[newHead++])),
             listener,
-            isSvg
+            isSvg,
+            decorator
           ),
           (oldVKid = oldVKids[oldHead]) && oldVKid.node
         )
@@ -218,7 +222,8 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg) {
               oldVKid,
               newVKids[newHead],
               listener,
-              isSvg
+              isSvg,
+              decorator
             )
             newHead++
           }
@@ -333,6 +338,7 @@ const appAux = disp => props => () => {
       state = newState;
       if (!lock) defer(render, (lock = true))
     }
+
     return state
   }
 
@@ -390,7 +396,16 @@ const h = isStyle => name => ps => children => {
     return vdom;
 }
 
+const lazy = st => view => ({
+    type: LAZY_NODE,
+    lazy: {
+        view: (x => view(x.state)),
+        state: st
+    }
+});
+
 exports.emptyNode = null;
 exports.appAux = appAux;
 exports.hAux = h;
 exports.text = createTextVNode;
+exports.lazy = lazy;

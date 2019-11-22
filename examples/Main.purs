@@ -5,7 +5,7 @@ import Data.Array ((..), mapWithIndex)
 import Data.Lens (Lens', lens)
 import Effect (Effect)
 import Run (match)
-import Pha (VDom, InterpretEffs, app, text)
+import Pha (VDom, InterpretEffs, app, text, lazy)
 import Pha.Action (Action, Event, getState, setState, 
                     DELAY, delay, delayEffect,
                     RNG, rngEffect)
@@ -18,11 +18,13 @@ type State = {
     puzzle :: Array Int
 }
 
+-- effects used in this app
 type EFFS = (delay :: DELAY, rng :: RNG)
 
+-- initial effects
 state :: State
 state = {
-    counter: 0,
+    counter: 1,
     puzzle: 0 .. 15
 }
 
@@ -44,6 +46,9 @@ shufflePuzzle = do
     shuffled <- shuffle puzzle
     setState _{puzzle = shuffled}
 
+lazyView :: forall s r.  Int -> VDom s r 
+lazyView i = div' [class' "counter" true] [text $ show i]
+
 view :: State -> VDom State EFFS
 view {counter, puzzle} = 
     div' [] [
@@ -63,6 +68,9 @@ view {counter, puzzle} =
             ] []
         ],
 
+        -- this node is updated only when the counter reaches a multiple of 4
+        lazy (counter/4) lazyView,
+
         div' [class' "puzzle" true] (
             puzzle # mapWithIndex \i j ->
                 div' [
@@ -74,7 +82,8 @@ view {counter, puzzle} =
         button [click shufflePuzzle] [text "Shuffle"]
     ]
 
-
+-- a mapping of each algebraic effect to a real effect
+-- delayEffect and rngEffect are default mappings but we can use a mockup mapping for testing.
 interpretEffects :: Event -> InterpretEffs EFFS
 interpretEffects ev = match {
     delay: delayEffect,
@@ -83,10 +92,10 @@ interpretEffects ev = match {
 
 main :: Effect Unit
 main = app {
-    state,
-    view,
-    init: pure unit,
-    node: "root",
+    state,           -- initial state
+    view,            -- a mapping of the state to virtual dom
+    init: pure unit, -- action triggered at the start of the app (no action here)
+    node: "root",    -- the id of the root node of the app
     events: [],
     effects: interpretEffects
 }

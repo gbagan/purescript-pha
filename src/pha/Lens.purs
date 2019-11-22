@@ -18,7 +18,7 @@ lensVariant lens = onMatch {
 actionOver :: ∀st1 st2 effs. Lens' st1 st2 -> Action st2 effs -> Action st1 effs
 actionOver lens (Run f) = Run $ hoistFree (lensVariant lens) f
 
-foreign import viewOverAux :: ∀a b effs. (∀eff2. Action b eff2 -> Action a eff2) -> VDom b effs -> VDom a effs
+foreign import addDecorator :: ∀a b effs. (∀eff2. Action b eff2 -> Action a eff2) -> VDom b effs -> VDom a effs
 
 viewOver :: ∀a b effs. Lens' a b -> VDom b effs -> VDom a effs
-viewOver lens = viewOverAux (actionOver lens)
+viewOver lens = addDecorator (actionOver lens)

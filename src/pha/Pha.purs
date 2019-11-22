@@ -25,8 +25,9 @@ h :: ∀st effs. String -> Array (Prop st effs) -> Array (VDom st effs) -> VDom 
 h = hAux isStyle
 
 foreign import text :: ∀a effs. String -> VDom a effs
-
 foreign import emptyNode :: ∀a effs. VDom a effs
+
+foreign import lazy :: ∀a b effs. b -> (b -> VDom a effs) -> VDom a effs
 
 ifN :: ∀a effs. Boolean -> (Unit -> VDom a effs) -> VDom a effs
 ifN cond vdom = if cond then vdom unit else emptyNode

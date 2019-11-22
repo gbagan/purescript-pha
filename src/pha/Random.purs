@@ -11,20 +11,20 @@ data Rng a = RngInt Int (Int -> a) | RngNumber (Number -> a)
 derive instance functorRng :: Functor Rng
 type RNG = FProxy Rng
 
+-- | generate a random integer in the range [0, n - 1]
 randomInt :: ∀r. Int -> Run (rng :: RNG | r) Int
-randomInt max = lift (SProxy :: SProxy "rng") (RngInt max identity)
+randomInt n = lift (SProxy :: SProxy "rng") (RngInt n identity)
 
-type Random a = ∀r. Run (rng :: RNG | r) a
-type Random' r a = Run (rng :: RNG | r) a
-
-randomBool :: Random Boolean
+-- | generate a random boolean 
+randomBool :: ∀r. Run (rng :: RNG | r) Boolean
 randomBool = randomInt 2 <#> eq 0
 
-shuffle :: ∀a. Array a -> Random (Array a)
+-- | randomly shuffle an array
+shuffle :: ∀a r. Array a -> Run (rng :: RNG | r) (Array a)
 shuffle array = do
     rnds <- sequence $ array # mapWithIndex \i x -> Tuple x <$> randomInt (i+1)
     pure $ rnds # foldl (\t (Tuple x i) -> t # insertAt i x # fromMaybe []) []
 
-randomPick :: ∀a r. Array a -> Maybe (Random' r a)
+randomPick :: ∀a r. Array a -> Maybe (Run (rng :: RNG | r) a)
 randomPick [] = Nothing
 randomPick t = Just $ unsafePartial $ unsafeIndex t <$> (randomInt $ length t)

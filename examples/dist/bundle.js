@@ -2017,7 +2017,6 @@ var PS = {};
  
     const setState = newState => {
       if (state !== newState) {
-        console.log(state, newState);
         state = newState;
         if (!lock) defer(render, (lock = true))
       }
@@ -2287,10 +2286,10 @@ var PS = {};
           throw new Error("Failed pattern match at Pha.Random (line 11, column 1 - line 11, column 42): " + [ m.constructor.name ]);
       };
   });
-  var randomInt = function (max) {
+  var randomInt = function (n) {
       return Run.lift()(new Data_Symbol.IsSymbol(function () {
           return "rng";
-      }))(functorRng)(Data_Symbol.SProxy.value)(new RngInt(max, Control_Category.identity(Control_Category.categoryFn)));
+      }))(functorRng)(Data_Symbol.SProxy.value)(new RngInt(n, Control_Category.identity(Control_Category.categoryFn)));
   };
   var shuffle = function (array) {
       return Control_Bind.bind(Run.bindRun)(Data_Traversable.sequence(Data_Traversable.traversableArray)(Run.applicativeRun)(Data_Array.mapWithIndex(function (i) {
@@ -2417,8 +2416,8 @@ var PS = {};
   var exports = $PS["Pha.Html"];
   var Data_Show = $PS["Data.Show"];
   var Pha = $PS["Pha"];
-  var Percent = function (x1) {
-      return x1;
+  var Percent = function (x) {
+      return x;
   };
   var EUnit = function (toStr) {
       this.toStr = toStr;
@@ -2428,7 +2427,7 @@ var PS = {};
   });                                                        
   var toStr = function (dict) {
       return dict.toStr;
-  };                     
+  };
   var style = function (dictEUnit) {
       return function (n) {
           return function (x$prime) {
@@ -2437,7 +2436,7 @@ var PS = {};
       };
   };
   var span = Pha.h("span");                         
-  var pc = Percent;  
+  var pc = Percent;
   var div$prime = Pha.h("div");                     
   var click = Pha.Event.create("click");
   var class$prime = Pha.Class.create;

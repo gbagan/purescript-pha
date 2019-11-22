@@ -1,4 +1,4 @@
-module Pha where
+module Pha (Prop(..), InterpretEffs, VDom, h, text, emptyNode, lazy, ifN, maybeN, app) where
 
 import Prelude
 import Effect (Effect)
@@ -21,31 +21,30 @@ isStyle (Style _ _) = true
 isStyle _ = false
 
 foreign import hAux :: ∀st effs. (Prop st effs -> Boolean) -> String -> Array (Prop st effs) -> Array (VDom st effs) -> VDom st effs
+
+-- | create a virtual node with the given tag name, the given array of attributes and the given array of children
 h :: ∀st effs. String -> Array (Prop st effs) -> Array (VDom st effs) -> VDom st effs
 h = hAux isStyle
 
+-- | create a text virtual node
 foreign import text :: ∀a effs. String -> VDom a effs
+
+-- | create an empty virtual node
 foreign import emptyNode :: ∀a effs. VDom a effs
 
+-- | lazily generate a virtual dom
+-- |
+-- | i.e. generate only if the first argument has changed.
+-- | otherwise, return the previous generated virtual dom
 foreign import lazy :: ∀a b effs. b -> (b -> VDom a effs) -> VDom a effs
 
+-- | return a virtual dom only if the first argument is true
+-- | otherwise, return an empty virtual node
 ifN :: ∀a effs. Boolean -> (Unit -> VDom a effs) -> VDom a effs
 ifN cond vdom = if cond then vdom unit else emptyNode
 
 maybeN :: ∀a effs. Maybe (VDom a effs) -> VDom a effs
 maybeN = fromMaybe emptyNode
-
--- type Match effs = -- ∀rl r1 r2 a. RowToList effs rl => VariantFMatchCases rl r1 a (Effect Unit) => Union r1 () r2 =>
---   Record effs -- -> VariantF r2 a -> b} -> Effect Unit
-type InterpretEffs effs = VariantF effs (Effect Unit) -> Effect Unit
-
-type Dispatch = ∀st effs. Effect st -> ((st -> st) -> Effect Unit) -> InterpretEffs effs -> Action st effs -> Effect Unit
-dispatch :: Dispatch
-dispatch getS setS matching = runCont go (\_ -> pure unit) where
-    go = onMatch {
-        getState: \(GetState cont) -> getS >>= cont,
-        setState: \(SetState fn cont) -> setS fn *> cont
-    } matching
 
 
 foreign import appAux :: ∀a effs. Dispatch -> {
@@ -66,3 +65,14 @@ app :: ∀a effs. {
     effects :: Event -> InterpretEffs effs
 } -> Effect Unit
 app = appAux dispatch
+
+
+type InterpretEffs effs = VariantF effs (Effect Unit) -> Effect Unit
+
+type Dispatch = ∀st effs. Effect st -> ((st -> st) -> Effect Unit) -> InterpretEffs effs -> Action st effs -> Effect Unit
+dispatch :: Dispatch
+dispatch getS setS matching = runCont go (\_ -> pure unit) where
+    go = onMatch {
+        getState: \(GetState cont) -> getS >>= cont,
+        setState: \(SetState fn cont) -> setS fn *> cont
+    } matching

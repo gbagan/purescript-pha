@@ -269,7 +269,20 @@ var PS = {};
           return new Just(value0);
       };
       return Just;
-  })();                                                   
+  })();
+  var maybe = function (v) {
+      return function (v1) {
+          return function (v2) {
+              if (v2 instanceof Nothing) {
+                  return v;
+              };
+              if (v2 instanceof Just) {
+                  return v1(v2.value0);
+              };
+              throw new Error("Failed pattern match at Data.Maybe (line 217, column 1 - line 217, column 51): " + [ v.constructor.name, v1.constructor.name, v2.constructor.name ]);
+          };
+      };
+  };                                                      
   var functorMaybe = new Data_Functor.Functor(function (v) {
       return function (v1) {
           if (v1 instanceof Just) {
@@ -306,6 +319,7 @@ var PS = {};
   });
   exports["Nothing"] = Nothing;
   exports["Just"] = Just;
+  exports["maybe"] = maybe;
   exports["bindMaybe"] = bindMaybe;
 })(PS);
 (function($PS) {
@@ -1825,18 +1839,9 @@ var PS = {};
       return Loading.value;
   }))(function () {
       return Control_Bind.bind(Run.bindRun)(Pha_Http.simpleRequest("https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cat"))(function (v) {
-          var status = (function () {
-              var v1 = Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(v)(function ($10) {
-                  return Data_Either.hush(Data_Argonaut_Parser.jsonParser($10));
-              }))(Data_Argonaut_Core.toObject))(Foreign_Object.lookup("data")))(Data_Argonaut_Core.toObject))(Foreign_Object.lookup("image_url")))(Data_Argonaut_Core.toString);
-              if (v1 instanceof Data_Maybe.Nothing) {
-                  return Failure.value;
-              };
-              if (v1 instanceof Data_Maybe.Just) {
-                  return new Success(v1.value0);
-              };
-              throw new Error("Failed pattern match at Example.Cats (line 27, column 18 - line 36, column 36): " + [ v1.constructor.name ]);
-          })();
+          var status = Data_Maybe.maybe(Failure.value)(Success.create)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(v)(function ($7) {
+              return Data_Either.hush(Data_Argonaut_Parser.jsonParser($7));
+          }))(Data_Argonaut_Core.toObject))(Foreign_Object.lookup("data")))(Data_Argonaut_Core.toObject))(Foreign_Object.lookup("image_url")))(Data_Argonaut_Core.toString));
           return Pha_Action.setState(function (v1) {
               return status;
           });
@@ -1852,7 +1857,7 @@ var PS = {};
       if (v instanceof Success) {
           return Pha_Html["div'"]([  ])([ Pha_Html.button([ Pha_Html.onclick(requestCat), Pha_Html.style(Pha_Html.unittoStr)("display")("block") ])([ Pha.text("More Please!") ]), Pha_Html.img([ Pha_Html.src(v.value0) ])([  ]) ]);
       };
-      throw new Error("Failed pattern match at Example.Cats (line 46, column 1 - line 46, column 36): " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Example.Cats (line 44, column 1 - line 44, column 36): " + [ v.constructor.name ]);
   };
   var view = function (st) {
       return Pha_Html["div'"]([  ])([ Pha_Html.h2([  ])("Random Cats"), viewGif(st) ]);

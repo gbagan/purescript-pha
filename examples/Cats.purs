@@ -1,6 +1,6 @@
 module Example.Cats where
 import Prelude
-import Data.Maybe (Maybe(..))
+import Data.Maybe (maybe)
 import Effect (Effect)
 import Run (match)
 import Pha (VDom, app, text)
@@ -24,16 +24,14 @@ requestCat :: forall effs. Action State (http :: HTTP | effs)
 requestCat = do
     setState \_ -> Loading
     res <- simpleRequest "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cat"
-    let status = case res
+    let status = maybe Failure Success $ 
+                res
                 >>= (jsonParser >>> hush)
                 >>= toObject 
                 >>= lookup "data"
                 >>= toObject
                 >>= lookup "image_url" 
                 >>= toString
-        of
-            Nothing -> Failure
-            Just url -> Success url
     setState \_ -> status
 
 view :: State -> VDom State EFFS

@@ -43,6 +43,9 @@ main = app {
 }
 ```
 
-### More advanced example
+### Other examples
 
-[Here](https://github.com/gbagan/purescript-pha/blob/master/examples/Main.purs)
+Counter2 (delayed action, raw events) [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/Counter2.purs) | [HTML](http://htmlpreview.github.io/?https://github.com/gbagan/purescript-pha/blob/master/examples/dist/ex-counter2.html)
+
+Randomness (+ animation) [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/Random.purs) |  [HTML](http://htmlpreview.github.io/?https://github.com/gbagan/purescript-pha/blob/master/examples/dist/ex-random.html)
+    

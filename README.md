@@ -11,7 +11,7 @@ Documentation is [published on Pursuit](https://pursuit.purescript.org/packages/
 ### Minimal example
 ```purescript
 module Example.Main where
-import Prelude
+import Prelude hiding (div)
 import Effect (Effect)
 import Pha (VDom, app, text)
 import Pha.Action (Action, setState)

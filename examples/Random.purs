@@ -6,7 +6,7 @@ import Data.Array ((..), mapWithIndex)
 import Effect (Effect)
 import Run (match)
 import Pha (VDom, app, text)
-import Pha.Action (Action, getState, setState, RNG, rngInterpret)
+import Pha.Action (Action, getState, setState, RNG, interpretRng)
 import Pha.Random (randomInt, shuffle, randomPick)
 import Pha.Html (div', button, onclick, class', style, pc)
 
@@ -47,7 +47,6 @@ shufflePuzzle = do
     shuffled <- shuffle puzzle
     setState _{puzzle = shuffled}
 
-
 viewCard :: Card -> String
 viewCard Ace   = "🂡"
 viewCard Two   = "🂢"
@@ -62,7 +61,6 @@ viewCard Ten   = "🂪"
 viewCard Jack  = "🂫"
 viewCard Queen = "🂭"
 viewCard King  = "🂮"
-
 
 view :: State -> VDom State EFFS
 view {dice, puzzle, card} = 
@@ -92,6 +90,6 @@ main = app {
     node: "root",
     events: [],
     effects: match {
-        rng: rngInterpret
+        rng: interpretRng
     }
 }

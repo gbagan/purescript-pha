@@ -1,4 +1,4 @@
-module Pha.Event (shiftKey, key, button, stopPropagation, preventDefault, targetChecked, targetValue, EVENT, eventInterpret, EventF) where
+module Pha.Event (shiftKey, key, button, stopPropagation, preventDefault, targetChecked, targetValue, EVENT, interpretEvent, EventF) where
 import Prelude
 import Pha (Event)
 import Run (Run, SProxy(..), FProxy, lift)
@@ -47,10 +47,10 @@ foreign import stopPropagationE :: Event -> Effect Unit
 foreign import unsafeTargetCheckedE :: Event -> Effect Boolean
 foreign import unsafeTargetValueE :: Event -> Effect String
 
-eventInterpret :: EventF (Effect Unit) -> Effect Unit
-eventInterpret (PreventDefault ev cont) = preventDefaultE ev *> cont
-eventInterpret (StopPropagation ev cont) = stopPropagationE ev *> cont
+interpretEvent :: EventF (Effect Unit) -> Effect Unit
+interpretEvent (PreventDefault ev cont) = preventDefaultE ev *> cont
+interpretEvent (StopPropagation ev cont) = stopPropagationE ev *> cont
 --eventEffect (Target ev cont) = targetE ev >>= cont
 --eventEffect (CurrentTarget ev cont) = currentTargetE ev >>= cont
-eventInterpret (TargetChecked ev cont) = unsafeToMaybe <$> (unsafeTargetCheckedE ev) >>= cont
-eventInterpret (TargetValue ev cont) = unsafeToMaybe <$> (unsafeTargetValueE ev) >>= cont
+interpretEvent (TargetChecked ev cont) = unsafeToMaybe <$> (unsafeTargetCheckedE ev) >>= cont
+interpretEvent (TargetValue ev cont) = unsafeToMaybe <$> (unsafeTargetValueE ev) >>= cont

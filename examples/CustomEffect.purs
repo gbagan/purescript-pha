@@ -66,8 +66,8 @@ foreign import pointerPositionAux :: Maybe Position -> (Position -> Maybe Positi
 pointerPosition :: Event -> Effect (Maybe Position)
 pointerPosition = pointerPositionAux Nothing Just
 
-pointerEffect :: GetPointer (Effect Unit) -> Effect Unit
-pointerEffect = \(GetPointer ev cont) -> pointerPosition ev >>= cont
+interpretPointer :: GetPointer (Effect Unit) -> Effect Unit
+interpretPointer = \(GetPointer ev cont) -> pointerPosition ev >>= cont
 
 main :: Effect Unit
 main = app {
@@ -77,6 +77,6 @@ main = app {
     node: "root",    -- the id of the root node of the app
     events: [],
     effects: match {
-        pointer: pointerEffect
+        pointer: interpretPointer
     }
 }

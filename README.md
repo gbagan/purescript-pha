@@ -56,3 +56,5 @@ Randomness (+ animation) [Code](https://github.com/gbagan/purescript-pha/blob/ma
 Custom effcts (+ svg, FFI) [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/CustomEffect.purs) | [HTML](http://htmlpreview.github.io/?https://github.com/gbagan/purescript-pha/blob/master/examples/dist/ex-customeffect.html)
 
 Inputs (event effects, text and checkbox inputs) [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/Inputs.purs) | [HTML](http://htmlpreview.github.io/?https://github.com/gbagan/purescript-pha/blob/master/examples/dist/ex-inputs.html)
+
+Cats (HTTP, JSon) [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/Cats.purs) | [HTML](http://htmlpreview.github.io/?https://github.com/gbagan/purescript-pha/blob/master/examples/dist/ex-cats.html)

@@ -59,16 +59,17 @@ foreign import appAux :: ∀a effs. Dispatch -> {
     state :: a,
     view :: a -> VDom a effs,
     node :: String,
-    events :: Array (Tuple String (Action a effs)),
+    events :: Array (Tuple String (Event -> Action a effs)),
     init :: Action a effs,
     effects :: InterpretEffs effs
 } -> Effect Unit
+
 
 app :: ∀a effs. {
     state :: a,
     view :: a -> VDom a effs,
     node :: String,
-    events :: Array (Tuple String (Action a effs)),
+    events :: Array (Tuple String (Event -> Action a effs)),
     init :: Action a effs,
     effects :: InterpretEffs effs
 } -> Effect Unit

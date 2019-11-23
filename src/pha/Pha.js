@@ -348,7 +348,6 @@ const appAux = disp => props => () => {
   const setState = newState => {
     if (state !== newState) {
       state = newState;
-      console.log(state);
       if (!lock) defer(render, (lock = true))
     }
 

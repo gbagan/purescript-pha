@@ -100,6 +100,9 @@ a = h "a"
 input :: ∀a effs. String -> Array (Prop a effs) -> VDom a effs
 input t props = h "input" ([attr "type" t] <> props) []
 
+img :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+img = h "img"
+
 -- attributes
 
 disabled :: ∀a effs. Boolean -> Prop a effs
@@ -110,6 +113,9 @@ checked b = attr "checked" (if b then "true" else "")
 
 href :: ∀a effs. String -> Prop a effs
 href = attr "href"
+
+src :: ∀a effs. String -> Prop a effs
+src = attr "src"
 
 value :: ∀a effs. String -> Prop a effs
 value = attr "value"

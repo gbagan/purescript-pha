@@ -11,7 +11,7 @@ import Prelude
 import Effect (Effect)
 import Pha (VDom, app, text)
 import Pha.Action (Action, setState)
-import Pha.Html (div', button, click)
+import Pha.Html (div', button, onclick)
 
 type State = {
     counter :: Int
@@ -29,7 +29,7 @@ view :: State -> VDom State ()
 view {counter} = 
     div' [] [
         div' [] [text $ show counter],
-        button [click increment] [text "Increment"]
+        button [onclick increment] [text "Increment"]
     ]
 
 main :: Effect Unit

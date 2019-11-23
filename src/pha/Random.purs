@@ -1,10 +1,9 @@
-module Pha.Random (randomInt, randomBool, shuffle, randomPick, RNG, Rng(..)) where
+module Pha.Random (randomNumber, randomInt, randomBool, shuffle, randomPick, RNG, Rng(..)) where
 import Prelude
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Maybe (Maybe, fromMaybe)
 import Data.Tuple (Tuple(Tuple))
 import Data.Traversable (sequence)
-import Data.Array (length, mapWithIndex, foldl, unsafeIndex, insertAt)
-import Partial.Unsafe (unsafePartial)
+import Data.Array (length, mapWithIndex, foldl, index, insertAt)
 import Run (FProxy, SProxy(..), Run, lift)
 
 data Rng a = RngInt Int (Int -> a) | RngNumber (Number -> a)
@@ -14,6 +13,10 @@ type RNG = FProxy Rng
 -- | generate a random integer in the range [0, n - 1]
 randomInt :: ∀r. Int -> Run (rng :: RNG | r) Int
 randomInt n = lift (SProxy :: SProxy "rng") (RngInt n identity)
+
+-- | generate a random number in the range [0, 1)
+randomNumber :: ∀r. Run (rng :: RNG | r) Number
+randomNumber = lift (SProxy :: SProxy "rng") (RngNumber identity)
 
 -- | generate a random boolean 
 randomBool :: ∀r. Run (rng :: RNG | r) Boolean
@@ -25,6 +28,5 @@ shuffle array = do
     rnds <- sequence $ array # mapWithIndex \i x -> Tuple x <$> randomInt (i+1)
     pure $ rnds # foldl (\t (Tuple x i) -> t # insertAt i x # fromMaybe []) []
 
-randomPick :: ∀a r. Array a -> Maybe (Run (rng :: RNG | r) a)
-randomPick [] = Nothing
-randomPick t = Just $ unsafePartial $ unsafeIndex t <$> (randomInt $ length t)
+randomPick :: ∀a r. Array a -> Run (rng :: RNG | r) (Maybe a)
+randomPick t = index t <$> (randomInt $ length t)

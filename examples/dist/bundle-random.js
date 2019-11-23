@@ -2280,7 +2280,7 @@ var PS = {};
   exports["style"] = style;
   exports["onclick"] = onclick;
   exports["button"] = button;
-  exports["div'"] = div$prime;
+  exports["div"] = div$prime;
   exports["unittoStr"] = unittoStr;
   exports["unitPc"] = unitPc;
 })(PS);
@@ -2480,9 +2480,9 @@ var PS = {};
       throw new Error("Failed pattern match at Example.Random (line 40, column 5 - line 42, column 29): " + [ v.constructor.name ]);
   });
   var view = function (v) {
-      return Pha_Html["div'"]([  ])([ Pha_Html["div'"]([ Pha_Html["class'"]("counter")(true) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(v.dice)) ]), Pha_Html.button([ Pha_Html.onclick(rollDice) ])([ Pha.text("Roll dice") ]), Pha_Html["div'"]([ Pha_Html.style(Pha_Html.unittoStr)("font-size")("12em") ])([ Pha.text(viewCard(v.card)) ]), Pha_Html.button([ Pha_Html.onclick(drawCard) ])([ Pha.text("Draw") ]), Pha_Html["div'"]([ Pha_Html["class'"]("puzzle")(true) ])(Data_Array.mapWithIndex(function (i) {
+      return Pha_Html["div"]([  ])([ Pha_Html["div"]([ Pha_Html["class'"]("counter")(true) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(v.dice)) ]), Pha_Html.button([ Pha_Html.onclick(rollDice) ])([ Pha.text("Roll dice") ]), Pha_Html["div"]([ Pha_Html.style(Pha_Html.unittoStr)("font-size")("12em") ])([ Pha.text(viewCard(v.card)) ]), Pha_Html.button([ Pha_Html.onclick(drawCard) ])([ Pha.text("Draw") ]), Pha_Html["div"]([ Pha_Html["class'"]("puzzle")(true) ])(Data_Array.mapWithIndex(function (i) {
           return function (j) {
-              return Pha_Html["div'"]([ Pha_Html["class'"]("puzzle-item")(true), Pha_Html.style(Pha_Html.unitPc)("left")(Pha_Html.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.div(Data_EuclideanRing.euclideanRingInt)(j)(4)))), Pha_Html.style(Pha_Html.unitPc)("top")(Pha_Html.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.mod(Data_EuclideanRing.euclideanRingInt)(j)(4)))) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(i)) ]);
+              return Pha_Html["div"]([ Pha_Html["class'"]("puzzle-item")(true), Pha_Html.style(Pha_Html.unitPc)("left")(Pha_Html.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.div(Data_EuclideanRing.euclideanRingInt)(j)(4)))), Pha_Html.style(Pha_Html.unitPc)("top")(Pha_Html.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.mod(Data_EuclideanRing.euclideanRingInt)(j)(4)))) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(i)) ]);
           };
       })(v.puzzle)), Pha_Html.button([ Pha_Html.onclick(shufflePuzzle) ])([ Pha.text("Shuffle") ]) ]);
   };

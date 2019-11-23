@@ -1,12 +1,12 @@
 module Example.Inputs where
-import Prelude
+import Prelude hiding (div)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Int (fromString)
 import Effect (Effect)
 import Run (match)
 import Pha (VDom, Event, app, text)
 import Pha.Action (Action, setState)
-import Pha.Html (div', br, attr, input, value, checked, onchange')
+import Pha.Html (div, br, attr, input, value, checked, onchange')
 import Pha.Event (EVENT, targetValue, targetChecked, interpretEvent)
 
 type State = {
@@ -47,7 +47,7 @@ changemul ev = targetChecked ev >>= \val -> setState _{isMul = (val == Just true
 
 view :: State -> VDom State EFFS
 view st@{val1, val2, isMul} = 
-    div' [] [
+    div [] [
         input "text" [attr "size" "5", onchange' changeval1, value val1],
         text " + ",
         input "text" [attr "size" "5", onchange' changeval2, value val2],

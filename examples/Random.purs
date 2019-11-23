@@ -1,5 +1,5 @@
 module Example.Random where
-import Prelude
+import Prelude hiding (div)
 import Data.Int (toNumber)
 import Data.Maybe (Maybe(..))
 import Data.Array ((..), mapWithIndex)
@@ -8,7 +8,7 @@ import Run (match)
 import Pha (VDom, app, text)
 import Pha.Action (Action, getState, setState, RNG, interpretRng)
 import Pha.Random (randomInt, shuffle, randomPick)
-import Pha.Html (div', button, onclick, class', style, pc)
+import Pha.Html (div, button, onclick, class', style, pc)
 
 data Card = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King
 
@@ -21,7 +21,7 @@ type State = {
 -- effects used in this app
 type EFFS = (rng :: RNG)
 
--- initial effects
+-- initial state
 state :: State
 state = {
     dice: 1,
@@ -64,16 +64,16 @@ viewCard King  = "🂮"
 
 view :: State -> VDom State EFFS
 view {dice, puzzle, card} = 
-    div' [] [
-        div' [class' "counter" true] [text $ show dice],
+    div [] [
+        div [class' "counter" true] [text $ show dice],
         button [onclick rollDice] [text "Roll dice"],
 
-        div' [style "font-size" "12em" ] [ text $ viewCard card ],
+        div [style "font-size" "12em" ] [ text $ viewCard card ],
         button [onclick drawCard] [ text "Draw" ],
 
-        div' [class' "puzzle" true] (
+        div [class' "puzzle" true] (
             puzzle # mapWithIndex \i j ->
-                div' [
+                div [
                     class' "puzzle-item" true,
                     style "left" $ pc (0.25 * toNumber (j / 4)),
                     style "top" $ pc (0.25 * toNumber (j `mod` 4)) 

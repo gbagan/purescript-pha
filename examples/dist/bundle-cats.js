@@ -1723,7 +1723,7 @@ var PS = {};
           return Pha.h("h2")(props)([ Pha.text(str) ]);
       };
   };
-  var div$prime = Pha.h("div");      
+  var div = Pha.h("div");            
   var button = Pha.h("button");    
   var attr = function (dictEUnit) {
       return function (n) {
@@ -1736,7 +1736,7 @@ var PS = {};
   exports["style"] = style;
   exports["onclick"] = onclick;
   exports["button"] = button;
-  exports["div'"] = div$prime;
+  exports["div"] = div;
   exports["h2"] = h2;
   exports["img"] = img;
   exports["src"] = src;
@@ -1849,18 +1849,18 @@ var PS = {};
   });
   var viewGif = function (v) {
       if (v instanceof Failure) {
-          return Pha_Html["div'"]([  ])([ Pha.text("I could not load a random cat for some reason. "), Pha_Html.button([ Pha_Html.onclick(requestCat) ])([ Pha.text("Try Again!") ]) ]);
+          return Pha_Html.div([  ])([ Pha.text("I could not load a random cat for some reason. "), Pha_Html.button([ Pha_Html.onclick(requestCat) ])([ Pha.text("Try Again!") ]) ]);
       };
       if (v instanceof Loading) {
           return Pha.text("Loading...");
       };
       if (v instanceof Success) {
-          return Pha_Html["div'"]([  ])([ Pha_Html.button([ Pha_Html.onclick(requestCat), Pha_Html.style(Pha_Html.unittoStr)("display")("block") ])([ Pha.text("More Please!") ]), Pha_Html.img([ Pha_Html.src(v.value0) ])([  ]) ]);
+          return Pha_Html.div([  ])([ Pha_Html.button([ Pha_Html.onclick(requestCat), Pha_Html.style(Pha_Html.unittoStr)("display")("block") ])([ Pha.text("More Please!") ]), Pha_Html.img([ Pha_Html.src(v.value0) ])([  ]) ]);
       };
       throw new Error("Failed pattern match at Example.Cats (line 44, column 1 - line 44, column 36): " + [ v.constructor.name ]);
   };
   var view = function (st) {
-      return Pha_Html["div'"]([  ])([ Pha_Html.h2([  ])("Random Cats"), viewGif(st) ]);
+      return Pha_Html.div([  ])([ Pha_Html.h2([  ])("Random Cats"), viewGif(st) ]);
   };
   var main = Pha.app({
       state: state,

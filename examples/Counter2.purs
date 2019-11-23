@@ -1,5 +1,5 @@
 module Example.Counter2 where
-import Prelude
+import Prelude hiding (div)
 import Data.Int (even)
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
@@ -8,7 +8,7 @@ import Run (match)
 import Pha (VDom, Event, app, text)
 import Pha.Action (Action, setState, DELAY, delay, interpretDelay)
 import Pha.Event (key) as E
-import Pha.Html (div', button, span, onclick, class')
+import Pha.Html (div, button, span, onclick, class')
 
 type State = {
     counter :: Int
@@ -33,20 +33,20 @@ delayedIncrement = delay 1000 *> increment
 
 view :: State -> VDom State EFFS
 view {counter} = 
-    div' [] [
-        div' [class' "counter" true] [text $ show counter],
+    div [] [
+        div [class' "counter" true] [text $ show counter],
         button [onclick increment] [text "Increment"],
         button [onclick delayedIncrement] [text "Delayed Increment"],
 
-        div' [] [
+        div [] [
             span [] [text "green when the counter is even"],
-            div' [
+            div [
                 class' "box" true, 
                 class' "even" (even counter)
             ] []
         ],
 
-        div' [] [
+        div [] [
             text "press space to increment the counter"
         ]
     ]

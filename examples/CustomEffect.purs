@@ -1,11 +1,11 @@
 module Example.CustomEffect where
-import Prelude
+import Prelude hiding (div)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Run (Run, SProxy(..), FProxy, lift, match)
 import Pha (VDom, Event, app, maybeN)
 import Pha.Action (Action, setState)
-import Pha.Html (div', style, pc, onpointerleave, onpointermove')
+import Pha.Html (div, style, pc, onpointerleave, onpointermove')
 import Pha.Svg (svg, viewBox, circle, fill, stroke)
 import Pha.Util (translate)
 
@@ -42,8 +42,8 @@ clearPosition = setState _{position = Nothing}
 
 view :: State -> VDom State EFFS
 view {position} = 
-    div' [] [
-        div' [
+    div [] [
+        div [
             style "width" "400px",
             style "height" "400px",
             style "border" "solid grey thin",

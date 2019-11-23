@@ -1,6 +1,6 @@
 module Pha.Html where
 
-import Prelude
+import Prelude hiding (div)
 import Pha (VDom, Prop(..), Event, h, text)
 import Pha.Action (Action)
 
@@ -79,8 +79,8 @@ br = h "br" [] []
 button :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
 button = h "button"
 
-div' :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
-div' = h "div"
+div :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+div = h "div"
 
 span :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
 span = h "span"

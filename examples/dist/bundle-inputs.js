@@ -1798,7 +1798,7 @@ var PS = {};
   exports["attr"] = attr;
   exports["onchange'"] = onchange$prime;
   exports["br"] = br;
-  exports["div'"] = div$prime;
+  exports["div"] = div$prime;
   exports["input"] = input;
   exports["checked"] = checked;
   exports["value"] = value;
@@ -1885,7 +1885,7 @@ var PS = {};
       });
   };
   var view = function (v) {
-      return Pha_Html["div'"]([  ])([ Pha_Html.input("text")([ Pha_Html.attr(Pha_Html.unittoStr)("size")("5"), Pha_Html["onchange'"](changeval1), Pha_Html.value(v.val1) ]), Pha.text(" + "), Pha_Html.input("text")([ Pha_Html.attr(Pha_Html.unittoStr)("size")("5"), Pha_Html["onchange'"](changeval2), Pha_Html.value(v.val2) ]), Pha.text(" = " + result(v)), Pha_Html.br, Pha_Html.input("checkbox")([ Pha_Html.checked(v.isMul), Pha_Html["onchange'"](changemul) ]), Pha.text("Multiplication instead of addition") ]);
+      return Pha_Html["div"]([  ])([ Pha_Html.input("text")([ Pha_Html.attr(Pha_Html.unittoStr)("size")("5"), Pha_Html["onchange'"](changeval1), Pha_Html.value(v.val1) ]), Pha.text(" + "), Pha_Html.input("text")([ Pha_Html.attr(Pha_Html.unittoStr)("size")("5"), Pha_Html["onchange'"](changeval2), Pha_Html.value(v.val2) ]), Pha.text(" = " + result(v)), Pha_Html.br, Pha_Html.input("checkbox")([ Pha_Html.checked(v.isMul), Pha_Html["onchange'"](changemul) ]), Pha.text("Multiplication instead of addition") ]);
   };
   var main = Pha.app({
       state: state,

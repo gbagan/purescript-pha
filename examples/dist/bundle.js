@@ -2484,7 +2484,7 @@ var PS = {};
   exports["style"] = style;
   exports["click"] = click;
   exports["button"] = button;
-  exports["div'"] = div$prime;
+  exports["div"] = div$prime;
   exports["span"] = span;
   exports["unitPc"] = unitPc;
 })(PS);
@@ -2614,7 +2614,7 @@ var PS = {};
       throw new Error("Failed pattern match at Example.Main (line 93, column 16 - line 95, column 41): " + [ v.constructor.name ]);
   };
   var lazyView = function (i) {
-      return Pha_Html["div'"]([ Pha_Html["class'"]("counter")(true) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(i)) ]);
+      return Pha_Html["div"]([ Pha_Html["class'"]("counter")(true) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(i)) ]);
   };
   var interpretEffects = Data_Functor_Variant.match()()()({
       delay: Pha_Action.delayEffect,
@@ -2642,15 +2642,15 @@ var PS = {};
       })(dictStrong);
   };
   var view = function (v) {
-      return Pha_Html["div'"]([  ])([ Pha_Html["div'"]([ Pha_Html["class'"]("counter")(true) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(v.counter)) ]), Pha_Html.button([ Pha_Html.click(increment) ])([ Pha.text("Increment") ]), Pha_Html.button([ Pha_Html.click(delayedIncrement) ])([ Pha.text("Delayed Increment") ]), Pha_Lens.viewOver(function (dictStrong) {
+      return Pha_Html["div"]([  ])([ Pha_Html["div"]([ Pha_Html["class'"]("counter")(true) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(v.counter)) ]), Pha_Html.button([ Pha_Html.click(increment) ])([ Pha.text("Increment") ]), Pha_Html.button([ Pha_Html.click(delayedIncrement) ])([ Pha.text("Delayed Increment") ]), Pha_Lens.viewOver(function (dictStrong) {
           return _counter(dictStrong);
       })(Pha_Html.button([ Pha_Html.click(Pha_Action.setState(function (v1) {
           return v1 + 1 | 0;
-      })) ])([ Pha.text("Increment bis") ])), Pha_Html["div'"]([  ])([ Pha_Html.span([  ])([ Pha.text("green when counter is even") ]), Pha_Html["div'"]([ Pha_Html["class'"]("box")(true), Pha_Html["class'"]("even")(Data_Int.even(v.counter)) ])([  ]) ]), Pha.lazy(Data_EuclideanRing.div(Data_EuclideanRing.euclideanRingInt)(v.counter)(4))(lazyView), Pha_Html["div'"]([ Pha_Html["class'"]("puzzle")(true) ])(Data_Array.mapWithIndex(function (i) {
+      })) ])([ Pha.text("Increment bis") ])), Pha_Html["div"]([  ])([ Pha_Html.span([  ])([ Pha.text("green when counter is even") ]), Pha_Html["div"]([ Pha_Html["class'"]("box")(true), Pha_Html["class'"]("even")(Data_Int.even(v.counter)) ])([  ]) ]), Pha.lazy(Data_EuclideanRing.div(Data_EuclideanRing.euclideanRingInt)(v.counter)(4))(lazyView), Pha_Html["div"]([ Pha_Html["class'"]("puzzle")(true) ])(Data_Array.mapWithIndex(function (i) {
           return function (j) {
-              return Pha_Html["div'"]([ Pha_Html["class'"]("puzzle-item")(true), Pha_Html.style(Pha_Html.unitPc)("left")(Pha_Html.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.div(Data_EuclideanRing.euclideanRingInt)(j)(4)))), Pha_Html.style(Pha_Html.unitPc)("top")(Pha_Html.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.mod(Data_EuclideanRing.euclideanRingInt)(j)(4)))) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(i)) ]);
+              return Pha_Html["div"]([ Pha_Html["class'"]("puzzle-item")(true), Pha_Html.style(Pha_Html.unitPc)("left")(Pha_Html.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.div(Data_EuclideanRing.euclideanRingInt)(j)(4)))), Pha_Html.style(Pha_Html.unitPc)("top")(Pha_Html.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.mod(Data_EuclideanRing.euclideanRingInt)(j)(4)))) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(i)) ]);
           };
-      })(v.puzzle)), Pha_Html.button([ Pha_Html.click(shufflePuzzle) ])([ Pha.text("Shuffle") ]), Pha_Html["div'"]([  ])([ Pha.text("Key pressed: " + v.pressedKey) ]) ]);
+      })(v.puzzle)), Pha_Html.button([ Pha_Html.click(shufflePuzzle) ])([ Pha.text("Shuffle") ]), Pha_Html["div"]([  ])([ Pha.text("Key pressed: " + v.pressedKey) ]) ]);
   };
   var main = Pha.app({
       state: state,

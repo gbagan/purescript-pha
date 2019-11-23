@@ -1599,7 +1599,7 @@ var PS = {};
   exports["style"] = style;
   exports["pointermove'"] = pointermove$prime;
   exports["pointerleave"] = pointerleave;
-  exports["div'"] = div$prime;
+  exports["div"] = div$prime;
   exports["unittoStr"] = unittoStr;
   exports["unitNumber"] = unitNumber;
   exports["unitPc"] = unitPc;
@@ -1728,7 +1728,7 @@ var PS = {};
       };
   });
   var view = function (v) {
-      return Pha_Html["div'"]([  ])([ Pha_Html["div'"]([ Pha_Html.style(Pha_Html.unittoStr)("width")("400px"), Pha_Html.style(Pha_Html.unittoStr)("height")("400px"), Pha_Html.style(Pha_Html.unittoStr)("border")("solid grey thin"), Pha_Html["pointermove'"](updatePosition), Pha_Html.pointerleave(clearPosition) ])([ Pha_Svg.svg([ Pha_Svg.viewBox(0)(0)(100)(100) ])([ Pha.maybeN(Data_Functor.mapFlipped(Data_Maybe.functorMaybe)(v.position)(function (v1) {
+      return Pha_Html["div"]([  ])([ Pha_Html["div"]([ Pha_Html.style(Pha_Html.unittoStr)("width")("400px"), Pha_Html.style(Pha_Html.unittoStr)("height")("400px"), Pha_Html.style(Pha_Html.unittoStr)("border")("solid grey thin"), Pha_Html["pointermove'"](updatePosition), Pha_Html.pointerleave(clearPosition) ])([ Pha_Svg.svg([ Pha_Svg.viewBox(0)(0)(100)(100) ])([ Pha.maybeN(Data_Functor.mapFlipped(Data_Maybe.functorMaybe)(v.position)(function (v1) {
           return Pha_Svg.circle(Pha_Html.unitNumber)(Pha_Html.unitNumber)(Pha_Html.unitNumber)(0.0)(0.0)(7.0)([ Pha_Svg.fill("red"), Pha_Svg.stroke("black"), Pha_Html.style(Pha_Html.unittoStr)("transform")(Pha_Util.translate(Pha_Html.unitPc)(Pha_Html.unitPc)(Pha_Html.pc(v1.x))(Pha_Html.pc(v1.y))) ]);
       })) ]) ]) ]);
   };

@@ -1547,7 +1547,7 @@ var PS = {};
   exports["class'"] = class$prime;
   exports["click"] = click;
   exports["button"] = button;
-  exports["div'"] = div$prime;
+  exports["div"] = div$prime;
   exports["span"] = span;
 })(PS);
 (function($PS) {
@@ -1585,7 +1585,7 @@ var PS = {};
   };
   var delayedIncrement = Control_Apply.applySecond(Run.applyRun)(Pha_Action.delay(1000))(increment);
   var view = function (v) {
-      return Pha_Html["div'"]([  ])([ Pha_Html["div'"]([ Pha_Html["class'"]("counter")(true) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(v.counter)) ]), Pha_Html.button([ Pha_Html.click(increment) ])([ Pha.text("Increment") ]), Pha_Html.button([ Pha_Html.click(delayedIncrement) ])([ Pha.text("Delayed Increment") ]), Pha_Html["div'"]([  ])([ Pha_Html.span([  ])([ Pha.text("green when the counter is even") ]), Pha_Html["div'"]([ Pha_Html["class'"]("box")(true), Pha_Html["class'"]("even")(Data_Int.even(v.counter)) ])([  ]) ]), Pha_Html["div'"]([  ])([ Pha.text("press space to increment the counter") ]) ]);
+      return Pha_Html["div"]([  ])([ Pha_Html["div"]([ Pha_Html["class'"]("counter")(true) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(v.counter)) ]), Pha_Html.button([ Pha_Html.click(increment) ])([ Pha.text("Increment") ]), Pha_Html.button([ Pha_Html.click(delayedIncrement) ])([ Pha.text("Delayed Increment") ]), Pha_Html["div"]([  ])([ Pha_Html.span([  ])([ Pha.text("green when the counter is even") ]), Pha_Html["div"]([ Pha_Html["class'"]("box")(true), Pha_Html["class'"]("even")(Data_Int.even(v.counter)) ])([  ]) ]), Pha_Html["div"]([  ])([ Pha.text("press space to increment the counter") ]) ]);
   };
   var main = Pha.app({
       state: state,

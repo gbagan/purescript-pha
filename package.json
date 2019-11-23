@@ -9,6 +9,7 @@
   "scripts": {
     "init": "spago init",
     "build-example-counter2": "spago bundle-app -m Example.Counter2 --to examples/dist/bundle-counter2.js",
-    "build-example-random": "spago bundle-app -m Example.Random --to examples/dist/bundle-random.js"
+    "build-example-random": "spago bundle-app -m Example.Random --to examples/dist/bundle-random.js",
+    "build-example-customeffect": "spago bundle-app -m Example.CustomEffect --to examples/dist/bundle-customeffect.js"
   }
 }

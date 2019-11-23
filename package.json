@@ -8,6 +8,7 @@
   },
   "scripts": {
     "init": "spago init",
-    "build-example": "spago bundle-app -m Example.Main --to examples/dist/bundle.js"
+    "build-example-counter2": "spago bundle-app -m Example.Counter2 --to examples/dist/bundle-counter2.js",
+    "build-example-random": "spago bundle-app -m Example.Random --to examples/dist/bundle-random.js"
   }
 }

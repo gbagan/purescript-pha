@@ -5,7 +5,7 @@ import Effect (Effect)
 import Run (Run, SProxy(..), FProxy, lift, match)
 import Pha (VDom, Event, app, maybeN)
 import Pha.Action (Action, setState)
-import Pha.Html (div', style, pc, pointerleave, pointermove')
+import Pha.Html (div', style, pc, onpointerleave, onpointermove')
 import Pha.Svg (svg, viewBox, circle, fill, stroke)
 import Pha.Util (translate)
 
@@ -47,8 +47,8 @@ view {position} =
             style "width" "400px",
             style "height" "400px",
             style "border" "solid grey thin",
-            pointermove' updatePosition,
-            pointerleave clearPosition
+            onpointermove' updatePosition,
+            onpointerleave clearPosition
         ] [
             svg [viewBox 0 0 100 100] [
                 maybeN $ position <#> \{x, y} ->

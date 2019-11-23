@@ -1,6 +1,5 @@
-module Pha.Action (getState, setState, setState', GetState(..), SetState(..), GETSTATE, SETSTATE, 
-    delay, Delay(..), DELAY, delayEffect,
-    Action, Action', module R, rngEffect) where
+module Pha.Action (Action, Action', getState, setState, setState', delay, GETSTATE, SETSTATE, DELAY, delayEffect, rngEffect,
+    GetState(..), SetState(..), Delay(..), module R) where
 import Prelude
 import Data.Int (floor, toNumber)
 import Effect(Effect)

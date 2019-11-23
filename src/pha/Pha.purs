@@ -1,4 +1,4 @@
-module Pha (Event, Prop(..), InterpretEffs, VDom, h, text, emptyNode, lazy, ifN, maybeN, app) where
+module Pha (h, text, emptyNode, lazy, ifN, maybeN, app, Event, Prop(..), VDom, InterpretEffs) where
 
 import Prelude
 import Effect (Effect)

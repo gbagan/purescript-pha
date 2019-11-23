@@ -4,11 +4,10 @@ import Data.Int (toNumber)
 import Data.Array ((..), mapWithIndex)
 import Effect (Effect)
 import Run (match)
-import Pha (VDom, Event, app, text)
-import Pha.Action (Action, getState, setState,
-                    RNG, rngEffect)
+import Pha (VDom, app, text)
+import Pha.Action (Action, getState, setState, RNG, rngEffect)
 import Pha.Random (randomInt, shuffle)
-import Pha.Html (div', button, click, class', style, pc)
+import Pha.Html (div', button, onclick, class', style, pc)
 
 type State = {
     dice :: Int,
@@ -40,7 +39,7 @@ view :: State -> VDom State EFFS
 view {dice, puzzle} = 
     div' [] [
         div' [class' "counter" true] [text $ show dice],
-        button [click rollDice] [text "Roll dice"],
+        button [onclick rollDice] [text "Roll dice"],
 
         div' [class' "puzzle" true] (
             puzzle # mapWithIndex \i j ->
@@ -50,7 +49,7 @@ view {dice, puzzle} =
                     style "top" $ pc (0.25 * toNumber (j `mod` 4)) 
                 ] [text $ show i]
         ),
-        button [click shufflePuzzle] [text "Shuffle"]
+        button [onclick shufflePuzzle] [text "Shuffle"]
     ]
 
 main :: Effect Unit

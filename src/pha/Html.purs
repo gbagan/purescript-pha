@@ -32,41 +32,44 @@ class' = Class
 style :: ∀a effs u. EUnit u => String -> u -> Prop a effs
 style n x' = Style n (toStr x')
 
-click' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
-click' = Event "click"
+onclick' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
+onclick' = Event "click"
 
-click :: ∀a effs. Action a effs -> Prop a effs
-click = click' <<< const
+onclick :: ∀a effs. Action a effs -> Prop a effs
+onclick = onclick' <<< const
 
-contextmenu' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
-contextmenu' = Event "contextmenu"
+oncontextmenu' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
+oncontextmenu' = Event "contextmenu"
 
-pointermove' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
-pointermove' = Event "pointermove"
+onpointermove' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
+onpointermove' = Event "pointermove"
 
-pointerup' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
-pointerup' = Event "pointerup"
+onpointerup' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
+onpointerup' = Event "pointerup"
 
-pointerup :: ∀a effs. Action a effs -> Prop a effs
-pointerup = pointerup' <<< const
+onpointerup :: ∀a effs. Action a effs -> Prop a effs
+onpointerup = onpointerup' <<< const
 
-pointerdown' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
-pointerdown' = Event "pointerdown"
+onpointerdown' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
+onpointerdown' = Event "pointerdown"
 
-pointerdown :: ∀a effs. Action a effs -> Prop a effs
-pointerdown = pointerdown' <<< const
+onpointerdown :: ∀a effs. Action a effs -> Prop a effs
+onpointerdown = onpointerdown' <<< const
 
-pointerenter' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
-pointerenter' = Event "pointerenter"
+onpointerenter' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
+onpointerenter' = Event "pointerenter"
 
-pointerenter :: ∀a effs. Action a effs -> Prop a effs
-pointerenter = pointerenter' <<< const
+onpointerenter :: ∀a effs. Action a effs -> Prop a effs
+onpointerenter = onpointerenter' <<< const
 
-pointerleave' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
-pointerleave' = Event "pointerleave"
+onpointerleave' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
+onpointerleave' = Event "pointerleave"
 
-pointerleave :: ∀a effs. Action a effs -> Prop a effs
-pointerleave = pointerleave' <<< const
+onpointerleave :: ∀a effs. Action a effs -> Prop a effs
+onpointerleave = onpointerleave' <<< const
+
+onchange' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
+onchange' = Event "change"
 
 -- elements
 
@@ -94,10 +97,19 @@ p = h "p"
 a :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
 a = h "a"
 
+input :: ∀a effs. String -> Array (Prop a effs) -> VDom a effs
+input t props = h "input" ([attr "type" t] <> props) []
+
 -- attributes
 
 disabled :: ∀a effs. Boolean -> Prop a effs
 disabled b = attr "disabled" (if b then "true" else "")
 
+checked :: ∀a effs. Boolean -> Prop a effs
+checked b = attr "checked" (if b then "true" else "")
+
 href :: ∀a effs. String -> Prop a effs
 href = attr "href"
+
+value :: ∀a effs. String -> Prop a effs
+value = attr "value"

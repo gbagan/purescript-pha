@@ -8,7 +8,7 @@ import Run (match)
 import Pha (VDom, Event, app, text)
 import Pha.Action (Action, setState, DELAY, delay, delayEffect)
 import Pha.Event (key) as E
-import Pha.Html (div', button, span, click, class')
+import Pha.Html (div', button, span, onclick, class')
 
 type State = {
     counter :: Int
@@ -35,8 +35,8 @@ view :: State -> VDom State EFFS
 view {counter} = 
     div' [] [
         div' [class' "counter" true] [text $ show counter],
-        button [click increment] [text "Increment"],
-        button [click delayedIncrement] [text "Delayed Increment"],
+        button [onclick increment] [text "Increment"],
+        button [onclick delayedIncrement] [text "Delayed Increment"],
 
         div' [] [
             span [] [text "green when the counter is even"],

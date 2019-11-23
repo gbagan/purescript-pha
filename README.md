@@ -17,20 +17,16 @@ import Pha (VDom, app, text)
 import Pha.Action (Action, setState)
 import Pha.Html (div', button, onclick)
 
-type State = {
-    counter :: Int
-}
+type State = Int
 
 state :: State
-state = {
-    counter: 1
-}
+state = 0
 
 increment :: Action State ()
-increment = setState \{counter} -> {counter: counter + 1}
+increment = setState (_ + 1)
 
 view :: State -> VDom State ()
-view {counter} = 
+view counter = 
     div' [] [
         div' [] [text $ show counter],
         button [onclick increment] [text "Increment"]

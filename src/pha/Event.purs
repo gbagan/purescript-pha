@@ -1,6 +1,6 @@
 module Pha.Event (preventDefault, shiftKey, key) where
 import Prelude
-import Pha.Action (Event)
+import Pha (Event)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
 

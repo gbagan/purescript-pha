@@ -6,7 +6,7 @@ import Data.Lens (Lens', lens)
 import Effect (Effect)
 import Run (match)
 import Pha (VDom, InterpretEffs, app, text, lazy)
-import Pha.Action (Action, Event, getState, setState, 
+import Pha.Action (Action, getState, setState, 
                     DELAY, delay, delayEffect,
                     RNG, rngEffect)
 import Pha.Lens (viewOver)
@@ -84,8 +84,8 @@ view {counter, puzzle} =
 
 -- a mapping of each algebraic effect to a real effect
 -- delayEffect and rngEffect are default mappings but we can use a mockup mapping for testing.
-interpretEffects :: Event -> InterpretEffs EFFS
-interpretEffects ev = match {
+interpretEffects :: InterpretEffs EFFS
+interpretEffects = match {
     delay: delayEffect,
     rng: rngEffect
 }

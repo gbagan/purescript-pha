@@ -1,7 +1,7 @@
 module Pha.Html where
 
 import Prelude
-import Pha (VDom, Prop(..), h, text)
+import Pha (VDom, Prop(..), Event, h, text)
 import Pha.Action (Action)
 
 class EUnit a where toStr  :: a -> String
@@ -32,29 +32,41 @@ class' = Class
 style :: ∀a effs u. EUnit u => String -> u -> Prop a effs
 style n x' = Style n (toStr x')
 
+click' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
+click' = Event "click"
+
 click :: ∀a effs. Action a effs -> Prop a effs
-click = Event "click"
+click = click' <<< const
 
-contextmenu :: ∀a effs. Action a effs -> Prop a effs
-contextmenu = Event "contextmenu"
+contextmenu' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
+contextmenu' = Event "contextmenu"
 
-pointermove :: ∀a effs. Action a effs -> Prop a effs
-pointermove = Event "pointermove"
+pointermove' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
+pointermove' = Event "pointermove"
+
+pointerup' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
+pointerup' = Event "pointerup"
 
 pointerup :: ∀a effs. Action a effs -> Prop a effs
-pointerup = Event "pointerup"
+pointerup = pointerup' <<< const
+
+pointerdown' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
+pointerdown' = Event "pointerdown"
 
 pointerdown :: ∀a effs. Action a effs -> Prop a effs
-pointerdown = Event "pointerdown"
+pointerdown = pointerdown' <<< const
+
+pointerenter' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
+pointerenter' = Event "pointerenter"
 
 pointerenter :: ∀a effs. Action a effs -> Prop a effs
-pointerenter = Event "pointerenter"
+pointerenter = pointerenter' <<< const
+
+pointerleave' :: ∀a effs. (Event -> Action a effs) -> Prop a effs
+pointerleave' = Event "pointerleave"
 
 pointerleave :: ∀a effs. Action a effs -> Prop a effs
-pointerleave = Event "pointerleave"
-
-keydown :: ∀a effs. Action a effs -> Prop a effs
-keydown = Event "keydown"
+pointerleave = pointerleave' <<< const
 
 -- elements
 
@@ -89,6 +101,3 @@ disabled b = attr "disabled" (if b then "true" else "")
 
 href :: ∀a effs. String -> Prop a effs
 href = attr "href"
-
-translate :: ∀u1 u2. EUnit u1 => EUnit u2 => u1 -> u2 -> String
-translate x' y' = "translate(" <> toStr x' <> "," <> toStr y' <> ")"

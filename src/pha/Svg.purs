@@ -15,11 +15,13 @@ rect x' y' w h' props = h "rect" ([attr "x" x', attr "y" y', attr "width" w, att
 path :: ∀a effs. String -> Array (Prop a effs) -> VDom a effs
 path d props = h "path" ([attr "d" d] <> props) []
     
-line ::  ∀a effs u1 u2 u3 u4. EUnit u1 => EUnit u2 => EUnit u3 => EUnit u4 => u1 -> u2 -> u3 -> u4 -> Array (Prop a effs) -> VDom a effs
+line ::  ∀a effs u1 u2 u3 u4. EUnit u1 => EUnit u2 => EUnit u3 => EUnit u4 =>
+            u1 -> u2 -> u3 -> u4 -> Array (Prop a effs) -> VDom a effs
 line x1 y1 x2 y2 props = h "line" ([attr "x1" x1, attr "y1" y1, attr "x2" x2, attr "y2" y2] <> props) []
     
-circle :: ∀a effs. Number -> Number -> Number -> Array (Prop a effs) -> VDom a effs
-circle cx cy r props = h "circle" ([attr "cx" $ show cx, attr "cy" $ show cy, attr "r" $ show r] <> props) []
+circle :: ∀a effs u1 u2 u3. EUnit u1 => EUnit u2 => EUnit u3 =>
+            u1 -> u2 -> u3 -> Array (Prop a effs) -> VDom a effs
+circle cx cy r props = h "circle" ([attr "cx" cx, attr "cy" cy, attr "r" r] <> props) []
     
 use :: ∀a effs u1 u2 u3 u4. EUnit u1 => EUnit u2 => EUnit u3 => EUnit u4 =>
                 u1 -> u2 -> u3 -> u4 -> String -> Array (Prop a effs) -> VDom a effs
@@ -55,6 +57,3 @@ strokeDasharray = attr "stroke-dasharray"
     
 svguse :: ∀a effs. String -> Array (Prop a effs) -> VDom a effs
 svguse symbol props = svg ([width "100%", height "100%"]  <> props) [h "use" [attr "href" symbol] []]
-    
-rgbColor :: Int -> Int -> Int -> String
-rgbColor r g' b = "rgb(" <> show r <> "," <> show g' <> "," <> show b <> ")"

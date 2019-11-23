@@ -33,7 +33,7 @@ const patchProperty = function(node, key, oldValue, newValue, listener, isSvg, d
     if (
       !((node.actions || (node.actions = {}))[
         (key = key.slice(2).toLowerCase())
-      ] = decorator ? decorator(newValue) : newValue)
+      ] = decorator ? (ev => decorator(newValue(ev))) : newValue)
     ) {
       node.removeEventListener(key, listener)
     } else if (!oldValue) {
@@ -53,7 +53,6 @@ const patchProperty = function(node, key, oldValue, newValue, listener, isSvg, d
 }
 
 const createNode = function(vnode, listener, isSvg, decorator) {
-    const decorator2 = !decorator ? vnode.decorator : vnode.decorator ? (x => vnode.decorator(decorator(x))) : decorator; 
   var node =
     vnode.type === TEXT_NODE
       ? document.createTextNode(vnode.name)
@@ -61,6 +60,9 @@ const createNode = function(vnode, listener, isSvg, decorator) {
       ? document.createElementNS("http://www.w3.org/2000/svg", vnode.name)
       : document.createElement(vnode.name)
   var props = vnode.props
+
+  const dec2 = vnode.decorator;
+  const decorator2 = !decorator ? dec2 : dec2 ? (x => ev => decorator(dec2(x(ev)))) : decorator; 
 
   for (var k in props) {
     patchProperty(node, k, null, props[k], listener, isSvg, decorator2)
@@ -84,7 +86,7 @@ const getKey = vnode => vnode == null ? null : vnode.key;
 
 const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decorator) {
    //decorator = newVNode.decorator || decorator;
-   decorator2 = !decorator ? newVNode.decorator : newVNode.decorator ? (x => newVNode.decorator(decorator(x))) : decorator; 
+
   if (oldVNode === newVNode) {
   } else if (
     oldVNode != null &&
@@ -94,7 +96,7 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decora
     if (oldVNode.name !== newVNode.name) node.nodeValue = newVNode.name
   } else if (oldVNode == null || oldVNode.name !== newVNode.name) {
     node = parent.insertBefore(
-      createNode((newVNode = getVNode(newVNode)), listener, isSvg, decorator2),
+      createNode((newVNode = getVNode(newVNode)), listener, isSvg, decorator),
       node
     )
     if (oldVNode != null) {
@@ -117,6 +119,13 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decora
     var newHead = 0
     var oldTail = oldVKids.length - 1
     var newTail = newVKids.length - 1
+
+    const dec2 = newVNode.decorator;
+    const decorator2 = !decorator ?
+                   dec2 
+                : dec2 ? 
+                        (x => ev => decorator(dec(x(ev))))
+                 : decorator;
 
     isSvg = isSvg || newVNode.name === "svg"
 
@@ -339,13 +348,18 @@ const appAux = disp => props => () => {
   const setState = newState => {
     if (state !== newState) {
       state = newState;
+      console.log(state);
       if (!lock) defer(render, (lock = true))
     }
 
     return state
   }
 
-  const dispatch = (event, action) => disp(() => state)(fn => () => setState(fn(state)))(effects(event))(action)();
+  const dispatch = (event, action) => disp
+                                        (() => state)
+                                        (fn => () => setState(fn(state)))
+                                        (effects)
+                                        (action(event))();
 
   const rawEvent = (name, action) => {
      const listener = event => dispatch(event, action);
@@ -367,7 +381,7 @@ const appAux = disp => props => () => {
   for (let i = 0; i < events.length; i++) {
      rawEvent(events[i].value0, events[i].value1);
   }
-  dispatch(undefined, init);
+  dispatch(undefined, () => init);
 }
 
 const h = isStyle => name => ps => children => {
@@ -381,7 +395,7 @@ const h = isStyle => name => ps => children => {
         const value1 = obj.value1;
         if (value1 === undefined)
             vdom.key = value0;
-        else if (typeof value1 === 'object')
+        else if (typeof value1 === 'function')
             vdom.props["on"+value0] = value1;
         else if (typeof value1 === 'boolean') {
             if(!value1)

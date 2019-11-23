@@ -1,20 +1,21 @@
-module Pha (Prop(..), InterpretEffs, VDom, h, text, emptyNode, lazy, ifN, maybeN, app) where
+module Pha (Event, Prop(..), InterpretEffs, VDom, h, text, emptyNode, lazy, ifN, maybeN, app) where
 
 import Prelude
 import Effect (Effect)
-import Pha.Action (Action, Event, GetState(..), SetState(..))
+import Pha.Action (Action, GetState(..), SetState(..))
 import Data.Maybe (Maybe, fromMaybe)
 import Data.Tuple (Tuple)
 import Run (VariantF, runCont, onMatch)
 
 foreign import data VDom :: Type -> #Type -> Type
+foreign import data Event :: Type
 
 data Prop st effs =
     Key String
   | Attr String String
   | Class String Boolean
   | Style String String
-  | Event String (Action st effs)
+  | Event String (Event -> Action st effs)
 
 isStyle :: ∀st effs. Prop st effs -> Boolean
 isStyle (Style _ _) = true
@@ -29,7 +30,9 @@ h = hAux isStyle
 -- | create a text virtual node
 foreign import text :: ∀a effs. String -> VDom a effs
 
--- | create an empty virtual node
+-- | represent an empty virtual node
+-- | 
+-- | does not generate HTML content. Only used for commodity
 foreign import emptyNode :: ∀a effs. VDom a effs
 
 -- | lazily generate a virtual dom
@@ -43,9 +46,14 @@ foreign import lazy :: ∀a b effs. b -> (b -> VDom a effs) -> VDom a effs
 ifN :: ∀a effs. Boolean -> (Unit -> VDom a effs) -> VDom a effs
 ifN cond vdom = if cond then vdom unit else emptyNode
 
+-- | is equivalent to
+-- |
+-- | maybeN (Just vdom) = vdom
+-- |
+-- | maybeN Nothing = emptyNode
+
 maybeN :: ∀a effs. Maybe (VDom a effs) -> VDom a effs
 maybeN = fromMaybe emptyNode
-
 
 foreign import appAux :: ∀a effs. Dispatch -> {
     state :: a,
@@ -53,7 +61,7 @@ foreign import appAux :: ∀a effs. Dispatch -> {
     node :: String,
     events :: Array (Tuple String (Action a effs)),
     init :: Action a effs,
-    effects :: Event -> InterpretEffs effs
+    effects :: InterpretEffs effs
 } -> Effect Unit
 
 app :: ∀a effs. {
@@ -62,7 +70,7 @@ app :: ∀a effs. {
     node :: String,
     events :: Array (Tuple String (Action a effs)),
     init :: Action a effs,
-    effects :: Event -> InterpretEffs effs
+    effects :: InterpretEffs effs
 } -> Effect Unit
 app = appAux dispatch
 

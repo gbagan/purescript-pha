@@ -15,10 +15,12 @@ lensVariant lens = onMatch {
     setState: \(SetState fn cont) -> inj (SProxy :: SProxy "setState") (SetState (lens %~ fn) cont)
 } unsafeCoerce
 
+-- | create an action which is applied on the target of the lens
 actionOver :: ∀st1 st2 effs. Lens' st1 st2 -> Action st2 effs -> Action st1 effs
 actionOver lens (Run f) = Run $ hoistFree (lensVariant lens) f
 
 foreign import addDecorator :: ∀a b effs. (∀eff2. Action b eff2 -> Action a eff2) -> VDom b effs -> VDom a effs
 
+-- | return the same virtual dom as given in argument except that all actions triggered are applied on the target of the lens
 viewOver :: ∀a b effs. Lens' a b -> VDom b effs -> VDom a effs
 viewOver lens = addDecorator (actionOver lens)

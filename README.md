@@ -1,6 +1,8 @@
 # purescript-pha
 A binding of hyperapp in Purescript
 
+### Documentation
+Documentation is [published on Pursuit](https://pursuit.purescript.org/packages/purescript-pha)
 
 ### Minimal example
 ```purescript

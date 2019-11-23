@@ -1,4 +1,4 @@
-module Pha.Action (Action, Action', getState, setState, setState', delay, GETSTATE, SETSTATE, DELAY, delayEffect, rngEffect,
+module Pha.Action (Action, Action', getState, setState, setState', delay, GETSTATE, SETSTATE, DELAY, delayInterpret, rngInterpret,
     GetState(..), SetState(..), Delay(..), module R) where
 import Prelude
 import Data.Int (floor, toNumber)
@@ -43,10 +43,10 @@ foreign import setTimeout :: Int -> Effect Unit -> Effect Unit
 foreign import mathRandom :: Effect Number
 
 -- | default implementation of the effect delay
-delayEffect :: Delay (Effect Unit) -> Effect Unit
-delayEffect (Delay ms cont) = setTimeout ms cont
+delayInterpret :: Delay (Effect Unit) -> Effect Unit
+delayInterpret (Delay ms cont) = setTimeout ms cont
 
 -- | default implementation for random effects
-rngEffect :: R.Rng (Effect Unit) -> Effect Unit
-rngEffect (R.RngInt m cont) = mathRandom >>= \r -> cont (floor(r * toNumber m))
-rngEffect (R.RngNumber cont) = mathRandom >>= cont
+rngInterpret :: R.Rng (Effect Unit) -> Effect Unit
+rngInterpret (R.RngInt m cont) = mathRandom >>= \r -> cont (floor(r * toNumber m))
+rngInterpret (R.RngNumber cont) = mathRandom >>= cont

@@ -7,7 +7,7 @@ import Run (match)
 import Pha (VDom, Event, app, text)
 import Pha.Action (Action, setState)
 import Pha.Html (div', br, attr, input, value, checked, onchange')
-import Pha.Event (EVENT, eventEffect, targetValue, targetChecked)
+import Pha.Event (EVENT, eventInterpret, targetValue, targetChecked)
 
 type State = {
     val1 :: String,
@@ -65,6 +65,6 @@ main = app {
     node: "root",
     events: [],
     effects: match {
-        event: eventEffect
+        event: eventInterpret
     }
 }

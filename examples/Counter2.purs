@@ -6,7 +6,7 @@ import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import Run (match)
 import Pha (VDom, Event, app, text)
-import Pha.Action (Action, setState, DELAY, delay, delayEffect)
+import Pha.Action (Action, setState, DELAY, delay, delayInterpret)
 import Pha.Event (key) as E
 import Pha.Html (div', button, span, onclick, class')
 
@@ -64,6 +64,6 @@ main = app {
     node: "root",    -- the id of the root node of the app
     events: [Tuple "keydown" onKeydown],
     effects: match {
-        delay: delayEffect
+        delay: delayInterpret
     }
 }

@@ -5,7 +5,7 @@ import Data.Array ((..), mapWithIndex)
 import Effect (Effect)
 import Run (match)
 import Pha (VDom, app, text)
-import Pha.Action (Action, getState, setState, RNG, rngEffect)
+import Pha.Action (Action, getState, setState, RNG, rngInterpret)
 import Pha.Random (randomInt, shuffle)
 import Pha.Html (div', button, onclick, class', style, pc)
 
@@ -60,6 +60,6 @@ main = app {
     node: "root",
     events: [],
     effects: match {
-        rng: rngEffect
+        rng: rngInterpret
     }
 }

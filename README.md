@@ -1,5 +1,9 @@
 # purescript-pha
-A binding of hyperapp in Purescript
+Yet another Elm-like library based on Hyperapp and purescript-run
+
+https://github.com/jorgebucaran/hyperapp
+
+https://github.com/natefaubion/purescript-run
 
 ### Documentation
 Documentation is [published on Pursuit](https://pursuit.purescript.org/packages/purescript-pha)

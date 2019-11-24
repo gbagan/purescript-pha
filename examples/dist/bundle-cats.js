@@ -1707,13 +1707,13 @@ var PS = {};
   var Data_Maybe = $PS["Data.Maybe"];
   var Pha = $PS["Pha"];         
   var src = Pha.attr("src");
-  var always_ = function ($8) {
-      return Data_Function["const"](Data_Maybe.Just.create($8));
+  var always_ = function ($4) {
+      return Data_Function["const"](Data_Maybe.Just.create($4));
   };
   var onclick = (function () {
-      var $9 = Pha.on("click");
-      return function ($10) {
-          return $9(always_($10));
+      var $5 = Pha.on("click");
+      return function ($6) {
+          return $5(always_($6));
       };
   })();
   exports["src"] = src;

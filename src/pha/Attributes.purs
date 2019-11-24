@@ -2,12 +2,8 @@ module Pha.Attributes where
 
 import Prelude hiding (div)
 import Pha (Prop, Event, attr, on)
-import Pha.Action (Action)
 import Data.Maybe (Maybe(..))
-import Data.Either (Either(..))
-import Foreign (Foreign, unsafeToForeign, F, readBoolean, readInt, readString)
-import Foreign.Index (readProp)
-import Control.Monad.Except (runExcept)
+import Pha.Event.Decoder (withDecoder, currentTargetChecked, currentTargetValue)
 
 disabled :: ∀msg. Boolean -> Prop msg
 disabled b = attr "disabled" (if b then "true" else "")
@@ -69,21 +65,8 @@ onclick = on "click" <<< always_
 -- onchange' :: ∀msg. (Event -> msg) -> Prop msg
 -- onchange' = on "change"
 
-type Decoder a = Foreign -> F a
-
-withDecoder ∷ ∀a msg. Decoder a → String → (a → Maybe msg) → Prop msg
-withDecoder decoder eventname handler = on eventname handler' where
-    handler' ev =
-        case runExcept (decoder (unsafeToForeign ev)) of
-            Left _  → Nothing
-            Right a → handler a
-
-currentTargetValue ∷ Decoder String
-currentTargetValue = readProp "currentTarget" >=> readProp "value" >=> readString
-
 onvaluechange :: ∀msg. (String -> msg) -> Prop msg
 onvaluechange handler = withDecoder currentTargetValue "change" (Just <<< handler)
 
 onchecked :: ∀msg. (Boolean -> msg) -> Prop msg
-onchecked handler = withDecoder decoder "change" (Just <<< handler) where
-    decoder = readProp "currentTarget" >=> readProp "checked" >=> readBoolean
+onchecked handler = withDecoder currentTargetChecked "change" (Just <<< handler)

@@ -1,7 +1,7 @@
 module Pha.Elements where
 
 import Prelude hiding (div)
-import Pha (VDom, Prop(..), Event, h, text, attr)
+import Pha (VDom, Prop, h, attr)
 
 a :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
 a = h "a"

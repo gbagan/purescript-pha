@@ -26,10 +26,10 @@ use ref props = h "use" ([attr "href" ref] <> props) []
 text' :: ∀a effs. String -> Array (Prop a effs) -> VDom a effs
 text' t props = h "text" props [text t]
 
-x :: ∀a effs. String -> Prop a effs
-x = attr "x"
-y :: ∀a effs. String -> Prop a effs
-y = attr "y"
+x_ :: ∀a effs. String -> Prop a effs
+x_ = attr "x"
+y_ :: ∀a effs. String -> Prop a effs
+y_ = attr "y"
 x1 :: ∀a effs. String -> Prop a effs
 x1 = attr "x1"
 y1 :: ∀a effs. String -> Prop a effs

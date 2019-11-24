@@ -1,8 +1,6 @@
 module Pha.Action (Action, Action', getState, setState, setState', GETSTATE, SETSTATE,
     GetState(..), SetState(..)) where
 import Prelude
-import Data.Int (floor, toNumber)
-import Effect(Effect)
 import Run (FProxy, Run, SProxy(..), lift)
 
 foreign import data Event :: Type

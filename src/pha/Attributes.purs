@@ -1,7 +1,7 @@
 module Pha.Attributes where
 
 import Prelude hiding (div)
-import Pha (VDom, Prop, Event, h, text, attr, on)
+import Pha (Prop, Event, attr, on)
 import Pha.Action (Action)
 
 

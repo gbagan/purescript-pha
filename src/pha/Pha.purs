@@ -79,6 +79,11 @@ ifN cond vdom = if cond then vdom unit else emptyNode
 maybeN :: ∀msg. Maybe (VDom msg) -> VDom msg
 maybeN = fromMaybe emptyNode
 
+foreign import mapView :: ∀a b. (a -> b) -> VDom a -> VDom b
+instance functorVDom :: Functor VDom where
+    map = mapView
+--viewOver lens = addDecorator (actionOver lens)
+
 foreign import appAux :: ∀msg state effs. Dispatch -> {
     state :: state,
     view :: state -> VDom msg,

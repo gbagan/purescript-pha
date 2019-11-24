@@ -1,7 +1,7 @@
 module Pha.Attributes where
 
 import Prelude hiding (div)
-import Pha (Prop, Event, attr, on)
+import Pha (Prop, attr, on)
 import Data.Maybe (Maybe(..))
 import Pha.Event.Decoder (withDecoder, currentTargetChecked, currentTargetValue)
 

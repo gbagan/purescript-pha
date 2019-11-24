@@ -1638,7 +1638,7 @@ var PS = {};
       };
       return false;
   };
-  var h = $foreign.hAux(isStyle);
+  var h = $foreign.hAux(isStyle);                              
   var dispatch = function (getS) {
       return function (setS) {
           return function (matching) {

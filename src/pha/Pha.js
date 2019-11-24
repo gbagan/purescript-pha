@@ -424,6 +424,7 @@ const lazy = st => view => ({
     }
 });
 
+exports.mapView = decorator => vnode => Object.assign({}, vnode, {decorator});
 exports.emptyNode = null;
 exports.appAux = appAux;
 exports.hAux = h;

@@ -1,1 +1,0 @@
-exports.addDecorator = decorator => vnode => Object.assign({}, vnode, {decorator});

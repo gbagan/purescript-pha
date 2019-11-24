@@ -1434,7 +1434,7 @@ var PS = {};
         )
 
   const appAux = disp => props => () => {
-    const {view, events, effects, init} = props
+    const {view, events, effects, init, update} = props
     let state = {};
     let lock = false
     let node = document.getElementById(props.node);
@@ -1453,11 +1453,15 @@ var PS = {};
       return state
     }
 
-    const dispatch = (event, action) => disp
-                                          (() => state)
-                                          (fn => () => setState(fn(state)))
-                                          (effects)
-                                          (action(event))();
+    const dispatch = (event, handler) => {
+          const msg = handler(event);
+          if (msg && msg.hasOwnProperty('value0')) { 
+              disp (() => state)
+                  (fn => () => setState(fn(state)))
+                  (effects)
+                  (update(msg.value0))();
+          }
+    }
 
     const rawEvent = (name, action) => {
        const listener = event => dispatch(event, action);
@@ -1626,11 +1630,7 @@ var PS = {};
       };
       return On;
   })();
-  var style = function (n) {
-      return function (v) {
-          return new Style(n, v);
-      };
-  };
+  var style = Style.create;
   var on = On.create;  
   var isStyle = function (v) {
       if (v instanceof Style) {
@@ -1656,11 +1656,7 @@ var PS = {};
           };
       };
   };                             
-  var attr = function (n) {
-      return function (v) {
-          return new Attr(n, v);
-      };
-  };
+  var attr = Attr.create;
   var app = $foreign.appAux(dispatch);
   exports["h"] = h;
   exports["attr"] = attr;
@@ -1708,12 +1704,18 @@ var PS = {};
   $PS["Pha.Attributes"] = $PS["Pha.Attributes"] || {};
   var exports = $PS["Pha.Attributes"];
   var Data_Function = $PS["Data.Function"];
+  var Data_Maybe = $PS["Data.Maybe"];
   var Pha = $PS["Pha"];         
-  var src = Pha.attr("src");                      
-  var onclick$prime = Pha.on("click");
-  var onclick = function ($6) {
-      return onclick$prime(Data_Function["const"]($6));
+  var src = Pha.attr("src");
+  var always_ = function ($8) {
+      return Data_Function["const"](Data_Maybe.Just.create($8));
   };
+  var onclick = (function () {
+      var $9 = Pha.on("click");
+      return function ($10) {
+          return $9(always_($10));
+      };
+  })();
   exports["src"] = src;
   exports["onclick"] = onclick;
 })(PS);
@@ -1825,38 +1827,48 @@ var PS = {};
       };
       return Success;
   })();
-  var state = Loading.value;
-  var requestCat = Control_Bind.discard(Control_Bind.discardUnit)(Run.bindRun)(Pha_Action.setState(function (v) {
-      return Loading.value;
-  }))(function () {
-      return Control_Bind.bind(Run.bindRun)(Pha_Effects_Http.simpleRequest("https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cat"))(function (v) {
-          var status = Data_Maybe.maybe(Failure.value)(Success.create)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(v)(function ($7) {
-              return Data_Either.hush(Data_Argonaut_Parser.jsonParser($7));
-          }))(Data_Argonaut_Core.toObject))(Foreign_Object.lookup("data")))(Data_Argonaut_Core.toObject))(Foreign_Object.lookup("image_url")))(Data_Argonaut_Core.toString));
-          return Pha_Action.setState(function (v1) {
-              return status;
-          });
-      });
-  });
+  var RequestCat = (function () {
+      function RequestCat() {
+
+      };
+      RequestCat.value = new RequestCat();
+      return RequestCat;
+  })();
   var viewGif = function (v) {
       if (v instanceof Failure) {
-          return Pha_Elements.div([  ])([ Pha.text("I could not load a random cat for some reason. "), Pha_Elements.button([ Pha_Attributes.onclick(requestCat) ])([ Pha.text("Try Again!") ]) ]);
+          return Pha_Elements.div([  ])([ Pha.text("I could not load a random cat for some reason. "), Pha_Elements.button([ Pha_Attributes.onclick(RequestCat.value) ])([ Pha.text("Try Again!") ]) ]);
       };
       if (v instanceof Loading) {
           return Pha.text("Loading...");
       };
       if (v instanceof Success) {
-          return Pha_Elements.div([  ])([ Pha_Elements.button([ Pha_Attributes.onclick(requestCat), Pha.style("display")("block") ])([ Pha.text("More Please!") ]), Pha_Elements.img([ Pha_Attributes.src(v.value0) ])([  ]) ]);
+          return Pha_Elements.div([  ])([ Pha_Elements.button([ Pha_Attributes.onclick(RequestCat.value), Pha.style("display")("block") ])([ Pha.text("More Please!") ]), Pha_Elements.img([ Pha_Attributes.src(v.value0) ])([  ]) ]);
       };
-      throw new Error("Failed pattern match at Example.Cats (line 45, column 1 - line 45, column 36): " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Example.Cats (line 47, column 1 - line 47, column 29): " + [ v.constructor.name ]);
   };
   var view = function (st) {
       return Pha_Elements.div([  ])([ Pha_Elements.h2([  ])([ Pha.text("Random Cats") ]), viewGif(st) ]);
   };
+  var update = function (v) {
+      return Control_Bind.discard(Control_Bind.discardUnit)(Run.bindRun)(Pha_Action.setState(function (v1) {
+          return Loading.value;
+      }))(function () {
+          return Control_Bind.bind(Run.bindRun)(Pha_Effects_Http.simpleRequest("https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cat"))(function (v1) {
+              var status = Data_Maybe.maybe(Failure.value)(Success.create)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(Control_Bind.bind(Data_Maybe.bindMaybe)(v1)(function ($9) {
+                  return Data_Either.hush(Data_Argonaut_Parser.jsonParser($9));
+              }))(Data_Argonaut_Core.toObject))(Foreign_Object.lookup("data")))(Data_Argonaut_Core.toObject))(Foreign_Object.lookup("image_url")))(Data_Argonaut_Core.toString));
+              return Pha_Action.setState(function (v2) {
+                  return status;
+              });
+          });
+      });
+  };
+  var state = Loading.value;
   var main = Pha.app({
       state: state,
       view: view,
-      init: requestCat,
+      update: update,
+      init: update(RequestCat.value),
       node: "root",
       events: [  ],
       effects: Data_Functor_Variant.match()()()({
@@ -1866,8 +1878,9 @@ var PS = {};
   exports["Failure"] = Failure;
   exports["Loading"] = Loading;
   exports["Success"] = Success;
+  exports["RequestCat"] = RequestCat;
   exports["state"] = state;
-  exports["requestCat"] = requestCat;
+  exports["update"] = update;
   exports["view"] = view;
   exports["viewGif"] = viewGif;
   exports["main"] = main;

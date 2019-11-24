@@ -7,68 +7,67 @@ import Data.Maybe (Maybe, fromMaybe)
 import Data.Tuple (Tuple)
 import Run (VariantF, runCont, onMatch)
 
-foreign import data VDom :: Type -> #Type -> Type
+foreign import data VDom :: Type -> Type
 foreign import data Event :: Type
 
-data Prop st effs =
+data Prop msg =
     Key String
   | Attr String String
   | Class String Boolean
   | Style String String
-  | On String (Event -> Action st effs)
+  | On String (Event -> Maybe msg)
 
   
 -- | add a key to the vnode
-key :: ∀a effs. String -> Prop a effs
+key :: ∀msg. String -> Prop msg
 key = Key
   
 -- | add or change an attribute
-attr :: ∀a effs. String -> String -> Prop a effs
-attr n v = Attr n v
+attr :: ∀msg. String -> String -> Prop msg
+attr = Attr
   
 -- | add a class name to the vnode
-class_ :: ∀a effs. String -> Prop a effs
+class_ :: ∀msg. String -> Prop msg
 class_ name = Class name true
   
 -- | add a class name to the vnode if the second argument is true
-class' :: ∀a effs. String -> Boolean -> Prop a effs
+class' :: ∀msg. String -> Boolean -> Prop msg
 class' = Class
 
-on :: ∀a effs. String -> (Event -> Action a effs) -> Prop a effs 
+on :: ∀msg. String -> (Event -> Maybe msg) -> Prop msg 
 on = On
 
 -- | add or change a style attribute
-style :: ∀a effs. String -> String -> Prop a effs
-style n v = Style n v
+style :: ∀msg. String -> String -> Prop msg
+style = Style
   
-
-isStyle :: ∀st effs. Prop st effs -> Boolean
+isStyle :: ∀msg. Prop msg -> Boolean
 isStyle (Style _ _) = true
 isStyle _ = false
 
-foreign import hAux :: ∀st effs. (Prop st effs -> Boolean) -> String -> Array (Prop st effs) -> Array (VDom st effs) -> VDom st effs
+foreign import hAux :: ∀msg. (Prop msg -> Boolean) -> String -> Array (Prop msg) -> Array (VDom msg) -> VDom msg
 
 -- | create a virtual node with the given tag name, the given array of attributes and the given array of children
-h :: ∀st effs. String -> Array (Prop st effs) -> Array (VDom st effs) -> VDom st effs
+h :: ∀msg. String -> Array (Prop msg) -> Array (VDom msg) -> VDom msg
 h = hAux isStyle
 
 -- | create a text virtual node
-foreign import text :: ∀a effs. String -> VDom a effs
+foreign import text :: ∀msg. String -> VDom msg
 
 -- | represent an empty virtual node
 -- | 
 -- | does not generate HTML content. Only used for commodity
-foreign import emptyNode :: ∀a effs. VDom a effs
+foreign import emptyNode :: ∀msg. VDom msg
 
 -- | lazily generate a virtual dom
 -- |
 -- | i.e. generate only if the first argument has changed.
 -- | otherwise, return the previous generated virtual dom
-foreign import lazy :: ∀a b effs. b -> (b -> VDom a effs) -> VDom a effs
+foreign import lazy :: ∀a msg. a -> (a -> VDom msg) -> VDom msg
 
 -- | return a virtual dom only if the first argument is true
 -- | otherwise, return an empty virtual node
-ifN :: ∀a effs. Boolean -> (Unit -> VDom a effs) -> VDom a effs
+ifN :: ∀msg. Boolean -> (Unit -> VDom msg) -> VDom msg
 ifN cond vdom = if cond then vdom unit else emptyNode
 
 -- | is equivalent to
@@ -77,25 +76,27 @@ ifN cond vdom = if cond then vdom unit else emptyNode
 -- |
 -- | maybeN Nothing = emptyNode
 
-maybeN :: ∀a effs. Maybe (VDom a effs) -> VDom a effs
+maybeN :: ∀msg. Maybe (VDom msg) -> VDom msg
 maybeN = fromMaybe emptyNode
 
-foreign import appAux :: ∀a effs. Dispatch -> {
-    state :: a,
-    view :: a -> VDom a effs,
+foreign import appAux :: ∀msg state effs. Dispatch -> {
+    state :: state,
+    view :: state -> VDom msg,
+    update :: msg -> Action state effs,
     node :: String,
-    events :: Array (Tuple String (Event -> Action a effs)),
-    init :: Action a effs,
+    events :: Array (Tuple String (Event -> Action state effs)),
+    init :: Action state effs,
     effects :: InterpretEffs effs
 } -> Effect Unit
 
 
-app :: ∀a effs. {
-    state :: a,
-    view :: a -> VDom a effs,
+app :: ∀msg state effs. {
+    state :: state,
+    view :: state -> VDom msg,
+    update :: msg -> Action state effs,
     node :: String,
-    events :: Array (Tuple String (Event -> Action a effs)),
-    init :: Action a effs,
+    events :: Array (Tuple String (Event -> Action state effs)),
+    init :: Action state effs,
     effects :: InterpretEffs effs
 } -> Effect Unit
 app = appAux dispatch

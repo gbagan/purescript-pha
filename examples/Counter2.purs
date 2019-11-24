@@ -25,20 +25,21 @@ state = {
     counter: 0
 }
 
--- pure actions
+data Msg = Increment | DelayedIncrement
+
 increment :: forall effs. Action State effs
 increment = setState \{counter} -> {counter: counter + 1}
 
--- actions with effects
-delayedIncrement :: forall effs. Action State (delay :: DELAY | effs)
-delayedIncrement = delay 1000 *> increment
+update :: Msg -> Action State EFFS
+update Increment = increment
+update DelayedIncrement = delay 1000 *> increment
 
-view :: State -> VDom State EFFS
+view :: State -> VDom Msg
 view {counter} = 
     div [] [
         div [class_ "counter"] [text $ show counter],
-        button [onclick increment] [text "Increment"],
-        button [onclick delayedIncrement] [text "Delayed Increment"],
+        button [onclick Increment] [text "Increment"],
+        button [onclick DelayedIncrement] [text "Delayed Increment"],
 
         div [] [
             span [] [text "green when the counter is even"],
@@ -62,6 +63,7 @@ main :: Effect Unit
 main = app {
     state,           -- initial state
     view,            -- a mapping of the state to virtual dom
+    update,
     init: pure unit, -- action triggered at the start of the app (no action here)
     node: "root",    -- the id of the root node of the app
     events: [Tuple "keydown" onKeydown],

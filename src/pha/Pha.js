@@ -335,7 +335,7 @@ const recycleNode = node =>
       )
 
 const appAux = disp => props => () => {
-  const {view, events, effects, init} = props
+  const {view, events, effects, init, update} = props
   let state = {};
   let lock = false
   let node = document.getElementById(props.node);
@@ -354,11 +354,15 @@ const appAux = disp => props => () => {
     return state
   }
 
-  const dispatch = (event, action) => disp
-                                        (() => state)
-                                        (fn => () => setState(fn(state)))
-                                        (effects)
-                                        (action(event))();
+  const dispatch = (event, handler) => {
+        const msg = handler(event);
+        if (msg && msg.hasOwnProperty('value0')) { 
+            disp (() => state)
+                (fn => () => setState(fn(state)))
+                (effects)
+                (update(msg.value0))();
+        }
+  }
 
   const rawEvent = (name, action) => {
      const listener = event => dispatch(event, action);

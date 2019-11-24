@@ -1,14 +1,12 @@
 module Example.Inputs where
 import Prelude hiding (div)
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Maybe (fromMaybe)
 import Data.Int (fromString)
 import Effect (Effect)
-import Run (match)
-import Pha (VDom, Event, app, text, attr)
+import Pha (VDom, app, text, attr)
 import Pha.Action (Action, setState)
 import Pha.Elements (div, br, input)
-import Pha.Attributes (value, checked, onchange')
-import Pha.Event (EVENT, targetValue, targetChecked, interpretEvent)
+import Pha.Attributes (value, checked, onvaluechange, onchecked)
 
 type State = {
     val1 :: String,
@@ -16,8 +14,7 @@ type State = {
     isMul :: Boolean
 }
 
--- effects used in this app
-type EFFS = (event :: EVENT)
+data Msg = ChangeVal1 String | ChangeVal2 String | ChangeOp Boolean
 
 -- initial state
 state :: State
@@ -33,39 +30,30 @@ result {val1, val2, isMul} = fromMaybe "invalid input" do
     y <- fromString val2
     pure $ show (if isMul then x * y else x + y)
 
-changeval1 :: forall r. Event -> Action State (event :: EVENT | r)
-changeval1 ev = targetValue ev >>= case _ of
-    Just val -> setState _{val1 = val}
-    Nothing -> pure unit
+update :: Msg -> Action State ()
+update (ChangeVal1 val) = setState _{val1 = val}
+update (ChangeVal2 val) = setState _{val2 = val}
+update (ChangeOp b) = setState _{isMul = b}
 
-changeval2 :: forall r. Event -> Action State (event :: EVENT | r)
-changeval2 ev = targetValue ev >>= case _ of
-    Just val -> setState _{val2 = val}
-    Nothing -> pure unit
-
-changemul :: forall r. Event -> Action State (event :: EVENT | r)
-changemul ev = targetChecked ev >>= \val -> setState _{isMul = (val == Just true)}
-
-view :: State -> VDom State EFFS
+view :: State -> VDom Msg
 view st@{val1, val2, isMul} = 
     div [] [
-        input "text" [attr "size" "5", onchange' changeval1, value val1],
-        text " + ",
-        input "text" [attr "size" "5", onchange' changeval2, value val2],
+        input "text" [attr "size" "5", onvaluechange ChangeVal1, value val1],
+        text (if isMul then " * " else " + "),
+        input "text" [attr "size" "5", onvaluechange ChangeVal2, value val2],
         text $ " = " <> result st,
         br,
-        input "checkbox" [checked isMul, onchange' changemul],
+        input "checkbox" [checked isMul, onchecked ChangeOp],
         text "Multiplication instead of addition"
     ]
 
 main :: Effect Unit
 main = app {
     state,
-    view, 
+    view,
+    update,
     init: pure unit,
     node: "root",
     events: [],
-    effects: match {
-        event: interpretEvent
-    }
+    effects: \_ -> pure unit
 }

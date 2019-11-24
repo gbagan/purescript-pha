@@ -14,6 +14,8 @@ import Data.Either (hush)
 
 data State = Failure | Loading | Success String
 
+data Msg = RequestCat
+
 -- effects used in this app
 type EFFS = (http :: HTTP)
 
@@ -21,8 +23,8 @@ type EFFS = (http :: HTTP)
 state :: State
 state = Loading
 
-requestCat :: forall effs. Action State (http :: HTTP | effs)
-requestCat = do
+update :: Msg -> Action State EFFS
+update RequestCat = do
     setState \_ -> Loading
     res <- simpleRequest "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cat"
     let status = maybe Failure Success $ 
@@ -35,21 +37,21 @@ requestCat = do
                 >>= toString
     setState \_ -> status
 
-view :: State -> VDom State EFFS
+view :: State -> VDom Msg
 view st = 
     div [] [
         h2 [] [text "Random Cats"],  
         viewGif st
     ]
 
-viewGif :: State -> VDom State EFFS
+viewGif :: State -> VDom Msg
 viewGif Failure = div [] [
         text "I could not load a random cat for some reason. ",
-        button [onclick requestCat] [ text "Try Again!" ]
+        button [onclick RequestCat] [ text "Try Again!" ]
     ]
 viewGif Loading = text "Loading..."
 viewGif (Success url) = div [] [
-        button [ onclick requestCat, style "display" "block" ] [ text "More Please!" ],
+        button [ onclick RequestCat, style "display" "block" ] [ text "More Please!" ],
         img [ src url ] []
     ]
 
@@ -57,7 +59,8 @@ main :: Effect Unit
 main = app {
     state,
     view,
-    init: requestCat,
+    update,
+    init: update RequestCat,
     node: "root",
     events: [],
     effects: match {

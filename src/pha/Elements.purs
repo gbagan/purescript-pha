@@ -3,59 +3,59 @@ module Pha.Elements where
 import Prelude hiding (div)
 import Pha (VDom, Prop, h, attr)
 
-a :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+a :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 a = h "a"
 
-br :: ∀a effs. VDom a effs
+br :: ∀msg. VDom msg
 br = h "br" [] []
 
-button :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+button :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 button = h "button"
 
-div :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+div :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 div = h "div"
 
-footer :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+footer :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 footer = h "footer"
 
-img :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+img :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 img = h "img"
 
-input :: ∀a effs. String -> Array (Prop a effs) -> VDom a effs
+input :: ∀msg. String -> Array (Prop msg) -> VDom msg
 input t props = h "input" ([attr "type" t] <> props) []
     
-h1 :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+h1 :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 h1 = h "h1"
 
-h2 :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+h2 :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 h2 = h "h2"
 
-h3 :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+h3 :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 h3 = h "h3"
 
-header :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+header :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 header = h "header"
 
-li :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+li :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 li = h "li"
 
-p :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+p :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 p = h "p"
 
-main :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+main :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 main = h "main"
 
-nav :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+nav :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 nav = h "nav"
 
-ol :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+ol :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 ol = h "ol"
 
-section :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+section :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 section = h "section"
 
-span :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+span :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 span = h "span"
 
-ul :: ∀a effs. Array (Prop a effs) -> Array (VDom a effs) -> VDom a effs
+ul :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg
 ul = h "ul"

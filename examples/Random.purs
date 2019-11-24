@@ -20,6 +20,8 @@ type State = {
     card :: Card
 }
 
+data Msg = RollDice | DrawCard | ShufflePuzzle
+
 -- effects used in this app
 type EFFS = (rng :: RNG)
 
@@ -31,20 +33,19 @@ state = {
     card: Ace
 }
 
-rollDice :: forall effs. Action State (rng :: RNG | effs)
-rollDice = do
+update :: Msg -> Action State EFFS
+
+update RollDice = do
     rolled <- randomInt 6 <#> (_ + 1)
     setState _{dice = rolled}
 
-drawCard :: forall effs. Action State (rng :: RNG | effs)
-drawCard = do
+update DrawCard = do
     drawn <- randomPick [Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King]
     case drawn of
         Just card -> setState _{card = card}
         Nothing -> pure unit
 
-shufflePuzzle :: forall effs. Action State (rng :: RNG | effs)
-shufflePuzzle = do
+update ShufflePuzzle = do
     {puzzle} <- getState
     shuffled <- shuffle puzzle
     setState _{puzzle = shuffled}
@@ -64,14 +65,14 @@ viewCard Jack  = "🂫"
 viewCard Queen = "🂭"
 viewCard King  = "🂮"
 
-view :: State -> VDom State EFFS
+view :: State -> VDom Msg
 view {dice, puzzle, card} = 
     div [] [
         div [class' "counter" true] [text $ show dice],
-        button [onclick rollDice] [text "Roll dice"],
+        button [onclick RollDice] [text "Roll dice"],
 
         div [style "font-size" "12em" ] [ text $ viewCard card ],
-        button [onclick drawCard] [ text "Draw" ],
+        button [onclick DrawCard] [ text "Draw" ],
 
         div [class' "puzzle" true] (
             puzzle # mapWithIndex \i j ->
@@ -81,14 +82,15 @@ view {dice, puzzle, card} =
                     style "top" $ pc (0.25 * toNumber (j `mod` 4)) 
                 ] [text $ show i]
         ),
-        button [onclick shufflePuzzle] [text "Shuffle"]
+        button [onclick ShufflePuzzle] [text "Shuffle"]
     ]
 
 main :: Effect Unit
 main = app {
     state,
     view,
-    init: rollDice,
+    update,
+    init: update RollDice,
     node: "root",
     events: [],
     effects: match {

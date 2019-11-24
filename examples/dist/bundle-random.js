@@ -1861,7 +1861,7 @@ var PS = {};
         )
 
   const appAux = disp => props => () => {
-    const {view, events, effects, init} = props
+    const {view, events, effects, init, update} = props
     let state = {};
     let lock = false
     let node = document.getElementById(props.node);
@@ -1880,11 +1880,15 @@ var PS = {};
       return state
     }
 
-    const dispatch = (event, action) => disp
-                                          (() => state)
-                                          (fn => () => setState(fn(state)))
-                                          (effects)
-                                          (action(event))();
+    const dispatch = (event, handler) => {
+          const msg = handler(event);
+          if (msg && msg.hasOwnProperty('value0')) { 
+              disp (() => state)
+                  (fn => () => setState(fn(state)))
+                  (effects)
+                  (update(msg.value0))();
+          }
+    }
 
     const rawEvent = (name, action) => {
        const listener = event => dispatch(event, action);
@@ -2057,11 +2061,7 @@ var PS = {};
       };
       return On;
   })();
-  var style = function (n) {
-      return function (v) {
-          return new Style(n, v);
-      };
-  };
+  var style = Style.create;
   var on = On.create;  
   var isStyle = function (v) {
       if (v instanceof Style) {
@@ -2154,11 +2154,17 @@ var PS = {};
   $PS["Pha.Attributes"] = $PS["Pha.Attributes"] || {};
   var exports = $PS["Pha.Attributes"];
   var Data_Function = $PS["Data.Function"];
-  var Pha = $PS["Pha"];                           
-  var onclick$prime = Pha.on("click");
-  var onclick = function ($6) {
-      return onclick$prime(Data_Function["const"]($6));
+  var Data_Maybe = $PS["Data.Maybe"];
+  var Pha = $PS["Pha"];
+  var always_ = function ($7) {
+      return Data_Function["const"](Data_Maybe.Just.create($7));
   };
+  var onclick = (function () {
+      var $8 = Pha.on("click");
+      return function ($9) {
+          return $8(always_($9));
+      };
+  })();
   exports["onclick"] = onclick;
 })(PS);
 (function(exports) {
@@ -2297,6 +2303,27 @@ var PS = {};
   var Pha_Elements = $PS["Pha.Elements"];
   var Pha_Util = $PS["Pha.Util"];
   var Run = $PS["Run"];                
+  var RollDice = (function () {
+      function RollDice() {
+
+      };
+      RollDice.value = new RollDice();
+      return RollDice;
+  })();
+  var DrawCard = (function () {
+      function DrawCard() {
+
+      };
+      DrawCard.value = new DrawCard();
+      return DrawCard;
+  })();
+  var ShufflePuzzle = (function () {
+      function ShufflePuzzle() {
+
+      };
+      ShufflePuzzle.value = new ShufflePuzzle();
+      return ShufflePuzzle;
+  })();
   var Ace = (function () {
       function Ace() {
 
@@ -2428,61 +2455,71 @@ var PS = {};
       if (v instanceof King) {
           return "\ud83c\udcae";
       };
-      throw new Error("Failed pattern match at Example.Random (line 52, column 1 - line 52, column 27): " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Example.Random (line 53, column 1 - line 53, column 27): " + [ v.constructor.name ]);
+  };
+  var view = function (v) {
+      return Pha_Elements.div([  ])([ Pha_Elements.div([ Pha["class'"]("counter")(true) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(v.dice)) ]), Pha_Elements.button([ Pha_Attributes.onclick(RollDice.value) ])([ Pha.text("Roll dice") ]), Pha_Elements.div([ Pha.style("font-size")("12em") ])([ Pha.text(viewCard(v.card)) ]), Pha_Elements.button([ Pha_Attributes.onclick(DrawCard.value) ])([ Pha.text("Draw") ]), Pha_Elements.div([ Pha["class'"]("puzzle")(true) ])(Data_Array.mapWithIndex(function (i) {
+          return function (j) {
+              return Pha_Elements.div([ Pha["class'"]("puzzle-item")(true), Pha.style("left")(Pha_Util.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.div(Data_EuclideanRing.euclideanRingInt)(j)(4)))), Pha.style("top")(Pha_Util.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.mod(Data_EuclideanRing.euclideanRingInt)(j)(4)))) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(i)) ]);
+          };
+      })(v.puzzle)), Pha_Elements.button([ Pha_Attributes.onclick(ShufflePuzzle.value) ])([ Pha.text("Shuffle") ]) ]);
+  };
+  var update = function (v) {
+      if (v instanceof RollDice) {
+          return Control_Bind.bind(Run.bindRun)(Data_Functor.mapFlipped(Run.functorRun)(Pha_Effects_Random.randomInt(6))(function (v1) {
+              return v1 + 1 | 0;
+          }))(function (v1) {
+              return Pha_Action.setState(function (v2) {
+                  return {
+                      dice: v1,
+                      card: v2.card,
+                      puzzle: v2.puzzle
+                  };
+              });
+          });
+      };
+      if (v instanceof DrawCard) {
+          return Control_Bind.bind(Run.bindRun)(Pha_Effects_Random.randomPick([ Ace.value, Two.value, Three.value, Four.value, Five.value, Six.value, Seven.value, Eight.value, Nine.value, Ten.value, Jack.value, Queen.value, King.value ]))(function (v1) {
+              if (v1 instanceof Data_Maybe.Just) {
+                  return Pha_Action.setState(function (v2) {
+                      return {
+                          card: v1.value0,
+                          dice: v2.dice,
+                          puzzle: v2.puzzle
+                      };
+                  });
+              };
+              if (v1 instanceof Data_Maybe.Nothing) {
+                  return Control_Applicative.pure(Run.applicativeRun)(Data_Unit.unit);
+              };
+              throw new Error("Failed pattern match at Example.Random (line 44, column 5 - line 46, column 29): " + [ v1.constructor.name ]);
+          });
+      };
+      if (v instanceof ShufflePuzzle) {
+          return Control_Bind.bind(Run.bindRun)(Pha_Action.getState)(function (v1) {
+              return Control_Bind.bind(Run.bindRun)(Pha_Effects_Random.shuffle(v1.puzzle))(function (v2) {
+                  return Pha_Action.setState(function (v3) {
+                      return {
+                          puzzle: v2,
+                          card: v3.card,
+                          dice: v3.dice
+                      };
+                  });
+              });
+          });
+      };
+      throw new Error("Failed pattern match at Example.Random (line 36, column 1 - line 36, column 35): " + [ v.constructor.name ]);
   };
   var state = {
       dice: 1,
       puzzle: Data_Array.range(0)(15),
       card: Ace.value
   };
-  var shufflePuzzle = Control_Bind.bind(Run.bindRun)(Pha_Action.getState)(function (v) {
-      return Control_Bind.bind(Run.bindRun)(Pha_Effects_Random.shuffle(v.puzzle))(function (v1) {
-          return Pha_Action.setState(function (v2) {
-              return {
-                  puzzle: v1,
-                  card: v2.card,
-                  dice: v2.dice
-              };
-          });
-      });
-  });
-  var rollDice = Control_Bind.bind(Run.bindRun)(Data_Functor.mapFlipped(Run.functorRun)(Pha_Effects_Random.randomInt(6))(function (v) {
-      return v + 1 | 0;
-  }))(function (v) {
-      return Pha_Action.setState(function (v1) {
-          return {
-              dice: v,
-              card: v1.card,
-              puzzle: v1.puzzle
-          };
-      });
-  });
-  var drawCard = Control_Bind.bind(Run.bindRun)(Pha_Effects_Random.randomPick([ Ace.value, Two.value, Three.value, Four.value, Five.value, Six.value, Seven.value, Eight.value, Nine.value, Ten.value, Jack.value, Queen.value, King.value ]))(function (v) {
-      if (v instanceof Data_Maybe.Just) {
-          return Pha_Action.setState(function (v1) {
-              return {
-                  card: v.value0,
-                  dice: v1.dice,
-                  puzzle: v1.puzzle
-              };
-          });
-      };
-      if (v instanceof Data_Maybe.Nothing) {
-          return Control_Applicative.pure(Run.applicativeRun)(Data_Unit.unit);
-      };
-      throw new Error("Failed pattern match at Example.Random (line 42, column 5 - line 44, column 29): " + [ v.constructor.name ]);
-  });
-  var view = function (v) {
-      return Pha_Elements.div([  ])([ Pha_Elements.div([ Pha["class'"]("counter")(true) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(v.dice)) ]), Pha_Elements.button([ Pha_Attributes.onclick(rollDice) ])([ Pha.text("Roll dice") ]), Pha_Elements.div([ Pha.style("font-size")("12em") ])([ Pha.text(viewCard(v.card)) ]), Pha_Elements.button([ Pha_Attributes.onclick(drawCard) ])([ Pha.text("Draw") ]), Pha_Elements.div([ Pha["class'"]("puzzle")(true) ])(Data_Array.mapWithIndex(function (i) {
-          return function (j) {
-              return Pha_Elements.div([ Pha["class'"]("puzzle-item")(true), Pha.style("left")(Pha_Util.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.div(Data_EuclideanRing.euclideanRingInt)(j)(4)))), Pha.style("top")(Pha_Util.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.mod(Data_EuclideanRing.euclideanRingInt)(j)(4)))) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(i)) ]);
-          };
-      })(v.puzzle)), Pha_Elements.button([ Pha_Attributes.onclick(shufflePuzzle) ])([ Pha.text("Shuffle") ]) ]);
-  };
   var main = Pha.app({
       state: state,
       view: view,
-      init: rollDice,
+      update: update,
+      init: update(RollDice.value),
       node: "root",
       events: [  ],
       effects: Data_Functor_Variant.match()()()({
@@ -2502,10 +2539,11 @@ var PS = {};
   exports["Jack"] = Jack;
   exports["Queen"] = Queen;
   exports["King"] = King;
+  exports["RollDice"] = RollDice;
+  exports["DrawCard"] = DrawCard;
+  exports["ShufflePuzzle"] = ShufflePuzzle;
   exports["state"] = state;
-  exports["rollDice"] = rollDice;
-  exports["drawCard"] = drawCard;
-  exports["shufflePuzzle"] = shufflePuzzle;
+  exports["update"] = update;
   exports["viewCard"] = viewCard;
   exports["view"] = view;
   exports["main"] = main;

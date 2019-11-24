@@ -1,4 +1,4 @@
-module Pha (h, text, emptyNode, lazy, ifN, maybeN, app, Event, Prop(..), VDom, InterpretEffs) where
+module Pha (h, text, emptyNode, key, attr, style, on, class_, class', lazy, ifN, maybeN, app, Event, Prop, VDom, InterpretEffs) where
 
 import Prelude
 import Effect (Effect)
@@ -15,7 +15,32 @@ data Prop st effs =
   | Attr String String
   | Class String Boolean
   | Style String String
-  | Event String (Event -> Action st effs)
+  | On String (Event -> Action st effs)
+
+  
+-- | add a key to the vnode
+key :: ∀a effs. String -> Prop a effs
+key = Key
+  
+-- | add or change an attribute
+attr :: ∀a effs. String -> String -> Prop a effs
+attr n v = Attr n v
+  
+-- | add a class name to the vnode
+class_ :: ∀a effs. String -> Prop a effs
+class_ name = Class name true
+  
+-- | add a class name to the vnode if the second argument is true
+class' :: ∀a effs. String -> Boolean -> Prop a effs
+class' = Class
+
+on :: ∀a effs. String -> (Event -> Action a effs) -> Prop a effs 
+on = On
+
+-- | add or change a style attribute
+style :: ∀a effs. String -> String -> Prop a effs
+style n v = Style n v
+  
 
 isStyle :: ∀st effs. Prop st effs -> Boolean
 isStyle (Style _ _) = true

@@ -3,11 +3,12 @@ import Prelude hiding (div)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Run (Run, SProxy(..), FProxy, lift, match)
-import Pha (VDom, Event, app, maybeN)
+import Pha (VDom, Event, app, maybeN, style)
 import Pha.Action (Action, setState)
-import Pha.Html (div, style, pc, onpointerleave, onpointermove')
-import Pha.Svg (svg, viewBox, circle, fill, stroke)
-import Pha.Util (translate)
+import Pha.Elements (div)
+import Pha.Attributes (onpointerleave, onpointermove')
+import Pha.Svg (svg, viewBox, circle, r, fill, stroke)
+import Pha.Util (pc, translate)
 
 type Position = {x :: Number, y :: Number}
 
@@ -52,7 +53,8 @@ view {position} =
         ] [
             svg [viewBox 0 0 100 100] [
                 maybeN $ position <#> \{x, y} ->
-                    circle 0.0 0.0 7.0 [
+                    circle [
+                        r "7.0",
                         fill "red",
                         stroke "black",
                         style "transform" $ translate (pc x) (pc y)

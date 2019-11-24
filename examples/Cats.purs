@@ -3,10 +3,11 @@ import Prelude hiding (div)
 import Data.Maybe (maybe)
 import Effect (Effect)
 import Run (match)
-import Pha (VDom, app, text)
+import Pha (VDom, app, text, style)
 import Pha.Action (Action, setState)
-import Pha.Http (simpleRequest, HTTP, interpretHttp)
-import Pha.Html (div, h2, button, style, onclick, img, src)
+import Pha.Effects.Http (simpleRequest, HTTP, interpretHttp)
+import Pha.Elements (div, h2, button, img)
+import Pha.Attributes (onclick, src)
 import Data.Argonaut (jsonParser, toObject, toString)
 import Foreign.Object (lookup)
 import Data.Either (hush)
@@ -37,7 +38,7 @@ requestCat = do
 view :: State -> VDom State EFFS
 view st = 
     div [] [
-        h2 [] "Random Cats",  
+        h2 [] [text "Random Cats"],  
         viewGif st
     ]
 

@@ -4,9 +4,10 @@ import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Int (fromString)
 import Effect (Effect)
 import Run (match)
-import Pha (VDom, Event, app, text)
+import Pha (VDom, Event, app, text, attr)
 import Pha.Action (Action, setState)
-import Pha.Html (div, br, attr, input, value, checked, onchange')
+import Pha.Elements (div, br, input)
+import Pha.Attributes (value, checked, onchange')
 import Pha.Event (EVENT, targetValue, targetChecked, interpretEvent)
 
 type State = {

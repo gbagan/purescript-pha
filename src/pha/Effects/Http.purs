@@ -1,4 +1,4 @@
-module Pha.Http (simpleRequest, HTTP, interpretHttp, Http) where
+module Pha.Effects.Http (simpleRequest, HTTP, interpretHttp, Http) where
 import Prelude
 import Data.Maybe (Maybe(..))
 import Run (Run, SProxy(..), FProxy, lift)

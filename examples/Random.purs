@@ -5,10 +5,12 @@ import Data.Maybe (Maybe(..))
 import Data.Array ((..), mapWithIndex)
 import Effect (Effect)
 import Run (match)
-import Pha (VDom, app, text)
-import Pha.Action (Action, getState, setState, RNG, interpretRng)
-import Pha.Random (randomInt, shuffle, randomPick)
-import Pha.Html (div, button, onclick, class', style, pc)
+import Pha (VDom, app, text, class', style)
+import Pha.Action (Action, getState, setState)
+import Pha.Effects.Random (RNG, randomInt, shuffle, randomPick, interpretRng)
+import Pha.Elements (div, button)
+import Pha.Attributes (onclick)
+import Pha.Util (pc)
 
 data Card = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King
 

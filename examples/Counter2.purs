@@ -5,10 +5,12 @@ import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import Run (match)
-import Pha (VDom, Event, app, text)
-import Pha.Action (Action, setState, DELAY, delay, interpretDelay)
+import Pha (VDom, Event, app, text, class_, class')
+import Pha.Action (Action, setState)
+import Pha.Effects.Delay (DELAY, delay, interpretDelay)
 import Pha.Event (key) as E
-import Pha.Html (div, button, span, onclick, class')
+import Pha.Elements (div, button, span)
+import Pha.Attributes (onclick)
 
 type State = {
     counter :: Int
@@ -34,14 +36,14 @@ delayedIncrement = delay 1000 *> increment
 view :: State -> VDom State EFFS
 view {counter} = 
     div [] [
-        div [class' "counter" true] [text $ show counter],
+        div [class_ "counter"] [text $ show counter],
         button [onclick increment] [text "Increment"],
         button [onclick delayedIncrement] [text "Delayed Increment"],
 
         div [] [
             span [] [text "green when the counter is even"],
             div [
-                class' "box" true, 
+                class_ "box", 
                 class' "even" (even counter)
             ] []
         ],

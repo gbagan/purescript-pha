@@ -1,8 +1,10 @@
-module Pha.Random (randomNumber, randomInt, randomBool, shuffle, randomPick, RNG, Rng(..)) where
+module Pha.Effects.Random (RNG, randomNumber, randomInt, randomBool, shuffle, randomPick , interpretRng, Rng(..)) where
 import Prelude
+import Effect (Effect)
 import Data.Maybe (Maybe, fromMaybe)
 import Data.Tuple (Tuple(Tuple))
 import Data.Traversable (sequence)
+import Data.Int (floor, toNumber)
 import Data.Array (length, mapWithIndex, foldl, index, insertAt)
 import Run (FProxy, SProxy(..), Run, lift)
 
@@ -28,5 +30,12 @@ shuffle array = do
     rnds <- sequence $ array # mapWithIndex \i x -> Tuple x <$> randomInt (i+1)
     pure $ rnds # foldl (\t (Tuple x i) -> t # insertAt i x # fromMaybe []) []
 
+-- | randomly select an element from the array
 randomPick :: ∀a r. Array a -> Run (rng :: RNG | r) (Maybe a)
 randomPick t = index t <$> (randomInt $ length t)
+
+foreign import mathRandom :: Effect Number
+-- | default implementation for random effects
+interpretRng :: Rng (Effect Unit) -> Effect Unit
+interpretRng (RngInt m cont) = mathRandom >>= \r -> cont (floor(r * toNumber m))
+interpretRng (RngNumber cont) = mathRandom >>= cont

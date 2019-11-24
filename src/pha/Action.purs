@@ -1,10 +1,9 @@
-module Pha.Action (Action, Action', getState, setState, setState', delay, GETSTATE, SETSTATE, DELAY, interpretDelay, interpretRng,
-    GetState(..), SetState(..), Delay(..), module R) where
+module Pha.Action (Action, Action', getState, setState, setState', GETSTATE, SETSTATE,
+    GetState(..), SetState(..)) where
 import Prelude
 import Data.Int (floor, toNumber)
 import Effect(Effect)
 import Run (FProxy, Run, SProxy(..), lift)
-import Pha.Random (RNG, Rng(..)) as R
 
 foreign import data Event :: Type
 
@@ -30,23 +29,3 @@ setState' fn = setState fn *> getState
 
 type Action' st effs a = Run (getState :: GETSTATE st, setState :: SETSTATE st | effs) a
 type Action st effs = Action' st effs Unit
-
-data Delay a = Delay Int a
-derive instance functorDelay :: Functor Delay
-type DELAY = FProxy Delay
-
--- | sleep during n milliseconds then continue the action
-delay :: ∀r. Int -> Run (delay :: DELAY | r) Unit
-delay ms = lift (SProxy :: SProxy "delay") (Delay ms unit)
-
-foreign import setTimeout :: Int -> Effect Unit -> Effect Unit
-foreign import mathRandom :: Effect Number
-
--- | default implementation of the effect delay
-interpretDelay :: Delay (Effect Unit) -> Effect Unit
-interpretDelay (Delay ms cont) = setTimeout ms cont
-
--- | default implementation for random effects
-interpretRng :: R.Rng (Effect Unit) -> Effect Unit
-interpretRng (R.RngInt m cont) = mathRandom >>= \r -> cont (floor(r * toNumber m))
-interpretRng (R.RngNumber cont) = mathRandom >>= cont

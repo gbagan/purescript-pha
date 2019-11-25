@@ -1860,18 +1860,17 @@ var PS = {};
           RECYCLED_NODE
         )
 
-  const appAux = disp => props => () => {
-    const {view, events, effects, init, update} = props
+  const appAux = props => () => {
     let state = {};
     let lock = false
-    let node = document.getElementById(props.node);
-    let vdom = node && recycleNode(node);
 
     const listener = function(event) {
-      dispatch(event, this.actions[event.type]);
+      dispatch(event)(this.actions[event.type])();
     }
  
-    const setState = newState => {
+    const getState = () => state;
+
+    const setState = newState => () => {
       if (state !== newState) {
         state = newState;
         if (!lock) defer(render, (lock = true))
@@ -1880,21 +1879,12 @@ var PS = {};
       return state
     }
 
-    const dispatch = (event, handler) => {
-          const msg = handler(event);
-          if (msg && msg.hasOwnProperty('value0')) { 
-              disp (() => state)
-                  (fn => () => setState(fn(state)))
-                  (effects)
-                  (update(msg.value0))();
-          }
-    }
+    const {state: istate, view, events, dispatch, init, node: rootnode} = props(getState)(setState);
 
-    const rawEvent = (name, action) => {
-       const listener = event => dispatch(event, action);
-       addEventListener (name, listener);
-     }
-
+    let node = document.getElementById(rootnode);
+    if (!node)
+      return;
+     let vdom = node && recycleNode(node);
 
     const render = () => {
       lock = false
@@ -1906,11 +1896,11 @@ var PS = {};
         listener
       )
     }
-    setState(props.state);
+    setState(istate)();
     for (let i = 0; i < events.length; i++) {
-       rawEvent(events[i].value0, events[i].value1);
+       addEventListener(events[i].value0, events[i].value1);
     }
-    dispatch(undefined, () => init);
+    init();
   }
 
   const h = isStyle => name => ps => children => {
@@ -2021,7 +2011,10 @@ var PS = {};
   var Control_Applicative = $PS["Control.Applicative"];
   var Control_Apply = $PS["Control.Apply"];
   var Control_Bind = $PS["Control.Bind"];
+  var Data_Functor = $PS["Data.Functor"];
   var Data_Functor_Variant = $PS["Data.Functor.Variant"];
+  var Data_Maybe = $PS["Data.Maybe"];
+  var Data_Tuple = $PS["Data.Tuple"];
   var Data_Unit = $PS["Data.Unit"];
   var Effect = $PS["Effect"];
   var Run = $PS["Run"];
@@ -2070,25 +2063,54 @@ var PS = {};
       return false;
   };
   var h = $foreign.hAux(isStyle);
-  var dispatch = function (getS) {
-      return function (setS) {
-          return function (matching) {
+  var class$prime = Class.create;
+  var app = function (v) {
+      var fn = function (getS) {
+          return function (setS) {
               var go = Data_Functor_Variant.onMatch()()()({
-                  getState: function (v) {
-                      return Control_Bind.bind(Effect.bindEffect)(getS)(v.value0);
+                  getState: function (v1) {
+                      return Control_Bind.bind(Effect.bindEffect)(getS)(v1.value0);
                   },
-                  setState: function (v) {
-                      return Control_Apply.applySecond(Effect.applyEffect)(setS(v.value0))(v.value1);
+                  setState: function (v1) {
+                      return Control_Apply.applySecond(Effect.applyEffect)(function __do() {
+                          var $37 = getS();
+                          return setS(v1.value0($37))();
+                      })(v1.value1);
                   }
-              })(matching);
-              return Run.runCont(go)(function (v) {
+              })(v.interpret);
+              var runAction = Run.runCont(go)(function (v1) {
                   return Control_Applicative.pure(Effect.applicativeEffect)(Data_Unit.unit);
               });
+              var init2 = runAction(v.init);
+              var events2 = Data_Functor.mapFlipped(Data_Functor.functorArray)(v.events)(function (v1) {
+                  return new Data_Tuple.Tuple(v1.value0, function (ev) {
+                      return runAction(v1.value1(ev));
+                  });
+              });
+              var dispatch1 = function (ev) {
+                  return function (handler) {
+                      var v1 = handler(ev);
+                      if (v1 instanceof Data_Maybe.Nothing) {
+                          return Control_Applicative.pure(Effect.applicativeEffect)(Data_Unit.unit);
+                      };
+                      if (v1 instanceof Data_Maybe.Just) {
+                          return runAction(v.update(v1.value0));
+                      };
+                      throw new Error("Failed pattern match at Pha (line 117, column 13 - line 119, column 51): " + [ v1.constructor.name ]);
+                  };
+              };
+              return {
+                  state: v.state,
+                  view: v.view,
+                  node: v.node,
+                  init: init2,
+                  events: events2,
+                  dispatch: dispatch1
+              };
           };
       };
+      return $foreign.appAux(fn);
   };
-  var class$prime = Class.create;
-  var app = $foreign.appAux(dispatch);
   exports["h"] = h;
   exports["style"] = style;
   exports["on"] = on;
@@ -2156,13 +2178,13 @@ var PS = {};
   var Data_Function = $PS["Data.Function"];
   var Data_Maybe = $PS["Data.Maybe"];
   var Pha = $PS["Pha"];
-  var always_ = function ($7) {
-      return Data_Function["const"](Data_Maybe.Just.create($7));
+  var always_ = function ($4) {
+      return Data_Function["const"](Data_Maybe.Just.create($4));
   };
   var onclick = (function () {
-      var $8 = Pha.on("click");
-      return function ($9) {
-          return $8(always_($9));
+      var $5 = Pha.on("click");
+      return function ($6) {
+          return $5(always_($6));
       };
   })();
   exports["onclick"] = onclick;
@@ -2522,7 +2544,7 @@ var PS = {};
       init: update(RollDice.value),
       node: "root",
       events: [  ],
-      effects: Data_Functor_Variant.match()()()({
+      interpret: Data_Functor_Variant.match()()()({
           rng: Pha_Effects_Random.interpretRng
       })
   });

@@ -67,7 +67,7 @@ main = app {
     init: pure unit, -- action triggered at the start of the app (no action here)
     node: "root",    -- the id of the root node of the app
     events: [Tuple "keydown" onKeydown],
-    effects: match {
+    interpret: match {
         delay: interpretDelay
     }
 }

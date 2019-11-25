@@ -93,7 +93,7 @@ main = app {
     init: update RollDice,
     node: "root",
     events: [],
-    effects: match {
+    interpret: match {
         rng: interpretRng
     }
 }

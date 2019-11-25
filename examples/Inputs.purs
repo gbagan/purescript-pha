@@ -55,5 +55,5 @@ main = app {
     init: pure unit,
     node: "root",
     events: [],
-    effects: \_ -> pure unit
+    interpret: \_ -> pure unit
 }

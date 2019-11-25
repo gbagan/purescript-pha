@@ -334,18 +334,17 @@ const recycleNode = node =>
         RECYCLED_NODE
       )
 
-const appAux = disp => props => () => {
-  const {view, events, effects, init, update} = props
+const appAux = props => () => {
   let state = {};
   let lock = false
-  let node = document.getElementById(props.node);
-  let vdom = node && recycleNode(node);
 
   const listener = function(event) {
-    dispatch(event, this.actions[event.type]);
+    dispatch(event)(this.actions[event.type])();
   }
  
-  const setState = newState => {
+  const getState = () => state;
+
+  const setState = newState => () => {
     if (state !== newState) {
       state = newState;
       if (!lock) defer(render, (lock = true))
@@ -354,21 +353,12 @@ const appAux = disp => props => () => {
     return state
   }
 
-  const dispatch = (event, handler) => {
-        const msg = handler(event);
-        if (msg && msg.hasOwnProperty('value0')) { 
-            disp (() => state)
-                (fn => () => setState(fn(state)))
-                (effects)
-                (update(msg.value0))();
-        }
-  }
+  const {state: istate, view, events, dispatch, init, node: rootnode} = props(getState)(setState);
 
-  const rawEvent = (name, action) => {
-     const listener = event => dispatch(event, action);
-     addEventListener (name, listener);
-   }
-
+  let node = document.getElementById(rootnode);
+  if (!node)
+    return;
+   let vdom = node && recycleNode(node);
 
   const render = () => {
     lock = false
@@ -380,11 +370,11 @@ const appAux = disp => props => () => {
       listener
     )
   }
-  setState(props.state);
+  setState(istate)();
   for (let i = 0; i < events.length; i++) {
-     rawEvent(events[i].value0, events[i].value1);
+     addEventListener(events[i].value0, events[i].value1);
   }
-  dispatch(undefined, () => init);
+  init();
 }
 
 const h = isStyle => name => ps => children => {

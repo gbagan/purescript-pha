@@ -63,7 +63,7 @@ main = app {
     init: update RequestCat,
     node: "root",
     events: [],
-    effects: match {
+    interpret: match {
         http: interpretHttp
     }
 }

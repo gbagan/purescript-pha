@@ -1,4 +1,4 @@
-module Pha.Event.Decoder (Decoder, withDecoder, currentTargetValue, currentTargetChecked, module F) where
+module Pha.Event.Decoder (Decoder, onWithDecoder, currentTargetValue, currentTargetChecked, shiftKey, module F) where
 import Prelude
 import Data.Maybe (Maybe(..))
 import Data.Either (Either(..))
@@ -10,15 +10,18 @@ import Control.Monad.Except (runExcept)
 
 type Decoder a = Foreign -> F a
 
-withDecoder :: ∀a msg. Decoder a → String → (a → Maybe msg) → Prop msg
-withDecoder decoder eventname handler = on eventname handler' where
+onWithDecoder :: ∀a msg. Decoder a → String → (a → msg) → Prop msg
+onWithDecoder decoder eventname handler = on eventname handler' where
     handler' ev =
         case runExcept (decoder (unsafeToForeign ev)) of
-            Left _  → Nothing
-            Right a → handler a
+            Right a → Just (handler a)
+            _  → Nothing
 
 currentTargetValue :: Decoder String
 currentTargetValue = F.readProp "currentTarget" >=> F.readProp "value" >=> F.readString
 
 currentTargetChecked :: Decoder Boolean
 currentTargetChecked = F.readProp "currentTarget" >=> F.readProp "checked" >=> F.readBoolean
+
+shiftKey :: Decoder Boolean
+shiftKey = F.readProp "shiftKey" >=> F.readBoolean

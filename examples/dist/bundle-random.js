@@ -2178,13 +2178,13 @@ var PS = {};
   var Data_Function = $PS["Data.Function"];
   var Data_Maybe = $PS["Data.Maybe"];
   var Pha = $PS["Pha"];
-  var always_ = function ($4) {
-      return Data_Function["const"](Data_Maybe.Just.create($4));
+  var always_ = function ($2) {
+      return Data_Function["const"](Data_Maybe.Just.create($2));
   };
   var onclick = (function () {
-      var $5 = Pha.on("click");
-      return function ($6) {
-          return $5(always_($6));
+      var $3 = Pha.on("click");
+      return function ($4) {
+          return $3(always_($4));
       };
   })();
   exports["onclick"] = onclick;

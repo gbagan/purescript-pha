@@ -3,7 +3,7 @@ module Pha.Attributes where
 import Prelude hiding (div)
 import Pha (Prop, attr, on)
 import Data.Maybe (Maybe(..))
-import Pha.Event.Decoder (withDecoder, currentTargetChecked, currentTargetValue)
+import Pha.Event.Decoder (onWithDecoder, currentTargetChecked, currentTargetValue)
 
 disabled :: ∀msg. Boolean -> Prop msg
 disabled b = attr "disabled" (if b then "true" else "")
@@ -66,7 +66,7 @@ onclick = on "click" <<< always_
 -- onchange' = on "change"
 
 onvaluechange :: ∀msg. (String -> msg) -> Prop msg
-onvaluechange handler = withDecoder currentTargetValue "change" (Just <<< handler)
+onvaluechange = onWithDecoder currentTargetValue "change"
 
 onchecked :: ∀msg. (Boolean -> msg) -> Prop msg
-onchecked handler = withDecoder currentTargetChecked "change" (Just <<< handler)
+onchecked = onWithDecoder currentTargetChecked "change"

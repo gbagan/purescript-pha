@@ -319,6 +319,7 @@ var PS = {};
       })());
   };
   exports["runExceptT"] = runExceptT;
+  exports["functorExceptT"] = functorExceptT;
   exports["applicativeExceptT"] = applicativeExceptT;
 })(PS);
 (function($PS) {
@@ -381,6 +382,7 @@ var PS = {};
       return bindIdentity;
   });
   exports["newtypeIdentity"] = newtypeIdentity;
+  exports["functorIdentity"] = functorIdentity;
   exports["monadIdentity"] = monadIdentity;
 })(PS);
 (function($PS) {
@@ -2508,27 +2510,40 @@ var PS = {};
   $PS["Pha.Events"] = $PS["Pha.Events"] || {};
   var exports = $PS["Pha.Events"];
   var Control_Monad_Except = $PS["Control.Monad.Except"];
+  var Control_Monad_Except_Trans = $PS["Control.Monad.Except.Trans"];
   var Data_Either = $PS["Data.Either"];
+  var Data_Functor = $PS["Data.Functor"];
+  var Data_Identity = $PS["Data.Identity"];
   var Data_Maybe = $PS["Data.Maybe"];
   var Foreign = $PS["Foreign"];
   var Pha = $PS["Pha"];
   var Pha_Events_Decoder = $PS["Pha.Events.Decoder"];                
-  var on = function (eventname) {
+  var on$prime = function (eventname) {
       return function (decoder) {
           var handler = function (ev) {
               var v = Control_Monad_Except.runExcept(decoder(Foreign.unsafeToForeign(ev)));
               if (v instanceof Data_Either.Right) {
-                  return new Data_Maybe.Just(v.value0);
+                  return v.value0;
               };
               return Data_Maybe.Nothing.value;
           };
           return Pha.on_(eventname)(handler);
       };
   };
+  var on = function (eventname) {
+      return function (decoder) {
+          return on$prime(eventname)((function () {
+              var $17 = Data_Functor.map(Control_Monad_Except_Trans.functorExceptT(Data_Identity.functorIdentity))(Data_Maybe.Just.create);
+              return function ($18) {
+                  return $17(decoder($18));
+              };
+          })());
+      };
+  };
   var onclick = (function () {
-      var $11 = on("click");
-      return function ($12) {
-          return $11(Pha_Events_Decoder.always($12));
+      var $21 = on("click");
+      return function ($22) {
+          return $21(Pha_Events_Decoder.always($22));
       };
   })();
   exports["onclick"] = onclick;

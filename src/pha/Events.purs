@@ -1,7 +1,8 @@
-module Pha.Events (onclick,
+module Pha.Events (onclick, onclick',
     onmouseup, onmousedown, onmouseenter, onmouseleave,
     onpointerup, onpointerdown, onpointerenter, onpointerleave,
-    onvaluechange, onchecked, 
+    oncontextmenu, oncontextmenu',
+    onvaluechange, onchecked,
     on, on', custom, preventDefaultOn, stopPropagationOn) where
 
 import Prelude hiding (div)

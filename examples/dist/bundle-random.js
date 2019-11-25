@@ -2533,17 +2533,17 @@ var PS = {};
   var on = function (eventname) {
       return function (decoder) {
           return on$prime(eventname)((function () {
-              var $19 = Data_Functor.map(Control_Monad_Except_Trans.functorExceptT(Data_Identity.functorIdentity))(Data_Maybe.Just.create);
-              return function ($20) {
-                  return $19(decoder($20));
+              var $35 = Data_Functor.map(Control_Monad_Except_Trans.functorExceptT(Data_Identity.functorIdentity))(Data_Maybe.Just.create);
+              return function ($36) {
+                  return $35(decoder($36));
               };
           })());
       };
   };
   var onclick = (function () {
-      var $23 = on("click");
-      return function ($24) {
-          return $23(Pha_Events_Decoder.always($24));
+      var $39 = on("click");
+      return function ($40) {
+          return $39(Pha_Events_Decoder.always($40));
       };
   })();
   exports["onclick"] = onclick;

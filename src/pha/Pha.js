@@ -33,7 +33,7 @@ const patchProperty = function(node, key, oldValue, newValue, listener, isSvg, d
     if (
       !((node.actions || (node.actions = {}))[
         (key = key.slice(2).toLowerCase())
-      ] = decorator ? (ev => decorator(newValue(ev))) : newValue)
+      ] = decorator ? decorator(newValue) : newValue)
     ) {
       node.removeEventListener(key, listener)
     } else if (!oldValue) {
@@ -372,7 +372,7 @@ const appAux = props => () => {
   }
   setState(istate)();
   for (let i = 0; i < events.length; i++) {
-     addEventListener(events[i].value0, events[i].value1);
+     addEventListener(events[i].value0, ev => events[i].value1(ev)());
   }
   init();
 }

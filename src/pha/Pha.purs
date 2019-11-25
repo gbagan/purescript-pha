@@ -1,4 +1,4 @@
-module Pha (h, text, emptyNode, key, attr, style, on, class_, class', lazy, ifN, maybeN, app, Event, Prop, VDom, InterpretEffs) where
+module Pha (h, text, emptyNode, key, attr, style, on, class_, class', lazy, ifN, maybeN, app, unsafeOnWithEffect, Event, Prop, VDom, InterpretEffs) where
 
 import Prelude
 import Effect (Effect)
@@ -10,12 +10,14 @@ import Run (VariantF, runCont, onMatch)
 foreign import data VDom :: Type -> Type
 foreign import data Event :: Type
 
+type EventHandler msg = Event -> {effect :: Effect Unit, msg :: Maybe msg}
+
 data Prop msg =
     Key String
   | Attr String String
   | Class String Boolean
   | Style String String
-  | On String (Event -> Maybe msg)
+  | On String (EventHandler msg)
 
   
 -- | add a key to the vnode
@@ -35,7 +37,10 @@ class' :: ∀msg. String -> Boolean -> Prop msg
 class' = Class
 
 on :: ∀msg. String -> (Event -> Maybe msg) -> Prop msg 
-on = On
+on n handler = On n \ev -> {effect: pure unit, msg: handler ev}
+
+unsafeOnWithEffect :: ∀msg. String -> EventHandler msg -> Prop msg
+unsafeOnWithEffect = On
 
 -- | add or change a style attribute
 style :: ∀msg. String -> String -> Prop msg
@@ -79,16 +84,17 @@ ifN cond vdom = if cond then vdom unit else emptyNode
 maybeN :: ∀msg. Maybe (VDom msg) -> VDom msg
 maybeN = fromMaybe emptyNode
 
-foreign import mapView :: ∀a b. (Maybe a -> Maybe b) -> VDom a -> VDom b
+foreign import mapView :: ∀a b. (EventHandler a -> EventHandler b) -> VDom a -> VDom b
 instance functorVDom :: Functor VDom where
-    map fn = mapView (map fn)
+    map fn = mapView mapH where
+        mapH handler ev = let {effect, msg} = handler ev in {effect, msg: map fn msg}
 --viewOver lens = addDecorator (actionOver lens)
 
 foreign import appAux :: ∀msg state. (Effect state -> (state -> Effect Unit) -> {
     state :: state,
     view :: state -> VDom msg,
     node :: String,
-    dispatch :: Event -> (Event -> Maybe msg) -> Effect Unit,
+    dispatch :: Event -> (EventHandler msg) -> Effect Unit,
     events :: Array (Tuple String (Event -> Effect Unit)),
     init :: Effect Unit
 }) -> Effect Unit
@@ -108,26 +114,21 @@ app {state, view, update, node, events, init, interpret} = appAux fn where
         {state, view, node, init: init2, events: events2, dispatch} where
         go = onMatch {
             getState: \(GetState cont) -> getS >>= cont,
-            setState: \(SetState fn cont) -> (getS >>= (fn >>> setS)) *> cont
+            setState: \(SetState f cont) -> (getS >>= (f >>> setS)) *> cont
         } interpret
         runAction :: Action state effs -> Effect Unit 
         runAction = runCont go (\_ -> pure unit)
 
-        dispatch = \ev handler ->
-            case handler ev of
+        dispatch :: Event -> (EventHandler msg) -> Effect Unit
+        dispatch = \ev handler -> do
+            let {effect, msg} = handler ev
+            effect
+            case msg of
                 Nothing -> pure unit
-                Just msg -> runAction (update msg)
+                Just m -> runAction (update m)
         
         init2 = runAction init
         events2 = events <#> \(Tuple name handler) -> Tuple name \ev -> runAction (handler ev)      
 
 
 type InterpretEffs effs = VariantF effs (Effect Unit) -> Effect Unit
-
-type Dispatch = ∀st effs. Effect st -> ((st -> st) -> Effect Unit) -> InterpretEffs effs -> Action st effs -> Effect Unit
-dispatch :: Dispatch
-dispatch getS setS matching = runCont go (\_ -> pure unit) where
-    go = onMatch {
-        getState: \(GetState cont) -> getS >>= cont,
-        setState: \(SetState fn cont) -> setS fn *> cont
-    } matching

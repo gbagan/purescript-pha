@@ -1559,7 +1559,7 @@ var PS = {};
       if (
         !((node.actions || (node.actions = {}))[
           (key = key.slice(2).toLowerCase())
-        ] = decorator ? (ev => decorator(newValue(ev))) : newValue)
+        ] = decorator ? decorator(newValue) : newValue)
       ) {
         node.removeEventListener(key, listener)
       } else if (!oldValue) {
@@ -1898,7 +1898,7 @@ var PS = {};
     }
     setState(istate)();
     for (let i = 0; i < events.length; i++) {
-       addEventListener(events[i].value0, events[i].value1);
+       addEventListener(events[i].value0, ev => events[i].value1(ev)());
     }
     init();
   }
@@ -2053,9 +2053,18 @@ var PS = {};
           };
       };
       return On;
-  })();
+  })();                              
   var style = Style.create;
-  var on = On.create;  
+  var on = function (n) {
+      return function (handler) {
+          return new On(n, function (ev) {
+              return {
+                  effect: Control_Applicative.pure(Effect.applicativeEffect)(Data_Unit.unit),
+                  msg: handler(ev)
+              };
+          });
+      };
+  };                   
   var isStyle = function (v) {
       if (v instanceof Style) {
           return true;
@@ -2087,16 +2096,19 @@ var PS = {};
                       return runAction(v1.value1(ev));
                   });
               });
-              var dispatch1 = function (ev) {
+              var dispatch = function (ev) {
                   return function (handler) {
                       var v1 = handler(ev);
-                      if (v1 instanceof Data_Maybe.Nothing) {
-                          return Control_Applicative.pure(Effect.applicativeEffect)(Data_Unit.unit);
+                      return function __do() {
+                          v1.effect();
+                          if (v1.msg instanceof Data_Maybe.Nothing) {
+                              return Data_Unit.unit;
+                          };
+                          if (v1.msg instanceof Data_Maybe.Just) {
+                              return runAction(v.update(v1.msg.value0))();
+                          };
+                          throw new Error("Failed pattern match at Pha (line 126, column 13 - line 128, column 47): " + [ v1.msg.constructor.name ]);
                       };
-                      if (v1 instanceof Data_Maybe.Just) {
-                          return runAction(v.update(v1.value0));
-                      };
-                      throw new Error("Failed pattern match at Pha (line 117, column 13 - line 119, column 51): " + [ v1.constructor.name ]);
                   };
               };
               return {
@@ -2105,7 +2117,7 @@ var PS = {};
                   node: v.node,
                   init: init2,
                   events: events2,
-                  dispatch: dispatch1
+                  dispatch: dispatch
               };
           };
       };

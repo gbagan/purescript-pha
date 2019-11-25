@@ -1,4 +1,4 @@
-module Pha (h, text, emptyNode, key, attr, style, on, class_, class', lazy, ifN, maybeN, app, unsafeOnWithEffect, Event, Prop, VDom, InterpretEffs) where
+module Pha (h, text, emptyNode, key, attr, style, on_, class_, class', lazy, ifN, maybeN, app, unsafeOnWithEffect, Event, Prop, VDom, InterpretEffs) where
 
 import Prelude
 import Effect (Effect)
@@ -36,8 +36,8 @@ class_ name = Class name true
 class' :: ∀msg. String -> Boolean -> Prop msg
 class' = Class
 
-on :: ∀msg. String -> (Event -> Maybe msg) -> Prop msg 
-on n handler = On n \ev -> {effect: pure unit, msg: handler ev}
+on_ :: ∀msg. String -> (Event -> Maybe msg) -> Prop msg 
+on_ n handler = On n \ev -> {effect: pure unit, msg: handler ev}
 
 unsafeOnWithEffect :: ∀msg. String -> EventHandler msg -> Prop msg
 unsafeOnWithEffect = On

@@ -8,6 +8,7 @@ You can edit this file as you like.
     [ "argonaut"
     , "argonaut-core"
     , "console"
+    , "debug"
     , "effect"
     , "either"
     , "foreign"

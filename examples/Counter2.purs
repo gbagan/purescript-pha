@@ -10,7 +10,7 @@ import Pha.Action (Action, setState)
 import Pha.Effects.Delay (DELAY, delay, interpretDelay)
 import Pha.Event (key) as E
 import Pha.Elements (div, button, span)
-import Pha.Attributes (onclick)
+import Pha.Events (onclick)
 
 type State = {
     counter :: Int

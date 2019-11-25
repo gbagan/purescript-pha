@@ -1,6 +1,6 @@
 module Pha.Elements where
 
-import Prelude hiding (div)
+import Prelude
 import Pha (VDom, Prop, h, attr)
 
 a :: ∀msg. Array (Prop msg) -> Array (VDom msg) -> VDom msg

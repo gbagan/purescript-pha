@@ -9,7 +9,7 @@ import Pha (VDom, app, text, class', style)
 import Pha.Action (Action, getState, setState)
 import Pha.Effects.Random (RNG, randomInt, shuffle, randomPick, interpretRng)
 import Pha.Elements (div, button)
-import Pha.Attributes (onclick)
+import Pha.Events (onclick)
 import Pha.Util (pc)
 
 data Card = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King

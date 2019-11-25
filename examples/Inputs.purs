@@ -6,7 +6,8 @@ import Effect (Effect)
 import Pha (VDom, app, text, attr)
 import Pha.Action (Action, setState)
 import Pha.Elements (div, br, input)
-import Pha.Attributes (value, checked, onvaluechange, onchecked)
+import Pha.Attributes (value, checked)
+import Pha.Events (onvaluechange, onchecked)
 
 type State = {
     val1 :: String,

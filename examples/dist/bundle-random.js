@@ -2529,21 +2529,21 @@ var PS = {};
           };
           return Pha.on_(eventname)(handler);
       };
-  };
+  };   
   var on = function (eventname) {
       return function (decoder) {
           return on$prime(eventname)((function () {
-              var $17 = Data_Functor.map(Control_Monad_Except_Trans.functorExceptT(Data_Identity.functorIdentity))(Data_Maybe.Just.create);
-              return function ($18) {
-                  return $17(decoder($18));
+              var $19 = Data_Functor.map(Control_Monad_Except_Trans.functorExceptT(Data_Identity.functorIdentity))(Data_Maybe.Just.create);
+              return function ($20) {
+                  return $19(decoder($20));
               };
           })());
       };
   };
   var onclick = (function () {
-      var $21 = on("click");
-      return function ($22) {
-          return $21(Pha_Events_Decoder.always($22));
+      var $23 = on("click");
+      return function ($24) {
+          return $23(Pha_Events_Decoder.always($24));
       };
   })();
   exports["onclick"] = onclick;

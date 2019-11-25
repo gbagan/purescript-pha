@@ -60,6 +60,9 @@ stopPropagationOn eventname decoder = custom eventname (decoder >>> map \(Tuple 
 onclick :: ∀msg. msg -> Prop msg
 onclick = on "click" <<< always
 
+onclick' :: ∀msg. Maybe msg -> Prop msg
+onclick' = on' "click" <<< always
+
 onmouseup :: ∀msg. msg -> Prop msg
 onmouseup = on "mouseup" <<< always
 
@@ -83,6 +86,14 @@ onpointerenter = on "pointerenter" <<< always
 
 onpointerleave :: ∀msg. msg -> Prop msg
 onpointerleave = on "pointerleave" <<< always
+
+-- | note: trigger preventDefault 
+oncontextmenu :: ∀msg. msg -> Prop msg
+oncontextmenu msg = preventDefaultOn "contextmenu" $ always (Tuple (Just msg) true)
+
+-- | note: trigger preventDefault 
+oncontextmenu' :: ∀msg. (Maybe msg) -> Prop msg
+oncontextmenu' msg = preventDefaultOn "contextmenu" $ always (Tuple msg true)
 
 onvaluechange :: ∀msg. (String -> msg) -> Prop msg
 onvaluechange f = on "change" (currentTargetValue >>> map f)

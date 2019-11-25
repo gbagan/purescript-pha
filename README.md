@@ -15,31 +15,37 @@ import Prelude hiding (div)
 import Effect (Effect)
 import Pha (VDom, app, text)
 import Pha.Action (Action, setState)
-import Pha.Html (div, button, onclick)
+import Pha.Elements (div, button)
+import Pha.Events (onclick)
 
 type State = Int
+
+data Msg = Increment | Decrement
 
 state :: State
 state = 0
 
-increment :: Action State ()
-increment = setState (_ + 1)
+update :: Msg -> Action State ()
+update Increment = setState (_ + 1)
+update Decrement = setState (_ - 1)
 
-view :: State -> VDom State ()
+view :: State -> VDom Msg
 view counter = 
     div [] [
         div [] [text $ show counter],
-        button [onclick increment] [text "Increment"]
+        button [onclick Increment] [text "+"],
+        button [onclick Decrement] [text "-"]
     ]
 
 main :: Effect Unit
 main = app {
     state,
     view,
+    update,
     init: pure unit,
     node: "root",
     events: [],
-    effects: \_ -> pure unit
+    interpret: \_ -> pure unit
 }
 ```
 
@@ -49,7 +55,7 @@ Counter2 (delayed action, raw events) [Code](https://github.com/gbagan/purescrip
 
 Randomness (+ animation) [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/Random.purs) |  [HTML](http://htmlpreview.github.io/?https://github.com/gbagan/purescript-pha/blob/master/examples/dist/ex-random.html)
 
-Custom effects (+ svg, FFI) [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/CustomEffect.purs) | [HTML](http://htmlpreview.github.io/?https://github.com/gbagan/purescript-pha/blob/master/examples/dist/ex-customeffect.html)
+Decoder (decoding events) [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/Decoder.purs) | [HTML](http://htmlpreview.github.io/?https://github.com/gbagan/purescript-pha/blob/master/examples/dist/ex-decoder.html)
 
 Inputs (event effects, text and checkbox inputs) [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/Inputs.purs) | [HTML](http://htmlpreview.github.io/?https://github.com/gbagan/purescript-pha/blob/master/examples/dist/ex-inputs.html)
 

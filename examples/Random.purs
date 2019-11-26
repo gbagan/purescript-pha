@@ -6,7 +6,7 @@ import Data.Array ((..), mapWithIndex)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Run (match)
-import Pha (VDom, app, text, class', style)
+import Pha (Document, app, text, class', style)
 import Pha.Action (Action, getState, setState)
 import Pha.Effects.Random (RNG, randomInt, shuffle, randomPick, interpretRng)
 import Pha.Elements (div, button)
@@ -66,25 +66,28 @@ viewCard Jack  = "🂫"
 viewCard Queen = "🂭"
 viewCard King  = "🂮"
 
-view :: State -> VDom Msg
-view {dice, puzzle, card} = 
-    div [] [
-        div [class' "counter" true] [text $ show dice],
-        button [onclick RollDice] [text "Roll dice"],
+view :: State -> Document Msg
+view {dice, puzzle, card} = {
+    title: "Randomness example",
+    body:
+        div [] [
+            div [class' "counter" true] [text $ show dice],
+            button [onclick RollDice] [text "Roll dice"],
 
-        div [style "font-size" "12em" ] [ text $ viewCard card ],
-        button [onclick DrawCard] [ text "Draw" ],
+            div [style "font-size" "12em" ] [ text $ viewCard card ],
+            button [onclick DrawCard] [ text "Draw" ],
 
-        div [class' "puzzle" true] (
-            puzzle # mapWithIndex \i j ->
-                div [
-                    class' "puzzle-item" true,
-                    style "left" $ pc (0.25 * toNumber (j / 4)),
-                    style "top" $ pc (0.25 * toNumber (j `mod` 4)) 
-                ] [text $ show i]
-        ),
-        button [onclick ShufflePuzzle] [text "Shuffle"]
-    ]
+            div [class' "puzzle" true] (
+                puzzle # mapWithIndex \i j ->
+                    div [
+                        class' "puzzle-item" true,
+                        style "left" $ pc (0.25 * toNumber (j / 4)),
+                        style "top" $ pc (0.25 * toNumber (j `mod` 4)) 
+                    ] [text $ show i]
+            ),
+            button [onclick ShufflePuzzle] [text "Shuffle"]
+        ]
+}
 
 main :: Effect Unit
 main = app {

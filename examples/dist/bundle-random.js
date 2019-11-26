@@ -2074,12 +2074,14 @@ var PS = {};
      let vdom = node && recycleNode(node);
 
     const render = () => {
+      const {title, body } = view(state); 
+      document.title = title;
       lock = false
       node = patch(
         node.parentNode,
         node,
         vdom,
-        vdom = view(state),
+        vdom = body,
         listener
       )
     }
@@ -2294,7 +2296,7 @@ var PS = {};
                           if (v1.msg instanceof Data_Maybe.Just) {
                               return runAction(v.update(v1.msg.value0))();
                           };
-                          throw new Error("Failed pattern match at Pha (line 135, column 13 - line 137, column 47): " + [ v1.msg.constructor.name ]);
+                          throw new Error("Failed pattern match at Pha (line 140, column 13 - line 142, column 47): " + [ v1.msg.constructor.name ]);
                       };
                   };
               };
@@ -2737,11 +2739,14 @@ var PS = {};
       throw new Error("Failed pattern match at Example.Random (line 54, column 1 - line 54, column 27): " + [ v.constructor.name ]);
   };
   var view = function (v) {
-      return Pha_Elements.div([  ])([ Pha_Elements.div([ Pha["class'"]("counter")(true) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(v.dice)) ]), Pha_Elements.button([ Pha_Events.onclick(RollDice.value) ])([ Pha.text("Roll dice") ]), Pha_Elements.div([ Pha.style("font-size")("12em") ])([ Pha.text(viewCard(v.card)) ]), Pha_Elements.button([ Pha_Events.onclick(DrawCard.value) ])([ Pha.text("Draw") ]), Pha_Elements.div([ Pha["class'"]("puzzle")(true) ])(Data_Array.mapWithIndex(function (i) {
-          return function (j) {
-              return Pha_Elements.div([ Pha["class'"]("puzzle-item")(true), Pha.style("left")(Pha_Util.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.div(Data_EuclideanRing.euclideanRingInt)(j)(4)))), Pha.style("top")(Pha_Util.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.mod(Data_EuclideanRing.euclideanRingInt)(j)(4)))) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(i)) ]);
-          };
-      })(v.puzzle)), Pha_Elements.button([ Pha_Events.onclick(ShufflePuzzle.value) ])([ Pha.text("Shuffle") ]) ]);
+      return {
+          title: "Randomness example",
+          body: Pha_Elements.div([  ])([ Pha_Elements.div([ Pha["class'"]("counter")(true) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(v.dice)) ]), Pha_Elements.button([ Pha_Events.onclick(RollDice.value) ])([ Pha.text("Roll dice") ]), Pha_Elements.div([ Pha.style("font-size")("12em") ])([ Pha.text(viewCard(v.card)) ]), Pha_Elements.button([ Pha_Events.onclick(DrawCard.value) ])([ Pha.text("Draw") ]), Pha_Elements.div([ Pha["class'"]("puzzle")(true) ])(Data_Array.mapWithIndex(function (i) {
+              return function (j) {
+                  return Pha_Elements.div([ Pha["class'"]("puzzle-item")(true), Pha.style("left")(Pha_Util.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.div(Data_EuclideanRing.euclideanRingInt)(j)(4)))), Pha.style("top")(Pha_Util.pc(0.25 * Data_Int.toNumber(Data_EuclideanRing.mod(Data_EuclideanRing.euclideanRingInt)(j)(4)))) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(i)) ]);
+              };
+          })(v.puzzle)), Pha_Elements.button([ Pha_Events.onclick(ShufflePuzzle.value) ])([ Pha.text("Shuffle") ]) ])
+      };
   };
   var update = function (v) {
       if (v instanceof RollDice) {

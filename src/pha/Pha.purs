@@ -1,5 +1,5 @@
 module Pha (h, text, emptyNode, key, attr, style, on_, class_, class', lazy,
-    whenN, (<?>), maybeN, maybeN', (<??>), app, sandbox, unsafeOnWithEffect, Event, Prop, VDom, InterpretEffs) where
+    whenN, (<?>), maybeN, maybeN', (<??>), app, sandbox, unsafeOnWithEffect, Event, Prop, VDom, Document, InterpretEffs) where
 
 import Prelude
 import Effect (Effect)
@@ -10,6 +10,11 @@ import Run (VariantF, runCont, onMatch)
 
 foreign import data VDom :: Type -> Type
 foreign import data Event :: Type
+
+type Document msg = {
+    title :: String,
+    body :: VDom msg
+}
 
 type EventHandler msg = Event -> {effect :: Effect Unit, msg :: Maybe msg}
 
@@ -102,7 +107,7 @@ instance functorVDom :: Functor VDom where
 
 foreign import appAux :: ∀msg state. (Effect state -> (state -> Effect Unit) -> {
     state :: state,
-    view :: state -> VDom msg,
+    view :: state -> Document msg,
     node :: String,
     dispatch :: Event -> (EventHandler msg) -> Effect Unit,
     events :: Array (Tuple String (Event -> Effect Unit)),
@@ -112,7 +117,7 @@ foreign import appAux :: ∀msg state. (Effect state -> (state -> Effect Unit) -
 
 app :: ∀msg state effs. {
     init :: Tuple state (Action state effs),
-    view :: state -> VDom msg,
+    view :: state -> Document msg,
     update :: msg -> Action state effs,
     node :: String,
     events :: Array (Tuple String (Event -> Action state effs)),
@@ -149,7 +154,7 @@ sandbox :: ∀msg state. {
 sandbox {init, view, update, node} =
     app {
         init: Tuple init (pure unit),
-        view,
+        view: \st -> {title: "app", body: view st},
         update: \msg -> setState (update msg),
         node,
         events: [],

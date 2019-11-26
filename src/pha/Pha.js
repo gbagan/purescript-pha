@@ -361,12 +361,14 @@ const appAux = props => () => {
    let vdom = node && recycleNode(node);
 
   const render = () => {
+    const {title, body } = view(state); 
+    document.title = title;
     lock = false
     node = patch(
       node.parentNode,
       node,
       vdom,
-      vdom = view(state),
+      vdom = body,
       listener
     )
   }

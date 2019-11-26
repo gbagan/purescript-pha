@@ -10,36 +10,37 @@ Documentation is [published on Pursuit](https://pursuit.purescript.org/packages/
 
 ### Minimal example
 ```purescript
-module Example.Main where
+module Example.Counter where
 import Prelude hiding (div)
 import Effect (Effect)
-import Pha (VDom, app, text)
-import Pha.Action (Action, setState)
-import Pha.Html (div, button, onclick)
+import Pha (VDom, sandbox, text)
+import Pha.Elements (div, span, button)
+import Pha.Events (onclick)
 
 type State = Int
+data Msg = Increment | Decrement
 
-state :: State
-state = 0
+init :: State
+init = 0
 
-increment :: Action State ()
-increment = setState (_ + 1)
+update :: Msg -> State -> State
+update Increment = (_ + 1)
+update Decrement = (_ - 1)
 
-view :: State -> VDom State ()
+view :: State -> VDom Msg
 view counter = 
-    div [] [
-        div [] [text $ show counter],
-        button [onclick increment] [text "Increment"]
+    div []
+    [   button [onclick Decrement] [text "-"]
+    ,   span [] [text $ show counter]
+    ,   button [onclick Increment] [text "-"]
     ]
 
 main :: Effect Unit
-main = app {
-    state,
+main = sandbox {
+    init,
+    update,
     view,
-    init: pure unit,
-    node: "root",
-    events: [],
-    effects: \_ -> pure unit
+    node: "root"
 }
 ```
 

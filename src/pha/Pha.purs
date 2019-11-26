@@ -1,8 +1,8 @@
-module Pha (h, text, emptyNode, key, attr, style, on_, class_, class', lazy, ifN, maybeN, app, unsafeOnWithEffect, Event, Prop, VDom, InterpretEffs) where
+module Pha (h, text, emptyNode, key, attr, style, on_, class_, class', lazy, ifN, maybeN, app, sandbox, unsafeOnWithEffect, Event, Prop, VDom, InterpretEffs) where
 
 import Prelude
 import Effect (Effect)
-import Pha.Action (Action, GetState(..), SetState(..))
+import Pha.Action (Action, setState, GetState(..), SetState(..))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Tuple (Tuple(..))
 import Run (VariantF, runCont, onMatch)
@@ -101,15 +101,14 @@ foreign import appAux :: ∀msg state. (Effect state -> (state -> Effect Unit) -
 
 
 app :: ∀msg state effs. {
-    state :: state,
+    init :: Tuple state (Action state effs),
     view :: state -> VDom msg,
     update :: msg -> Action state effs,
     node :: String,
     events :: Array (Tuple String (Event -> Action state effs)),
-    init :: Action state effs,
     interpret :: InterpretEffs effs
 } -> Effect Unit
-app {state, view, update, node, events, init, interpret} = appAux fn where
+app {init: Tuple state init, view, update, node, events, interpret} = appAux fn where
     fn getS setS =
         {state, view, node, init: init2, events: events2, dispatch} where
         go = onMatch {
@@ -130,5 +129,21 @@ app {state, view, update, node, events, init, interpret} = appAux fn where
         init2 = runAction init
         events2 = events <#> \(Tuple name handler) -> Tuple name \ev -> runAction (handler ev)      
 
+sandbox :: ∀msg state. {
+    init :: state,
+    view :: state -> VDom msg,
+    update :: msg -> state -> state,
+    node :: String
+} -> Effect Unit
+
+sandbox {init, view, update, node} =
+    app {
+        init: Tuple init (pure unit),
+        view,
+        update: \msg -> setState (update msg),
+        node,
+        events: [],
+        interpret: \_ -> pure unit
+    }
 
 type InterpretEffs effs = VariantF effs (Effect Unit) -> Effect Unit

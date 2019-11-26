@@ -2,8 +2,7 @@ module Example.Decoder where
 import Prelude hiding (div)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
-import Pha (VDom, app, maybeN, style)
-import Pha.Action (Action, setState)
+import Pha (VDom, sandbox, maybeN, style)
 import Pha.Elements (div)
 import Pha.Events (on, onpointerleave)
 import Pha.Events.Decoder (Decoder, readNumber, readProp, currentTarget, getBoundingClientRect)
@@ -26,11 +25,11 @@ decoder f = do
         y: (y - top) / height
     }
 -- initial state
-state :: State
-state = Nothing
+init :: State
+init = Nothing
 
-update :: Msg -> Action State ()
-update (SetPosition p) = setState (const p) 
+update :: Msg -> State -> State
+update (SetPosition p) = const p 
 
 view :: State -> VDom Msg
 view position = 
@@ -55,12 +54,9 @@ view position =
     ]
 
 main :: Effect Unit
-main = app {
-    state,           -- initial state
+main = sandbox {
+    init,           -- initial state
     view,            -- a mapping of the state to virtual dom
     update,
-    init: pure unit, -- action triggered at the start of the app (no action here)
-    node: "root",    -- the id of the root node of the app
-    events: [],
-    interpret: \_ -> pure unit
+    node: "root"
 }

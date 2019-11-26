@@ -3,6 +3,7 @@ import Prelude hiding (div)
 import Data.Int (toNumber)
 import Data.Maybe (Maybe(..))
 import Data.Array ((..), mapWithIndex)
+import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Run (match)
 import Pha (VDom, app, text, class', style)
@@ -87,10 +88,9 @@ view {dice, puzzle, card} =
 
 main :: Effect Unit
 main = app {
-    state,
+    init: state /\ update RollDice,
     view,
     update,
-    init: update RollDice,
     node: "root",
     events: [],
     interpret: match {

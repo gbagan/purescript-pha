@@ -3,6 +3,7 @@ import Prelude hiding (div)
 import Data.Int (even)
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
+import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Run (match)
 import Pha (VDom, Event, app, text, class_, class')
@@ -61,10 +62,9 @@ onKeydown ev = case E.key (ev) of
 
 main :: Effect Unit
 main = app {
-    state,           -- initial state
+    init: state /\ pure unit, -- initial state
     view,            -- a mapping of the state to virtual dom
     update,
-    init: pure unit, -- action triggered at the start of the app (no action here)
     node: "root",    -- the id of the root node of the app
     events: [Tuple "keydown" onKeydown],
     interpret: match {

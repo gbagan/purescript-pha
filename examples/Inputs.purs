@@ -3,8 +3,7 @@ import Prelude hiding (div)
 import Data.Maybe (fromMaybe)
 import Data.Int (fromString)
 import Effect (Effect)
-import Pha (VDom, app, text, attr)
-import Pha.Action (Action, setState)
+import Pha (VDom, sandbox, text, attr)
 import Pha.Elements (div, br, input)
 import Pha.Attributes (value, checked)
 import Pha.Events (onvaluechange, onchecked)
@@ -18,8 +17,8 @@ type State = {
 data Msg = ChangeVal1 String | ChangeVal2 String | ChangeOp Boolean
 
 -- initial state
-state :: State
-state = {
+init :: State
+init = {
     val1: "2",
     val2: "4",
     isMul: false
@@ -31,10 +30,10 @@ result {val1, val2, isMul} = fromMaybe "invalid input" do
     y <- fromString val2
     pure $ show (if isMul then x * y else x + y)
 
-update :: Msg -> Action State ()
-update (ChangeVal1 val) = setState _{val1 = val}
-update (ChangeVal2 val) = setState _{val2 = val}
-update (ChangeOp b) = setState _{isMul = b}
+update :: Msg -> State -> State
+update (ChangeVal1 val) = _{val1 = val}
+update (ChangeVal2 val) = _{val2 = val}
+update (ChangeOp b) = _{isMul = b}
 
 view :: State -> VDom Msg
 view st@{val1, val2, isMul} = 
@@ -49,12 +48,9 @@ view st@{val1, val2, isMul} =
     ]
 
 main :: Effect Unit
-main = app {
-    state,
+main = sandbox {
+    init,
     view,
     update,
-    init: pure unit,
-    node: "root",
-    events: [],
-    interpret: \_ -> pure unit
+    node: "root"
 }

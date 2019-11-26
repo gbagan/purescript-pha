@@ -2269,15 +2269,15 @@ var PS = {};
                   },
                   setState: function (v1) {
                       return Control_Apply.applySecond(Effect.applyEffect)(function __do() {
-                          var $37 = getS();
-                          return setS(v1.value0($37))();
+                          var $45 = getS();
+                          return setS(v1.value0($45))();
                       })(v1.value1);
                   }
               })(v.interpret);
               var runAction = Run.runCont(go)(function (v1) {
                   return Control_Applicative.pure(Effect.applicativeEffect)(Data_Unit.unit);
               });
-              var init2 = runAction(v.init);
+              var init2 = runAction(v.init.value1);
               var events2 = Data_Functor.mapFlipped(Data_Functor.functorArray)(v.events)(function (v1) {
                   return new Data_Tuple.Tuple(v1.value0, function (ev) {
                       return runAction(v1.value1(ev));
@@ -2294,12 +2294,12 @@ var PS = {};
                           if (v1.msg instanceof Data_Maybe.Just) {
                               return runAction(v.update(v1.msg.value0))();
                           };
-                          throw new Error("Failed pattern match at Pha (line 126, column 13 - line 128, column 47): " + [ v1.msg.constructor.name ]);
+                          throw new Error("Failed pattern match at Pha (line 125, column 13 - line 127, column 47): " + [ v1.msg.constructor.name ]);
                       };
                   };
               };
               return {
-                  state: v.state,
+                  state: v.init.value0,
                   view: v.view,
                   node: v.node,
                   init: init2,
@@ -2573,6 +2573,7 @@ var PS = {};
   var Data_Int = $PS["Data.Int"];
   var Data_Maybe = $PS["Data.Maybe"];
   var Data_Show = $PS["Data.Show"];
+  var Data_Tuple = $PS["Data.Tuple"];
   var Data_Unit = $PS["Data.Unit"];
   var Pha = $PS["Pha"];
   var Pha_Action = $PS["Pha.Action"];
@@ -2733,7 +2734,7 @@ var PS = {};
       if (v instanceof King) {
           return "\ud83c\udcae";
       };
-      throw new Error("Failed pattern match at Example.Random (line 53, column 1 - line 53, column 27): " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Example.Random (line 54, column 1 - line 54, column 27): " + [ v.constructor.name ]);
   };
   var view = function (v) {
       return Pha_Elements.div([  ])([ Pha_Elements.div([ Pha["class'"]("counter")(true) ])([ Pha.text(Data_Show.show(Data_Show.showInt)(v.dice)) ]), Pha_Elements.button([ Pha_Events.onclick(RollDice.value) ])([ Pha.text("Roll dice") ]), Pha_Elements.div([ Pha.style("font-size")("12em") ])([ Pha.text(viewCard(v.card)) ]), Pha_Elements.button([ Pha_Events.onclick(DrawCard.value) ])([ Pha.text("Draw") ]), Pha_Elements.div([ Pha["class'"]("puzzle")(true) ])(Data_Array.mapWithIndex(function (i) {
@@ -2770,7 +2771,7 @@ var PS = {};
               if (v1 instanceof Data_Maybe.Nothing) {
                   return Control_Applicative.pure(Run.applicativeRun)(Data_Unit.unit);
               };
-              throw new Error("Failed pattern match at Example.Random (line 44, column 5 - line 46, column 29): " + [ v1.constructor.name ]);
+              throw new Error("Failed pattern match at Example.Random (line 45, column 5 - line 47, column 29): " + [ v1.constructor.name ]);
           });
       };
       if (v instanceof ShufflePuzzle) {
@@ -2786,7 +2787,7 @@ var PS = {};
               });
           });
       };
-      throw new Error("Failed pattern match at Example.Random (line 36, column 1 - line 36, column 35): " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Example.Random (line 37, column 1 - line 37, column 35): " + [ v.constructor.name ]);
   };
   var state = {
       dice: 1,
@@ -2794,10 +2795,9 @@ var PS = {};
       card: Ace.value
   };
   var main = Pha.app({
-      state: state,
+      init: new Data_Tuple.Tuple(state, update(RollDice.value)),
       view: view,
       update: update,
-      init: update(RollDice.value),
       node: "root",
       events: [  ],
       interpret: Data_Functor_Variant.match()()()({

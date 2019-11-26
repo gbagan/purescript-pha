@@ -1,6 +1,7 @@
 module Example.Cats where
 import Prelude hiding (div)
 import Data.Maybe (maybe)
+import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Run (match)
 import Pha (VDom, app, text, style)
@@ -58,10 +59,9 @@ viewGif (Success url) = div [] [
 
 main :: Effect Unit
 main = app {
-    state,
+    init: state /\ update RequestCat,
     view,
     update,
-    init: update RequestCat,
     node: "root",
     events: [],
     interpret: match {

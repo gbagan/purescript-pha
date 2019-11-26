@@ -37,20 +37,20 @@ update DelayedIncrement = delay 1000 *> increment
 
 view :: State -> VDom Msg
 view {counter} = 
-    div [] [
-        div [class_ "counter"] [text $ show counter],
-        button [onclick Increment] [text "Increment"],
-        button [onclick DelayedIncrement] [text "Delayed Increment"],
+    div []
+    [   div [class_ "counter"] [text $ show counter]
+    ,   button [onclick Increment] [text "Increment"]
+    ,   button [onclick DelayedIncrement] [text "Delayed Increment"]
 
-        div [] [
-            span [] [text "green when the counter is even"],
-            div [
-                class_ "box", 
-                class' "even" (even counter)
+    ,   div []
+        [   span [] [text "green when the counter is even"]
+        ,   div
+            [   class_ "box"
+            ,   class' "even" (even counter)
             ] []
-        ],
+        ]
 
-        div [] [
+    ,   div [] [
             text "press space to increment the counter"
         ]
     ]

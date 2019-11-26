@@ -1,4 +1,5 @@
-module Pha (h, text, emptyNode, key, attr, style, on_, class_, class', lazy, ifN, maybeN, app, sandbox, unsafeOnWithEffect, Event, Prop, VDom, InterpretEffs) where
+module Pha (h, text, emptyNode, key, attr, style, on_, class_, class', lazy,
+    whenN, (<?>), maybeN, maybeN', (<??>), app, sandbox, unsafeOnWithEffect, Event, Prop, VDom, InterpretEffs) where
 
 import Prelude
 import Effect (Effect)
@@ -72,8 +73,11 @@ foreign import lazy :: ∀a msg. a -> (a -> VDom msg) -> VDom msg
 
 -- | return a virtual dom only if the first argument is true
 -- | otherwise, return an empty virtual node
-ifN :: ∀msg. Boolean -> (Unit -> VDom msg) -> VDom msg
-ifN cond vdom = if cond then vdom unit else emptyNode
+whenN :: ∀msg. Boolean -> (Unit -> VDom msg) -> VDom msg
+whenN cond vdom = if cond then vdom unit else emptyNode
+
+infix 1 whenN as <?>
+
 
 -- | is equivalent to
 -- |
@@ -83,6 +87,12 @@ ifN cond vdom = if cond then vdom unit else emptyNode
 
 maybeN :: ∀msg. Maybe (VDom msg) -> VDom msg
 maybeN = fromMaybe emptyNode
+
+maybeN' :: ∀a msg. Maybe a -> (a -> VDom msg) -> VDom msg
+maybeN' (Just a) f = f a
+maybeN' Nothing _ = emptyNode
+
+infix 1 maybeN' as <??>
 
 foreign import mapView :: ∀a b. (EventHandler a -> EventHandler b) -> VDom a -> VDom b
 instance functorVDom :: Functor VDom where

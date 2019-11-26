@@ -17,8 +17,8 @@ update Decrement = (_ - 1)
 
 view :: State -> VDom Msg
 view counter = 
-    div [] [
-        button [onclick Decrement] [text "-"]
+    div []
+    [   button [onclick Decrement] [text "-"]
     ,   span [] [text $ show counter]
     ,   button [onclick Increment] [text "-"]
     ]

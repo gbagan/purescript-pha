@@ -1,6 +1,5 @@
 module Pha.Attributes where
 
-import Prelude
 import Pha (Prop, attr)
 
 disabled :: ∀msg. Boolean -> Prop msg

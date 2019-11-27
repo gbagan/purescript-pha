@@ -1,6 +1,6 @@
-module Pha (h, text, emptyNode, key, attr, style, on_, class_, class', lazy,
-    whenN, (<?>), maybeN, maybeN', (<??>), app, sandbox, unsafeOnWithEffect,
-    VDom, Prop, Sub, Event, Document, InterpretEffs, EventHandler) where
+module Pha (VDom, Prop, Sub, Event, h, text, emptyNode, key, attr, style, on_, class_, class', lazy,
+    when, (<&&>), maybeN, maybe, (<??>), app, sandbox, unsafeOnWithEffect,
+     Document, InterpretEffs, EventHandler) where
 
 import Prelude
 import Effect (Effect)
@@ -62,34 +62,33 @@ foreign import emptyNode :: ∀msg. VDom msg
 -- | otherwise, return the previous generated virtual dom
 foreign import lazy :: ∀a msg. a -> (a -> VDom msg) -> VDom msg
 
--- | return a virtual dom only if the first argument is true
--- | otherwise, return an empty virtual node
-whenN :: ∀msg. Boolean -> (Unit -> VDom msg) -> VDom msg
-whenN cond vdom = if cond then vdom unit else emptyNode
+-- | ```purescript
+-- | when true = vdom unit
+-- | when false = emptyNode
+-- | ```
+when :: ∀msg. Boolean -> (Unit -> VDom msg) -> VDom msg
+when cond vdom = if cond then vdom unit else emptyNode
 
-infix 1 whenN as <?>
+infix 1 when as <&&>
 
 
--- | is equivalent to
--- |
+-- | ```purescript
 -- | maybeN (Just vdom) = vdom
--- |
 -- | maybeN Nothing = emptyNode
-
+-- | ```
 maybeN :: ∀msg. Maybe (VDom msg) -> VDom msg
 maybeN = fromMaybe emptyNode
 
-maybeN' :: ∀a msg. Maybe a -> (a -> VDom msg) -> VDom msg
-maybeN' (Just a) f = f a
-maybeN' Nothing _ = emptyNode
+maybe :: ∀a msg. Maybe a -> (a -> VDom msg) -> VDom msg
+maybe (Just a) f = f a
+maybe Nothing _ = emptyNode
 
-infix 1 maybeN' as <??>
-
+infix 1 maybe as <??>
+    
 foreign import mapView :: ∀a b. (EventHandler a -> EventHandler b) -> VDom a -> VDom b
 instance functorVDom :: Functor VDom where
     map fn = mapView mapH where
         mapH handler ev = let {effect, msg} = handler ev in {effect, msg: map fn msg}
---viewOver lens = addDecorator (actionOver lens)
 
 foreign import appAux :: ∀msg state. (Effect state -> (state -> Effect Unit) -> {
     state :: state,
@@ -101,6 +100,16 @@ foreign import appAux :: ∀msg state. (Effect state -> (state -> Effect Unit) -
     init :: Effect Unit
 }) -> Effect Unit
 
+-- | ```purescript
+-- | app :: ∀msg state effs. {
+-- |     init :: Tuple state (Action state effs),
+-- |     view :: state -> Document msg,
+-- |     update :: msg -> Action state effs,
+-- |     subscriptions :: state -> Array (Sub msg),
+-- |     interpret :: InterpretEffs effs,
+-- |     node :: String
+-- | } -> Effect Unit
+-- | ```
 
 app :: ∀msg state effs. {
     init :: Tuple state (Action state effs),
@@ -132,6 +141,15 @@ app {init: Tuple state init, view, update, node, subscriptions, interpret} = app
                 Just m -> dispatch m
         
         init2 = runAction init 
+
+-- | ```purescript
+-- | sandbox :: ∀msg state effs. {
+-- |     init :: state,
+-- |     view :: state -> VDom msg,
+-- |     update :: msg -> state -> state,
+-- |     node :: String
+-- | } -> Effect Unit
+-- | ```
 
 sandbox :: ∀msg state. {
     init :: state,

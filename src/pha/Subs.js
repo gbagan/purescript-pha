@@ -1,3 +1,5 @@
+exports.makeSub = fn => d => [fn, d]
+
 exports.addEventListener = name => fn => () => {
     if (window && window.addEventListener) {
         listener = window.addEventListener(name, ev => fn(ev)());
@@ -6,4 +8,11 @@ exports.addEventListener = name => fn => () => {
         return () => null;
     }
 }
-exports.makeSub = fn => d => [fn, d]
+
+exports.onAnimationFrameAux = fn => () => {
+    let id = requestAnimationFrame(timestamp => {
+        id = requestAnimationFrame(frame)
+        fn (timestamp)
+    })
+    return () => cancelAnimationFrame(id);
+}

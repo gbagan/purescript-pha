@@ -67,7 +67,7 @@ main = app {
     view,            -- a mapping of the state to virtual dom
     update,
     node: "root",    -- the id of the root node of the app
-    subscriptions: const [Subs.onkeydown keyDownHandler],
+    subscriptions: const [Subs.onKeyDown keyDownHandler],
     interpret: match {
         delay: interpretDelay
     }

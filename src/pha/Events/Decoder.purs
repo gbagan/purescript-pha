@@ -1,4 +1,5 @@
-module Pha.Events.Decoder (Decoder, always, currentTarget, currentTargetValue, currentTargetChecked, shiftKey, key, getBoundingClientRect, module F) where
+module Pha.Events.Decoder (Decoder, always, currentTarget, currentTargetValue, currentTargetChecked, 
+                            shiftKey, key, getBoundingClientRect, module F) where
 import Prelude
 import Foreign (readBoolean, readInt, readString, readNumber) as F
 import Foreign (Foreign, F)

@@ -2,11 +2,10 @@ module Example.Counter2 where
 import Prelude hiding (div)
 import Data.Int (even)
 import Data.Maybe (Maybe(..))
-import Data.Tuple (Tuple(..))
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Run (match)
-import Pha (Document, Event, app, text, class_, class')
+import Pha (Document, app, text, class_, class')
 import Pha.Action (Action, setState)
 import Pha.Effects.Delay (DELAY, delay, interpretDelay)
 import Pha.Subs as Subs

@@ -4,18 +4,15 @@ import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Pha (Event, Sub)
 import Pha.Events.Decoder as ED
-import Unsafe.Coerce (unsafeCoerce)
 import Foreign (unsafeToForeign)
 import Data.Either (Either(..))
 import Control.Monad.Except (runExcept)
 
 type Canceler = Effect Unit
 
-makeSub :: forall d msg. ((msg -> Effect Unit) -> d -> Effect (Effect Unit)) -> d -> Sub msg
-makeSub fn data_ = unsafeCoerce {fn, data_: data_}
+foreign import makeSub :: forall d msg. ((msg -> Effect Unit) -> d -> Effect (Effect Unit)) -> d -> Sub msg 
 
 foreign import addEventListener :: String -> (Event -> Effect Unit) -> Effect Canceler
-
 
 handleEvent :: forall msg. (msg -> Effect Unit ) -> ED.Decoder (Maybe msg) -> Event -> Effect Unit
 handleEvent dispatch decoder ev =

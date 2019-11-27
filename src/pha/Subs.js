@@ -5,4 +5,5 @@ exports.addEventListener = name => fn => () => {
     } else {
         return () => null;
     }
-} 
+}
+exports.makeSub = fn => d => [fn, d]

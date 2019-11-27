@@ -9,16 +9,11 @@ const EMPTY_ARR = []
 const map = EMPTY_ARR.map
 const defer = requestAnimationFrame || setTimeout
 
-const merge = function(a, b) {
-  var out = {}
+const merge = (a, b) => Object.assign({}, a, b);
 
-  for (var k in a) out[k] = a[k]
-  for (var k in b) out[k] = b[k]
+const compose = (f, g) => f && g ? x => f(g(x)) : f || g; 
 
-  return out
-}
-
-const patchProperty = function(node, key, oldValue, newValue, listener, isSvg, decorator) {
+const patchProperty = function(node, key, oldValue, newValue, listener, isSvg, mapf) {
   if (key === "key") {
   } else if (key === "style") {
     for (var k in merge(oldValue, newValue)) {
@@ -29,18 +24,16 @@ const patchProperty = function(node, key, oldValue, newValue, listener, isSvg, d
         node[key][k] = oldValue
       }
     }
-  } else if (key[0] === "o" && key[1] === "n") {
+  } else if (typeof newValue === "function") {
     if (
-      !((node.actions || (node.actions = {}))[
-        (key = key.slice(2).toLowerCase())
-      ] = decorator ? decorator(newValue) : newValue)
+      !((node.actions || (node.actions = {}))[key] = mapf ? mapf(newValue) : newValue)
     ) {
       node.removeEventListener(key, listener)
     } else if (!oldValue) {
       node.addEventListener(key, listener)
     }
   } else if (!isSvg && key !== "list" && key in node) {
-    node[key] = newValue == null ? "" : newValue
+    node[key] = newValue
   } else if (
     newValue == null ||
     newValue === false ||
@@ -52,7 +45,7 @@ const patchProperty = function(node, key, oldValue, newValue, listener, isSvg, d
   }
 }
 
-const createNode = function(vnode, listener, isSvg, decorator) {
+const createNode = function(vnode, listener, isSvg, mapf) {
   var node =
     vnode.type === TEXT_NODE
       ? document.createTextNode(vnode.name)
@@ -61,20 +54,19 @@ const createNode = function(vnode, listener, isSvg, decorator) {
       : document.createElement(vnode.name)
   var props = vnode.props
 
-  const dec2 = vnode.decorator;
-  const decorator2 = !decorator ? dec2 : dec2 ? (x => ev => decorator(dec2(x(ev)))) : decorator; 
+  mapf = mapf && compose(mapf, vnode.mapf); 
 
-  for (var k in props) {
-    patchProperty(node, k, null, props[k], listener, isSvg, decorator2)
+  for (let k in props) {
+    patchProperty(node, k, null, props[k], listener, isSvg, mapf)
   }
 
-  for (var i = 0, len = vnode.children.length; i < len; i++) {
+  for (let i = 0, len = vnode.children.length; i < len; i++) {
     node.appendChild(
       createNode(
         (vnode.children[i] = getVNode(vnode.children[i])),
         listener,
         isSvg,
-        decorator2
+        mapf
       )
     )
   }
@@ -84,9 +76,7 @@ const createNode = function(vnode, listener, isSvg, decorator) {
 
 const getKey = vnode => vnode == null ? null : vnode.key;
 
-const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decorator) {
-   //decorator = newVNode.decorator || decorator;
-
+const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, mapf) {
   if (oldVNode === newVNode) {
   } else if (
     oldVNode != null &&
@@ -96,7 +86,7 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decora
     if (oldVNode.name !== newVNode.name) node.nodeValue = newVNode.name
   } else if (oldVNode == null || oldVNode.name !== newVNode.name) {
     node = parent.insertBefore(
-      createNode((newVNode = getVNode(newVNode)), listener, isSvg, decorator),
+      createNode((newVNode = getVNode(newVNode)), listener, isSvg, mapf),
       node
     )
     if (oldVNode != null) {
@@ -115,18 +105,12 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decora
     var oldVKids = oldVNode.children
     var newVKids = newVNode.children
 
-    var oldHead = 0
-    var newHead = 0
-    var oldTail = oldVKids.length - 1
-    var newTail = newVKids.length - 1
+    let oldHead = 0
+    let newHead = 0
+    let oldTail = oldVKids.length - 1
+    let newTail = newVKids.length - 1
 
-    const dec2 = newVNode.decorator;
-    const decorator2 = !decorator ?
-                   dec2 
-                : dec2 ? 
-                        (x => ev => decorator(dec(x(ev))))
-                 : decorator;
-
+    mapf = mapf && compose(mapf, newVNode.mapf);
     isSvg = isSvg || newVNode.name === "svg"
 
     for (var i in merge(oldVProps, newVProps)) {
@@ -135,7 +119,7 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decora
           ? node[i]
           : oldVProps[i]) !== newVProps[i]
       ) {
-        patchProperty(node, i, oldVProps[i], newVProps[i], listener, isSvg, decorator2)
+        patchProperty(node, i, oldVProps[i], newVProps[i], listener, isSvg, mapf)
       }
     }
 
@@ -157,7 +141,7 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decora
         )),
         listener,
         isSvg,
-        decorator2
+        mapf
       )
     }
 
@@ -179,7 +163,7 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decora
         )),
         listener,
         isSvg,
-        decorator2
+        mapf
       )
     }
 
@@ -190,7 +174,7 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decora
             (newVKids[newHead] = getVNode(newVKids[newHead++])),
             listener,
             isSvg,
-            decorator2
+            mapf
           ),
           (oldVKid = oldVKids[oldHead]) && oldVKid.node
         )
@@ -232,7 +216,7 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decora
               newVKids[newHead],
               listener,
               isSvg,
-              decorator2
+              mapf
             )
             newHead++
           }
@@ -246,7 +230,7 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decora
               newVKids[newHead],
               listener,
               isSvg,
-              decorator2
+              mapf
             )
             newKeyed[newKey] = true
             oldHead++
@@ -259,7 +243,7 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decora
                 newVKids[newHead],
                 listener,
                 isSvg,
-                decorator2
+                mapf
               )
               newKeyed[newKey] = true
             } else {
@@ -270,7 +254,7 @@ const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, decora
                 newVKids[newHead],
                 listener,
                 isSvg,
-                decorator2
+                mapf
               )
             }
           }
@@ -300,24 +284,15 @@ const propsChanged = function(a, b) {
   for (var k in b) if (a[k] !== b[k]) return true
 }
 
-const getVNode = function(newVNode, oldVNode) {
-  return newVNode.type === LAZY_NODE
+const getVNode = (newVNode, oldVNode) =>
+  newVNode.type === LAZY_NODE
     ? ((!oldVNode || propsChanged(oldVNode.lazy, newVNode.lazy)) &&
         ((oldVNode = newVNode.lazy.view(newVNode.lazy)).lazy = newVNode.lazy),
       oldVNode)
     : newVNode
-}
 
-const createVNode = function(name, props, children, node, key, type) {
-  return {
-    name: name,
-    props: props,
-    children: children,
-    node: node,
-    type: type,
-    key: key
-  }
-}
+const createVNode = (name, props, children, node, key, type) =>
+  ({name, props, children, node, type, key})
 
 const createTextVNode = (value, node) =>
     createVNode(value, EMPTY_OBJ, EMPTY_ARR, node, null, TEXT_NODE);
@@ -332,7 +307,7 @@ const recycleNode = node =>
         node,
         null,
         RECYCLED_NODE
-      )      
+      )
 
 const shouldRestart = (a, b) => {
         if (a !== b) {
@@ -371,73 +346,63 @@ const shouldRestart = (a, b) => {
 
 
 const appAux = props => () => {
-  let state = {};
-  let lock = false
-  let subs = [];
+    let state = {};
+    let lock = false
+    let subs = [];
 
-  const listener = function(event) {
-    dispatchEvent(event)(this.actions[event.type])();
-  }
+    const listener = function(event) {
+        dispatchEvent(event)(this.actions[event.type])();
+    }
  
-  const getState = () => state;
+    const getState = () => state;
 
     const setState = newState => () => {
         if (state !== newState) {
-          state = newState
-          subs = patchSubs(subs, subscriptions(state).map(({fn, data_}) => [fn, data_]), dispatch)
-          if (view && !lock) defer(render, (lock = true))
+            state = newState
+            subs = patchSubs(subs, subscriptions(state), dispatch)
+            if (view && !lock) defer(render, (lock = true))
         }
         return state
-      }
+    }
 
-  const {state: istate, view, subscriptions, dispatch, dispatchEvent, init, node: rootnode} = props(getState)(setState);
+    const {state: istate, view, subscriptions, dispatch, dispatchEvent, init, node: rootnode} = props(getState)(setState);
 
-  let node = document.getElementById(rootnode);
-  if (!node)
-    return;
-   let vdom = node && recycleNode(node);
+    let node = document.getElementById(rootnode);
+    if (!node)
+        return;
+    let vdom = node && recycleNode(node);
 
-  const render = () => {
-    const {title, body } = view(state); 
-    document.title = title;
-    lock = false
-    node = patch(
-      node.parentNode,
-      node,
-      vdom,
-      vdom = body,
-      listener
-    )
-  }
-  setState(istate)();
-  init();
+    const render = () => {
+        const {title, body} = view(state); 
+        document.title = title;
+        lock = false
+        node = patch(
+            node.parentNode,
+            node,
+            vdom,
+            vdom = body,
+            listener
+        )
+    }
+    setState(istate)();
+    init();
 }
 
-const h = isStyle => name => ps => children => {
+const h = name => ps => children => {
     const style = {};
     const props = {style};
     const vdom = { name, children: children.filter(x => x), props, node: null };
     const n = ps.length;
     for (let i = 0; i < n; i++) {
-        const obj = ps[i];
-        const value0 = obj.value0;
-        const value1 = obj.value1;
-        if (value1 === undefined)
-            vdom.key = value0;
-        else if (typeof value1 === 'function')
-            vdom.props["on"+value0] = value1;
-        else if (typeof value1 === 'boolean') {
-            if(!value1)
-                {}
-            else if (props.class)  
-                props.class += ' ' + value0;
-            else
-                props.class = value0;
-        }
-        else if (isStyle(obj))
+        const [t, k, v] = ps[i];
+        if (t === 0)
+            vdom.key = k;
+        else if (t == 1)
+            props[k] = v;
+        else if (t === 2)
+            props.class = (props.class ? props.class + " " : "") + k;
+        else if (t === 3)
             style[value0] = value1;
-        else
-            props[value0] = value1;
     }
     return vdom;
 }
@@ -450,9 +415,15 @@ const lazy = st => view => ({
     }
 });
 
-exports.mapView = decorator => vnode => Object.assign({}, vnode, {decorator});
-exports.emptyNode = null;
-exports.appAux = appAux;
-exports.hAux = h;
-exports.text = createTextVNode;
-exports.lazy = lazy;
+exports.mapView = mapf => vnode => Object.assign({}, vnode, {mapf})
+exports.emptyNode = null
+exports.appAux = appAux
+exports.key = key => [0, key]
+exports.attr = k => v => [1, k, v]
+exports.class_ = cls => [2, cls]
+exports.noProp = [-1]
+exports.unsafeOnWithEffect = k => v => [1, k, v]
+exports.style = k => v => [3, k, v]
+exports.h = h
+exports.text = createTextVNode
+exports.lazy = lazy

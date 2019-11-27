@@ -1,6 +1,6 @@
 module Pha (h, text, emptyNode, key, attr, style, on_, class_, class', lazy,
     whenN, (<?>), maybeN, maybeN', (<??>), app, sandbox, unsafeOnWithEffect,
-    VDom, Prop, Sub, Event, Document, InterpretEffs) where
+    VDom, Prop, Sub, Event, Document, InterpretEffs, EventHandler) where
 
 import Prelude
 import Effect (Effect)
@@ -8,7 +8,6 @@ import Pha.Action (Action, setState, GetState(..), SetState(..))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Tuple (Tuple(..))
 import Run (VariantF, runCont, onMatch)
-import Unsafe.Coerce (unsafeCoerce)
 
 foreign import data VDom :: Type -> Type
 foreign import data Event :: Type
@@ -22,49 +21,32 @@ type EventHandler msg = Event -> {effect :: Effect Unit, msg :: Maybe msg}
 
 foreign import data Sub :: Type -> Type
 
-data Prop msg =
-    Key String
-  | Attr String String
-  | Class String Boolean
-  | Style String String
-  | On String (EventHandler msg)
-
+foreign import data Prop :: Type -> Type
   
 -- | add a key to the vnode
-key :: ∀msg. String -> Prop msg
-key = Key
+foreign import key :: ∀msg. String -> Prop msg
   
 -- | add or change an attribute
-attr :: ∀msg. String -> String -> Prop msg
-attr = Attr
+foreign import attr :: ∀msg. String -> String -> Prop msg
   
 -- | add a class name to the vnode
-class_ :: ∀msg. String -> Prop msg
-class_ name = Class name true
-  
+foreign import class_ :: ∀msg. String -> Prop msg
+
+foreign import noProp :: ∀msg. Prop msg
 -- | add a class name to the vnode if the second argument is true
 class' :: ∀msg. String -> Boolean -> Prop msg
-class' = Class
+class' c b = if b then class_ c else noProp
+
+foreign import unsafeOnWithEffect :: ∀msg. String -> EventHandler msg -> Prop msg
 
 on_ :: ∀msg. String -> (Event -> Maybe msg) -> Prop msg 
-on_ n handler = On n \ev -> {effect: pure unit, msg: handler ev}
-
-unsafeOnWithEffect :: ∀msg. String -> EventHandler msg -> Prop msg
-unsafeOnWithEffect = On
+on_ n handler = unsafeOnWithEffect n \ev -> {effect: pure unit, msg: handler ev}
 
 -- | add or change a style attribute
-style :: ∀msg. String -> String -> Prop msg
-style = Style
-  
-isStyle :: ∀msg. Prop msg -> Boolean
-isStyle (Style _ _) = true
-isStyle _ = false
+foreign import style :: ∀msg. String -> String -> Prop msg
 
-foreign import hAux :: ∀msg. (Prop msg -> Boolean) -> String -> Array (Prop msg) -> Array (VDom msg) -> VDom msg
-
--- | create a virtual node with the given tag name, the given array of attributes and the given array of children
-h :: ∀msg. String -> Array (Prop msg) -> Array (VDom msg) -> VDom msg
-h = hAux isStyle
+-- | h tag attributes children
+foreign import h :: ∀msg. String -> Array (Prop msg) -> Array (VDom msg) -> VDom msg
 
 -- | create a text virtual node
 foreign import text :: ∀msg. String -> VDom msg

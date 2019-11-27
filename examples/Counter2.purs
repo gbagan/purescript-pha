@@ -9,7 +9,7 @@ import Run (match)
 import Pha (Document, Event, app, text, class_, class')
 import Pha.Action (Action, setState)
 import Pha.Effects.Delay (DELAY, delay, interpretDelay)
-import Pha.Event (key) as E
+import Pha.Subs as Subs
 import Pha.Elements (div, button, span)
 import Pha.Events (onclick)
 
@@ -58,10 +58,9 @@ view {counter} = {
         ]
 }
 
-onKeydown :: forall effs. Event -> Action State effs
-onKeydown ev = case E.key (ev) of
-    Just " " -> increment
-    _ -> pure unit
+keyDownHandler :: String -> Maybe Msg
+keyDownHandler " " = Just Increment
+keyDownHandler _ = Nothing
 
 main :: Effect Unit
 main = app {
@@ -69,7 +68,7 @@ main = app {
     view,            -- a mapping of the state to virtual dom
     update,
     node: "root",    -- the id of the root node of the app
-    events: [Tuple "keydown" onKeydown],
+    subscriptions: const [Subs.onkeydown keyDownHandler],
     interpret: match {
         delay: interpretDelay
     }

@@ -1,5 +1,6 @@
 module Pha (h, text, emptyNode, key, attr, style, on_, class_, class', lazy,
-    whenN, (<?>), maybeN, maybeN', (<??>), app, sandbox, unsafeOnWithEffect, Event, Prop, VDom, Document, InterpretEffs) where
+    whenN, (<?>), maybeN, maybeN', (<??>), app, sandbox, unsafeOnWithEffect,
+    VDom, Prop, Sub, Event, Document, InterpretEffs) where
 
 import Prelude
 import Effect (Effect)
@@ -7,6 +8,7 @@ import Pha.Action (Action, setState, GetState(..), SetState(..))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Tuple (Tuple(..))
 import Run (VariantF, runCont, onMatch)
+import Unsafe.Coerce (unsafeCoerce)
 
 foreign import data VDom :: Type -> Type
 foreign import data Event :: Type
@@ -17,6 +19,8 @@ type Document msg = {
 }
 
 type EventHandler msg = Event -> {effect :: Effect Unit, msg :: Maybe msg}
+
+foreign import data Sub :: Type -> Type
 
 data Prop msg =
     Key String
@@ -109,8 +113,9 @@ foreign import appAux :: ∀msg state. (Effect state -> (state -> Effect Unit) -
     state :: state,
     view :: state -> Document msg,
     node :: String,
-    dispatch :: Event -> (EventHandler msg) -> Effect Unit,
-    events :: Array (Tuple String (Event -> Effect Unit)),
+    dispatch :: msg -> Effect Unit,
+    dispatchEvent :: Event -> (EventHandler msg) -> Effect Unit,
+    subscriptions :: state -> Array (Sub msg),
     init :: Effect Unit
 }) -> Effect Unit
 
@@ -120,12 +125,12 @@ app :: ∀msg state effs. {
     view :: state -> Document msg,
     update :: msg -> Action state effs,
     node :: String,
-    events :: Array (Tuple String (Event -> Action state effs)),
+    subscriptions :: state -> Array (Sub msg),
     interpret :: InterpretEffs effs
 } -> Effect Unit
-app {init: Tuple state init, view, update, node, events, interpret} = appAux fn where
+app {init: Tuple state init, view, update, node, subscriptions, interpret} = appAux fn where
     fn getS setS =
-        {state, view, node, init: init2, events: events2, dispatch} where
+        {state, view, node, init: init2, subscriptions, dispatch, dispatchEvent} where
         go = onMatch {
             getState: \(GetState cont) -> getS >>= cont,
             setState: \(SetState f cont) -> (getS >>= (f >>> setS)) *> cont
@@ -133,16 +138,18 @@ app {init: Tuple state init, view, update, node, events, interpret} = appAux fn 
         runAction :: Action state effs -> Effect Unit 
         runAction = runCont go (\_ -> pure unit)
 
-        dispatch :: Event -> (EventHandler msg) -> Effect Unit
-        dispatch = \ev handler -> do
+        dispatch :: msg -> Effect Unit
+        dispatch = runAction <<< update
+
+        dispatchEvent :: Event -> (EventHandler msg) -> Effect Unit
+        dispatchEvent = \ev handler -> do
             let {effect, msg} = handler ev
             effect
             case msg of
                 Nothing -> pure unit
-                Just m -> runAction (update m)
+                Just m -> dispatch m
         
-        init2 = runAction init
-        events2 = events <#> \(Tuple name handler) -> Tuple name \ev -> runAction (handler ev)      
+        init2 = runAction init 
 
 sandbox :: ∀msg state. {
     init :: state,
@@ -152,13 +159,13 @@ sandbox :: ∀msg state. {
 } -> Effect Unit
 
 sandbox {init, view, update, node} =
-    app {
-        init: Tuple init (pure unit),
-        view: \st -> {title: "app", body: view st},
-        update: \msg -> setState (update msg),
-        node,
-        events: [],
-        interpret: \_ -> pure unit
-    }
+    app 
+        {   init: Tuple init (pure unit)
+        ,   view: \st -> {title: "app", body: view st}
+        ,   update: \msg -> setState (update msg)
+        ,   node
+        ,   subscriptions: const []
+        ,   interpret: \_ -> pure unit
+        }
 
 type InterpretEffs effs = VariantF effs (Effect Unit) -> Effect Unit

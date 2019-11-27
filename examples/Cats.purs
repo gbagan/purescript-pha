@@ -66,7 +66,7 @@ main = app {
     view,
     update,
     node: "root",
-    events: [],
+    subscriptions: const [],
     interpret: match {
         http: interpretHttp
     }

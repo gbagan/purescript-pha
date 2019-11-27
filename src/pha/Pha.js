@@ -332,28 +332,65 @@ const recycleNode = node =>
         node,
         null,
         RECYCLED_NODE
-      )
+      )      
+
+const shouldRestart = (a, b) => {
+        if (a !== b) {
+          for (var k in merge(a, b)) {
+            if (a[k] !== b[k] && !isSameAction(a[k], b[k])) return true
+            b[k] = a[k]
+          }
+        }
+      }
+      
+    const patchSubs = (oldSubs, newSubs, dispatch) => {
+        for (
+          var i = 0, oldSub, newSub, subs = [];
+          i < oldSubs.length || i < newSubs.length;
+          i++
+        ) {
+          oldSub = oldSubs[i]
+          newSub = newSubs[i]
+          subs.push(
+            newSub
+              ? !oldSub ||
+                newSub.fn !== oldSub.fn ||
+                shouldRestart(newSub[0], oldSub[1])
+                ? [
+                    newSub[0],
+                    newSub[1],
+                    newSub[0](dispatch)(newSub[1])(),
+                    oldSub && oldSub[2]()
+                  ]
+                : oldSub
+              : oldSub && oldSub[2]()
+          )
+        }
+        return subs
+      }
+
 
 const appAux = props => () => {
   let state = {};
   let lock = false
+  let subs = [];
 
   const listener = function(event) {
-    dispatch(event)(this.actions[event.type])();
+    dispatchEvent(event)(this.actions[event.type])();
   }
  
   const getState = () => state;
 
-  const setState = newState => () => {
-    if (state !== newState) {
-      state = newState;
-      if (!lock) defer(render, (lock = true))
-    }
+    const setState = newState => () => {
+        if (state !== newState) {
+          state = newState
+          subs = patchSubs(subs, subscriptions(state).map(({fn, data_}) => [fn, data_]), dispatch)
+          if (view && !lock) defer(render, (lock = true))
+        }
+        return state
+      }
 
-    return state
-  }
-
-  const {state: istate, view, events, dispatch, init, node: rootnode} = props(getState)(setState);
+  const {state: istate, view, subscriptions, dispatch, dispatchEvent, init, node: rootnode} = props(getState)(setState);
 
   let node = document.getElementById(rootnode);
   if (!node)
@@ -373,9 +410,6 @@ const appAux = props => () => {
     )
   }
   setState(istate)();
-  for (let i = 0; i < events.length; i++) {
-     addEventListener(events[i].value0, ev => events[i].value1(ev)());
-  }
   init();
 }
 

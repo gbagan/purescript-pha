@@ -1,4 +1,4 @@
-module Pha.Events.Decoder (Decoder, always, currentTarget, currentTargetValue, currentTargetChecked, shiftKey, getBoundingClientRect, module F) where
+module Pha.Events.Decoder (Decoder, always, currentTarget, currentTargetValue, currentTargetChecked, shiftKey, key, getBoundingClientRect, module F) where
 import Prelude
 import Foreign (readBoolean, readInt, readString, readNumber) as F
 import Foreign (Foreign, F)
@@ -17,6 +17,9 @@ currentTargetChecked = currentTarget >=> F.readProp "checked" >=> F.readBoolean
 
 shiftKey :: Decoder Boolean
 shiftKey = F.readProp "shiftKey" >=> F.readBoolean
+
+key :: Decoder String
+key = F.readProp "key" >=> F.readString
 
 always ∷ ∀msg a. msg → a → F msg
 always = const <<< pure

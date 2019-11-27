@@ -2045,28 +2045,66 @@ var PS = {};
           node,
           null,
           RECYCLED_NODE
-        )
+        )      
+
+  const shouldRestart = (a, b) => {
+          if (a !== b) {
+            for (var k in merge(a, b)) {
+              if (a[k] !== b[k] && !isSameAction(a[k], b[k])) return true
+              b[k] = a[k]
+            }
+          }
+        }
+      
+      const patchSubs = (oldSubs, newSubs, dispatch) => {
+          for (var
+                i = 0, oldSub, newSub, subs = [];
+            i < oldSubs.length || i < newSubs.length;
+            i++
+          ) {
+            oldSub = oldSubs[i]
+            newSub = newSubs[i]
+            subs.push(
+              newSub
+                ? !oldSub ||
+                  newSub.fn !== oldSub.fn ||
+                  shouldRestart(newSub[0], oldSub[1])
+                  ? [
+                      newSub.fn,
+                      newSub.data_,
+                      newSub[0](dispatch)(newSub[1])(),
+                      oldSub && oldSub[2]()
+                    ]
+                  : oldSub
+                : oldSub && oldSub[2]()
+            )
+          }
+          return subs
+        }
+
 
   const appAux = props => () => {
     let state = {};
     let lock = false
 
     const listener = function(event) {
-      dispatch(event)(this.actions[event.type])();
+      dispatchEvent(event)(this.actions[event.type])();
     }
  
     const getState = () => state;
 
-    const setState = newState => () => {
-      if (state !== newState) {
-        state = newState;
-        if (!lock) defer(render, (lock = true))
-      }
+      const setState = newState => () => {
+          if (state !== newState) {
+            state = newState
+            if (subscriptions) {
+              subs = patchSubs(subs, subscriptions(state).map(({fn, data_}) => [fn, data_]), dispatch)
+            }
+            if (view && !lock) defer(render, (lock = true))
+          }
+          return state
+        }
 
-      return state
-    }
-
-    const {state: istate, view, events, dispatch, init, node: rootnode} = props(getState)(setState);
+    const {state: istate, view, events, dispatch, dispatchEvent, init, node: rootnode} = props(getState)(setState);
 
     let node = document.getElementById(rootnode);
     if (!node)
@@ -2200,10 +2238,8 @@ var PS = {};
   var Control_Applicative = $PS["Control.Applicative"];
   var Control_Apply = $PS["Control.Apply"];
   var Control_Bind = $PS["Control.Bind"];
-  var Data_Functor = $PS["Data.Functor"];
   var Data_Functor_Variant = $PS["Data.Functor.Variant"];
   var Data_Maybe = $PS["Data.Maybe"];
-  var Data_Tuple = $PS["Data.Tuple"];
   var Data_Unit = $PS["Data.Unit"];
   var Effect = $PS["Effect"];
   var Run = $PS["Run"];
@@ -2271,8 +2307,8 @@ var PS = {};
                   },
                   setState: function (v1) {
                       return Control_Apply.applySecond(Effect.applyEffect)(function __do() {
-                          var $50 = getS();
-                          return setS(v1.value0($50))();
+                          var $46 = getS();
+                          return setS(v1.value0($46))();
                       })(v1.value1);
                   }
               })(v.interpret);
@@ -2280,12 +2316,10 @@ var PS = {};
                   return Control_Applicative.pure(Effect.applicativeEffect)(Data_Unit.unit);
               });
               var init2 = runAction(v.init.value1);
-              var events2 = Data_Functor.mapFlipped(Data_Functor.functorArray)(v.events)(function (v1) {
-                  return new Data_Tuple.Tuple(v1.value0, function (ev) {
-                      return runAction(v1.value1(ev));
-                  });
-              });
-              var dispatch = function (ev) {
+              var dispatch = function ($47) {
+                  return runAction(v.update($47));
+              };
+              var dispatchEvent = function (ev) {
                   return function (handler) {
                       var v1 = handler(ev);
                       return function __do() {
@@ -2294,9 +2328,9 @@ var PS = {};
                               return Data_Unit.unit;
                           };
                           if (v1.msg instanceof Data_Maybe.Just) {
-                              return runAction(v.update(v1.msg.value0))();
+                              return dispatch(v1.msg.value0)();
                           };
-                          throw new Error("Failed pattern match at Pha (line 140, column 13 - line 142, column 47): " + [ v1.msg.constructor.name ]);
+                          throw new Error("Failed pattern match at Pha (line 148, column 13 - line 150, column 37): " + [ v1.msg.constructor.name ]);
                       };
                   };
               };
@@ -2305,8 +2339,9 @@ var PS = {};
                   view: v.view,
                   node: v.node,
                   init: init2,
-                  events: events2,
-                  dispatch: dispatch
+                  subscriptions: v.subscriptions,
+                  dispatch: dispatch,
+                  dispatchEvent: dispatchEvent
               };
           };
       };
@@ -2804,7 +2839,7 @@ var PS = {};
       view: view,
       update: update,
       node: "root",
-      events: [  ],
+      subscriptions: [  ],
       interpret: Data_Functor_Variant.match()()()({
           rng: Pha_Effects_Random.interpretRng
       })

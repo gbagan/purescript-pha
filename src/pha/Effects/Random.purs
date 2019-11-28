@@ -1,4 +1,4 @@
-module Pha.Effects.Random (RNG, randomNumber, randomInt, randomBool, shuffle, randomPick , interpretRng, Rng(..)) where
+module Pha.Effects.Random (RNG, randomNumber, randomInt, randomBool, shuffle, sample, interpretRng, Rng(..)) where
 import Prelude
 import Effect (Effect)
 import Data.Maybe (Maybe, fromMaybe)
@@ -31,8 +31,8 @@ shuffle array = do
     pure $ rnds # foldl (\t (Tuple x i) -> t # insertAt i x # fromMaybe []) []
 
 -- | randomly select an element from the array
-randomPick :: ∀a r. Array a -> Run (rng :: RNG | r) (Maybe a)
-randomPick t = index t <$> (randomInt $ length t)
+sample :: ∀a r. Array a -> Run (rng :: RNG | r) (Maybe a)
+sample t = index t <$> (randomInt $ length t)
 
 foreign import mathRandom :: Effect Number
 -- | default implementation for random effects

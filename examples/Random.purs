@@ -8,7 +8,7 @@ import Effect (Effect)
 import Run (match)
 import Pha (Document, app, text, class', style)
 import Pha.Action (Action, getState, setState)
-import Pha.Effects.Random (RNG, randomInt, shuffle, randomPick, interpretRng)
+import Pha.Effects.Random (RNG, randomInt, shuffle, sample, interpretRng)
 import Pha.Elements (div, button)
 import Pha.Events (onclick)
 import Pha.Util (pc)
@@ -41,7 +41,7 @@ update RollDice = do
     setState _{dice = rolled}
 
 update DrawCard = do
-    drawn <- randomPick [Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King]
+    drawn <- sample [Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King]
     case drawn of
         Just card -> setState _{card = card}
         Nothing -> pure unit

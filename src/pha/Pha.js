@@ -402,7 +402,7 @@ const h = name => ps => children => {
         else if (t === 2)
             props.class = (props.class ? props.class + " " : "") + k;
         else if (t === 3)
-            style[value0] = value1;
+            style[k] = v;
     }
     return vdom;
 }

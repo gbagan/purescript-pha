@@ -13,7 +13,8 @@ Documentation is [published on Pursuit](https://pursuit.purescript.org/packages/
 module Example.Counter where
 import Prelude hiding (div)
 import Effect (Effect)
-import Pha (VDom, sandbox, text)
+import Pha (VDom, text)
+impor Pha (sandbox, attachTo)
 import Pha.Elements (div, span, button)
 import Pha.Events (onclick)
 
@@ -36,12 +37,8 @@ view counter =
     ]
 
 main ∷ Effect Unit
-main = sandbox {
-    init,
-    update,
-    view,
-    node: "root"
-}
+main = sandbox { init, update, view}
+       # attachTo "root"
 ```
 
 ### Other examples
@@ -50,7 +47,7 @@ Counter2 (delayed action, raw events) [Code](https://github.com/gbagan/purescrip
 
 Randomness (+ animation) [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/Random.purs) |  [HTML](http://htmlpreview.github.io/?https://github.com/gbagan/purescript-pha/blob/master/examples/dist/ex-random.html)
 
-Custom effects (+ svg, FFI) [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/CustomEffect.purs) | [HTML](http://htmlpreview.github.io/?https://github.com/gbagan/purescript-pha/blob/master/examples/dist/ex-customeffect.html)
+Decoder (decoding events) [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/Decoder.purs) | [HTML](http://htmlpreview.github.io/?https://github.com/gbagan/purescript-pha/blob/master/examples/dist/ex-decoder.html)
 
 Inputs (event effects, text and checkbox inputs) [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/Inputs.purs) | [HTML](http://htmlpreview.github.io/?https://github.com/gbagan/purescript-pha/blob/master/examples/dist/ex-inputs.html)
 

@@ -3555,15 +3555,12 @@ var PS = {};
                       })(Run.send);
                       return Run.run(Run.monadRun)(handleState);
                   })();
-                  var test = function ($42) {
-                      return interpretState(v.interpret($42));
-                  };
-                  var runAction = function ($43) {
-                      return Effect_Aff.launchAff_(Run.runBaseAff(test($43)));
+                  var runAction = function ($42) {
+                      return Effect_Aff.launchAff_(Run.runBaseAff(interpretState(v.interpret($42))));
                   };
                   var init2 = runAction(v.init.value1);
-                  var dispatch = function ($44) {
-                      return runAction(v.update($44));
+                  var dispatch = function ($43) {
+                      return runAction(v.update($43));
                   };
                   var dispatchEvent = function (ev) {
                       return function (handler) {
@@ -3601,8 +3598,8 @@ var PS = {};
               view: v.view,
               update: v.update,
               subscriptions: v.subscriptions,
-              interpret: function ($45) {
-                  return interpret(v.interpret($45));
+              interpret: function ($44) {
+                  return interpret(v.interpret($44));
               }
           };
       };
@@ -3677,10 +3674,27 @@ var PS = {};
           throw new Error("Failed pattern match at Pha.Effects.Random (line 14, column 1 - line 14, column 41): " + [ m.constructor.name ]);
       };
   });
+  var _rng = Data_Symbol.SProxy.value;
+  var interpretRng = (function () {
+      var handle = function (v) {
+          if (v instanceof RngInt) {
+              return Control_Bind.bind(Run.bindRun)(Run.liftAff(Effect_Class.liftEffect(Effect_Aff.monadEffectAff)($foreign.mathRandom)))(function (v1) {
+                  return Control_Applicative.pure(Run.applicativeRun)(v.value1(Data_Int.floor(v1 * Data_Int.toNumber(v.value0))));
+              });
+          };
+          if (v instanceof RngNumber) {
+              return Run.liftAff(Data_Functor.mapFlipped(Effect_Aff.functorAff)(Effect_Class.liftEffect(Effect_Aff.monadEffectAff)($foreign.mathRandom))(v.value0));
+          };
+          throw new Error("Failed pattern match at Pha.Effects.Random (line 45, column 5 - line 45, column 35): " + [ v.constructor.name ]);
+      };
+      return Run.run(Run.monadRun)(Data_Functor_Variant.on()(new Data_Symbol.IsSymbol(function () {
+          return "rng";
+      }))(_rng)(handle)(Run.send));
+  })();
   var randomInt = function (n) {
       return Run.lift()(new Data_Symbol.IsSymbol(function () {
           return "rng";
-      }))(functorRng)(Data_Symbol.SProxy.value)(new RngInt(n, Control_Category.identity(Control_Category.categoryFn)));
+      }))(functorRng)(_rng)(new RngInt(n, Control_Category.identity(Control_Category.categoryFn)));
   };                                                                                                   
   var sample = function (t) {
       return Data_Functor.map(Run.functorRun)(Data_Array.index(t))(randomInt(Data_Array.length(t)));
@@ -3697,24 +3711,7 @@ var PS = {};
               };
           })([  ])(v));
       });
-  };                                                                                                               
-  var _rng = Data_Symbol.SProxy.value;
-  var interpretRng = (function () {
-      var handle = function (v) {
-          if (v instanceof RngInt) {
-              return Control_Bind.bind(Run.bindRun)(Run.liftAff(Effect_Class.liftEffect(Effect_Aff.monadEffectAff)($foreign.mathRandom)))(function (v1) {
-                  return Control_Applicative.pure(Run.applicativeRun)(v.value1(Data_Int.floor(v1 * Data_Int.toNumber(v.value0))));
-              });
-          };
-          if (v instanceof RngNumber) {
-              return Run.liftAff(Data_Functor.mapFlipped(Effect_Aff.functorAff)(Effect_Class.liftEffect(Effect_Aff.monadEffectAff)($foreign.mathRandom))(v.value0));
-          };
-          throw new Error("Failed pattern match at Pha.Effects.Random (line 45, column 5 - line 45, column 37): " + [ v.constructor.name ]);
-      };
-      return Run.run(Run.monadRun)(Data_Functor_Variant.on()(new Data_Symbol.IsSymbol(function () {
-          return "rng";
-      }))(_rng)(handle)(Run.send));
-  })();
+  };
   exports["randomInt"] = randomInt;
   exports["shuffle"] = shuffle;
   exports["sample"] = sample;

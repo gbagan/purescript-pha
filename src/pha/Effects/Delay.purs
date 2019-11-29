@@ -16,9 +16,9 @@ delay ∷ ∀r. Int → Run (delay ∷ DELAY | r) Unit
 delay ms = lift _delay (Delay ms unit)
 
 -- | default implementation of the effect delay
-interpretDelay :: ∀r. Run (aff :: AFF, delay :: DELAY | r) Unit -> Run (aff :: AFF | r) Unit
+interpretDelay ∷ ∀r. Run (aff ∷ AFF, delay ∷ DELAY | r) Unit → Run (aff ∷ AFF | r) Unit
 interpretDelay  = Run.run (Run.on _delay handle Run.send) where
-    handle :: Delay ~> Run (aff :: AFF | r)
+    handle ∷ Delay ~> Run (aff ∷ AFF | r)
     handle (Delay ms next) = do
         Run.liftAff $ Aff.delay (Milliseconds $ toNumber ms)
         pure next

@@ -2598,6 +2598,7 @@ var PS = {};
 })(PS);
 (function(exports) {
   const LAZY_NODE = 2
+  const TEXT_NODE = 3
 
   const h = name => ps => children => {
       const style = {};
@@ -2617,6 +2618,13 @@ var PS = {};
       }
       return vdom;
   }
+
+  const createTextVNode = text => ({
+      name: text,
+      props: {},
+      children: [],
+      type: 3
+  })
 
   const lazy = st => view => ({
       type: LAZY_NODE,
@@ -3074,9 +3082,6 @@ var PS = {};
   const createVNode = (name, props, children, node, key, type) =>
     ({name, props, children, node, type, key})
 
-  const createTextVNode = (value, node) =>
-      createVNode(value, EMPTY_OBJ, EMPTY_ARR, node, null, TEXT_NODE);
-
   const recycleNode = node =>
     node.nodeType === TEXT_NODE
       ? createTextVNode(node.nodeValue, node)
@@ -3166,8 +3171,7 @@ var PS = {};
       }
       setState(istate)();
       init();
-  }
-
+  }                             
   exports.app = app;
 })(PS["Pha.Internal"] = PS["Pha.Internal"] || {});
 (function($PS) {
@@ -3230,15 +3234,12 @@ var PS = {};
                       })(Run.send);
                       return Run.run(Run.monadRun)(handleState);
                   })();
-                  var test = function ($42) {
-                      return interpretState(v.interpret($42));
-                  };
-                  var runAction = function ($43) {
-                      return Effect_Aff.launchAff_(Run.runBaseAff(test($43)));
+                  var runAction = function ($42) {
+                      return Effect_Aff.launchAff_(Run.runBaseAff(interpretState(v.interpret($42))));
                   };
                   var init2 = runAction(v.init.value1);
-                  var dispatch = function ($44) {
-                      return runAction(v.update($44));
+                  var dispatch = function ($43) {
+                      return runAction(v.update($43));
                   };
                   var dispatchEvent = function (ev) {
                       return function (handler) {
@@ -3276,8 +3277,8 @@ var PS = {};
               view: v.view,
               update: v.update,
               subscriptions: v.subscriptions,
-              interpret: function ($45) {
-                  return interpret(v.interpret($45));
+              interpret: function ($44) {
+                  return interpret(v.interpret($44));
               }
           };
       };
@@ -3638,7 +3639,7 @@ var PS = {};
       if (v instanceof DelayedIncrement) {
           return Control_Apply.applySecond(Run.applyRun)(Pha_Effects_Delay.delay(1000))(increment);
       };
-      throw new Error("Failed pattern match at Example.Counter2 (line 34, column 1 - line 34, column 33): " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Example.Counter2 (line 33, column 1 - line 33, column 33): " + [ v.constructor.name ]);
   };
   var main = Pha_App.attachTo("root")(Pha_App.addInterpret(Pha_Effects_Delay.interpretDelay)(Pha_App.app({
       init: new Data_Tuple.Tuple(state, Control_Applicative.pure(Run.applicativeRun)(Data_Unit.unit)),

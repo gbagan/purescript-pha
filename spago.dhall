@@ -6,6 +6,7 @@ You can edit this file as you like.
 , license = "MIT"
 , dependencies =
     [ "aff"
+    , "affjax"
     , "argonaut"
     , "argonaut-core"
     , "console"

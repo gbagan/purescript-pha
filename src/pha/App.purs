@@ -37,7 +37,7 @@ newtype App msg state effs neffs = App {
 -- | } → App effs
 -- | ```
 
-addAff :: forall  a b. Run a b -> Run (aff :: AFF | a) b
+addAff ∷ forall  a b. Run a b → Run (aff ∷ AFF | a) b
 addAff = unsafeCoerce
 
 app ∷ ∀msg state effs. {
@@ -45,19 +45,19 @@ app ∷ ∀msg state effs. {
     view ∷ state → Document msg,
     update ∷ msg → Action state effs,
     subscriptions ∷ state → Array (Sub msg)
-} → App msg state effs (aff :: AFF | effs)
+} → App msg state effs (aff ∷ AFF | effs)
 app {init, view, update, subscriptions} =
     App {init, view, update, subscriptions, interpret: addAff}
 
 addInterpret ∷ ∀msg state effs effs1 effs2. Interpret state effs1 effs2 → App msg state effs effs1 → App msg state effs effs2
 addInterpret interpret (App a) = App a{interpret = a.interpret >>> interpret}
 
-attachTo :: ∀msg state effs. String -> App msg state effs (aff :: AFF) → Effect Unit
+attachTo ∷ ∀msg state effs. String → App msg state effs (aff ∷ AFF) → Effect Unit
 attachTo node (App {init: Tuple state init, view, update, subscriptions, interpret}) = Internal.app fn where
     fn getS setS =
         {state, view, node, init: init2, subscriptions, dispatch, dispatchEvent} where
 
-        interpretState ::  Action state (aff :: AFF) → Run (aff :: AFF) Unit
+        interpretState ∷  Action state (aff ∷ AFF) → Run (aff ∷ AFF) Unit
         interpretState  = Run.run handleState where
             handleState = onMatch {
                 getState: \(GetState next) → Run.liftAff $ liftEffect do
@@ -103,7 +103,7 @@ sandbox ∷ ∀msg state. {
     init ∷ state,
     view ∷ state → VDom msg,
     update ∷ msg → state → state
-} → App msg state () (aff :: AFF)
+} → App msg state () (aff ∷ AFF)
 
 sandbox {init, view, update} =
     app 
@@ -113,4 +113,4 @@ sandbox {init, view, update} =
         ,   subscriptions: const []
         }
 
-type Interpret state effs effs2 = Action state effs -> Action state effs2
+type Interpret state effs effs2 = Action state effs → Action state effs2

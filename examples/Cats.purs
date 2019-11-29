@@ -3,17 +3,15 @@ import Prelude hiding (div)
 import Data.Maybe (maybe)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import Run (match)
 import Pha (VDom,  text, style)
 import Pha.App (attachTo, Document, app, addInterpret)
 import Pha.Action (Action, setState)
-import Pha.Effects.Http (simpleRequest, HTTP, interpretHttp)
+import Pha.Effects.Http (ajax, HTTP, interpretHttp)
 import Pha.Elements (div, h2, button, img)
 import Pha.Attributes (src)
 import Pha.Events (onclick)
-import Data.Argonaut (jsonParser, toObject, toString)
-import Foreign.Object (lookup)
-import Data.Either (hush)
+import Data.Argonaut as J
+import Foreign.Object as O
 
 data State = Failure | Loading | Success String
 
@@ -29,15 +27,14 @@ state = Loading
 update ∷ Msg → Action State EFFS
 update RequestCat = do
     setState \_ → Loading
-    res ← simpleRequest "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cat"
+    res ← ajax "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cat"
     let status = maybe Failure Success $ 
                 res
-                >>= (jsonParser >>> hush)
-                >>= toObject 
-                >>= lookup "data"
-                >>= toObject
-                >>= lookup "image_url" 
-                >>= toString
+                >>= J.toObject 
+                >>= O.lookup "data"
+                >>= J.toObject
+                >>= O.lookup "image_url" 
+                >>= J.toString
     setState \_ → status
 
 view ∷ State → Document Msg
@@ -67,6 +64,5 @@ main = app {
     view,
     update,
     subscriptions: const []
- --   interpret: match {
---        http: interpretHttp  
-} # attachTo "root"
+} # addInterpret interpretHttp
+  # attachTo "root"

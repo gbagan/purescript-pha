@@ -4,8 +4,8 @@ import Data.Int (even)
 import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import Run (match)
-import Pha (Document, app, text, class_, class')
+import Pha (text, class_, class')
+import Pha.App (app, addInterpret, attachTo, Document)
 import Pha.Action (Action, setState)
 import Pha.Effects.Delay (DELAY, delay, interpretDelay)
 import Pha.Subs as Subs
@@ -13,28 +13,28 @@ import Pha.Elements (div, button, span)
 import Pha.Events (onclick)
 
 type State = {
-    counter :: Int
+    counter ∷ Int
 }
 
 -- effects used in this app
-type EFFS = (delay :: DELAY)
+type EFFS = (delay ∷ DELAY)
 
 -- initial state
-state :: State
+state ∷ State
 state = {
     counter: 0
 }
 
 data Msg = Increment | DelayedIncrement
 
-increment :: forall effs. Action State effs
-increment = setState \{counter} -> {counter: counter + 1}
+increment ∷ forall effs. Action State effs
+increment = setState \{counter} → {counter: counter + 1}
 
-update :: Msg -> Action State EFFS
+update ∷ Msg → Action State EFFS
 update Increment = increment
 update DelayedIncrement = delay 1000 *> increment
 
-view :: State -> Document Msg
+view ∷ State → Document Msg
 view {counter} = {
     title: "Counter example",
     body:
@@ -57,18 +57,15 @@ view {counter} = {
         ]
 }
 
-keyDownHandler :: String -> Maybe Msg
+keyDownHandler ∷ String → Maybe Msg
 keyDownHandler " " = Just Increment
 keyDownHandler _ = Nothing
 
-main :: Effect Unit
+main ∷ Effect Unit
 main = app {
-    init: state /\ pure unit, -- initial state
-    view,            -- a mapping of the state to virtual dom
+    init: state /\ pure unit,
+    view,
     update,
-    node: "root",    -- the id of the root node of the app
-    subscriptions: const [Subs.onKeyDown keyDownHandler],
-    interpret: match {
-        delay: interpretDelay
-    }
-}
+    subscriptions: const [Subs.onKeyDown keyDownHandler]
+} # addInterpret interpretDelay
+  # attachTo "root"

@@ -5,8 +5,8 @@ import Data.Maybe (Maybe(..))
 import Data.Array ((..), mapWithIndex)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import Run (match)
-import Pha (Document, app, text, class', style)
+import Pha (text, class', style)
+import Pha.App (Document, app, addInterpret, attachTo)
 import Pha.Action (Action, getState, setState)
 import Pha.Effects.Random (RNG, randomInt, shuffle, sample, interpretRng)
 import Pha.Elements (div, button)
@@ -16,42 +16,42 @@ import Pha.Util (pc)
 data Card = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King
 
 type State = {
-    dice :: Int,
-    puzzle :: Array Int,
-    card :: Card
+    dice ∷ Int,
+    puzzle ∷ Array Int,
+    card ∷ Card
 }
 
 data Msg = RollDice | DrawCard | ShufflePuzzle
 
 -- effects used in this app
-type EFFS = (rng :: RNG)
+type EFFS = (rng ∷ RNG)
 
 -- initial state
-state :: State
+state ∷ State
 state = {
     dice: 1,
     puzzle: 0 .. 15,
     card: Ace
 }
 
-update :: Msg -> Action State EFFS
+update ∷ Msg → Action State EFFS
 
 update RollDice = do
-    rolled <- randomInt 6 <#> (_ + 1)
+    rolled ← randomInt 6 <#> (_ + 1)
     setState _{dice = rolled}
 
 update DrawCard = do
-    drawn <- sample [Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King]
+    drawn ← sample [Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King]
     case drawn of
-        Just card -> setState _{card = card}
-        Nothing -> pure unit
+        Just card → setState _{card = card}
+        Nothing → pure unit
 
 update ShufflePuzzle = do
-    {puzzle} <- getState
-    shuffled <- shuffle puzzle
+    {puzzle} ← getState
+    shuffled ← shuffle puzzle
     setState _{puzzle = shuffled}
 
-viewCard :: Card -> String
+viewCard ∷ Card → String
 viewCard Ace   = "🂡"
 viewCard Two   = "🂢"
 viewCard Three = "🂣"
@@ -66,7 +66,7 @@ viewCard Jack  = "🂫"
 viewCard Queen = "🂭"
 viewCard King  = "🂮"
 
-view :: State -> Document Msg
+view ∷ State → Document Msg
 view {dice, puzzle, card} = {
     title: "Randomness example",
     body:
@@ -78,7 +78,7 @@ view {dice, puzzle, card} = {
             button [onclick DrawCard] [ text "Draw" ],
 
             div [class' "puzzle" true] (
-                puzzle # mapWithIndex \i j ->
+                puzzle # mapWithIndex \i j →
                     div [
                         class' "puzzle-item" true,
                         style "left" $ pc (0.25 * toNumber (j / 4)),
@@ -89,14 +89,11 @@ view {dice, puzzle, card} = {
         ]
 }
 
-main :: Effect Unit
+main ∷ Effect Unit
 main = app {
     init: state /\ update RollDice,
     view,
     update,
-    node: "root",
-    subscriptions: const [],
-    interpret: match {
-        rng: interpretRng
-    }
-}
+    subscriptions: const []
+} # addInterpret interpretRng
+  # attachTo "root"

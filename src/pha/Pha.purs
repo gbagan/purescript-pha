@@ -1,72 +1,67 @@
 module Pha (VDom, Prop, Sub, Event, h, text, emptyNode, key, attr, style, on_, class_, class', lazy,
-    when, (<&&>), maybeN, maybe, (<??>), app, sandbox, unsafeOnWithEffect,
-     Document, InterpretEffs, EventHandler) where
+    when, (<&&>), maybeN, maybe, (<??>), unsafeOnWithEffect, module A,
+      EventHandler) where
 
-import Prelude
+import Prelude hiding (when)
 import Effect (Effect)
-import Pha.Action (Action, setState, GetState(..), SetState(..))
+import Pha.Action (Action) as A
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Tuple (Tuple(..))
-import Run (VariantF, runCont, onMatch)
 
-foreign import data VDom :: Type -> Type
-foreign import data Event :: Type
+foreign import data VDom ∷ Type → Type
+foreign import data Event ∷ Type
 
-type Document msg = {
-    title :: String,
-    body :: VDom msg
-}
 
-type EventHandler msg = Event -> {effect :: Effect Unit, msg :: Maybe msg}
+type EventHandler msg = Event → {effect ∷ Effect Unit, msg ∷ Maybe msg}
 
-foreign import data Sub :: Type -> Type
+foreign import data Sub ∷ Type → Type
 
-foreign import data Prop :: Type -> Type
+foreign import data Prop ∷ Type → Type
   
 -- | add a key to the vnode
-foreign import key :: ∀msg. String -> Prop msg
+foreign import key ∷ ∀msg. String → Prop msg
   
 -- | add or change an attribute
-foreign import attr :: ∀msg. String -> String -> Prop msg
+foreign import attr ∷ ∀msg. String → String → Prop msg
   
 -- | add a class name to the vnode
-foreign import class_ :: ∀msg. String -> Prop msg
+foreign import class_ ∷ ∀msg. String → Prop msg
 
-foreign import noProp :: ∀msg. Prop msg
+foreign import noProp ∷ ∀msg. Prop msg
 -- | add a class name to the vnode if the second argument is true
-class' :: ∀msg. String -> Boolean -> Prop msg
+class' ∷ ∀msg. String → Boolean → Prop msg
 class' c b = if b then class_ c else noProp
 
-foreign import unsafeOnWithEffect :: ∀msg. String -> EventHandler msg -> Prop msg
+foreign import unsafeOnWithEffect ∷ ∀msg. String → EventHandler msg → Prop msg
 
-on_ :: ∀msg. String -> (Event -> Maybe msg) -> Prop msg 
-on_ n handler = unsafeOnWithEffect n \ev -> {effect: pure unit, msg: handler ev}
+on_ ∷ ∀msg. String → (Event → Maybe msg) → Prop msg 
+on_ n handler = unsafeOnWithEffect n \ev → {effect: pure unit, msg: handler ev}
 
 -- | add or change a style attribute
-foreign import style :: ∀msg. String -> String -> Prop msg
+foreign import style ∷ ∀msg. String → String → Prop msg
 
 -- | h tag attributes children
-foreign import h :: ∀msg. String -> Array (Prop msg) -> Array (VDom msg) -> VDom msg
+foreign import h ∷ ∀msg. String → Array (Prop msg) → Array (VDom msg) → VDom msg
 
 -- | create a text virtual node
-foreign import text :: ∀msg. String -> VDom msg
+foreign import text ∷ ∀msg. String → VDom msg
 
 -- | represent an empty virtual node
 -- | 
 -- | does not generate HTML content. Only used for commodity
-foreign import emptyNode :: ∀msg. VDom msg
+foreign import emptyNode ∷ ∀msg. VDom msg
 
 -- | lazily generate a virtual dom
 -- |
 -- | i.e. generate only if the first argument has changed.
 -- | otherwise, return the previous generated virtual dom
-foreign import lazy :: ∀a msg. a -> (a -> VDom msg) -> VDom msg
+foreign import lazy ∷ ∀a msg. a → (a → VDom msg) → VDom msg
 
 -- | ```purescript
 -- | when true = vdom unit
 -- | when false = emptyNode
 -- | ```
-when :: ∀msg. Boolean -> (Unit -> VDom msg) -> VDom msg
+when ∷ ∀msg. Boolean → (Unit → VDom msg) → VDom msg
 when cond vdom = if cond then vdom unit else emptyNode
 
 infix 1 when as <&&>
@@ -76,96 +71,16 @@ infix 1 when as <&&>
 -- | maybeN (Just vdom) = vdom
 -- | maybeN Nothing = emptyNode
 -- | ```
-maybeN :: ∀msg. Maybe (VDom msg) -> VDom msg
+maybeN ∷ ∀msg. Maybe (VDom msg) → VDom msg
 maybeN = fromMaybe emptyNode
 
-maybe :: ∀a msg. Maybe a -> (a -> VDom msg) -> VDom msg
+maybe ∷ ∀a msg. Maybe a → (a → VDom msg) → VDom msg
 maybe (Just a) f = f a
 maybe Nothing _ = emptyNode
 
 infix 1 maybe as <??>
     
-foreign import mapView :: ∀a b. (EventHandler a -> EventHandler b) -> VDom a -> VDom b
-instance functorVDom :: Functor VDom where
+foreign import mapView ∷ ∀a b. (EventHandler a → EventHandler b) → VDom a → VDom b
+instance functorVDom ∷ Functor VDom where
     map fn = mapView mapH where
         mapH handler ev = let {effect, msg} = handler ev in {effect, msg: map fn msg}
-
-foreign import appAux :: ∀msg state. (Effect state -> (state -> Effect Unit) -> {
-    state :: state,
-    view :: state -> Document msg,
-    node :: String,
-    dispatch :: msg -> Effect Unit,
-    dispatchEvent :: Event -> (EventHandler msg) -> Effect Unit,
-    subscriptions :: state -> Array (Sub msg),
-    init :: Effect Unit
-}) -> Effect Unit
-
--- | ```purescript
--- | app :: ∀msg state effs. {
--- |     init :: Tuple state (Action state effs),
--- |     view :: state -> Document msg,
--- |     update :: msg -> Action state effs,
--- |     subscriptions :: state -> Array (Sub msg),
--- |     interpret :: InterpretEffs effs,
--- |     node :: String
--- | } -> Effect Unit
--- | ```
-
-app :: ∀msg state effs. {
-    init :: Tuple state (Action state effs),
-    view :: state -> Document msg,
-    update :: msg -> Action state effs,
-    node :: String,
-    subscriptions :: state -> Array (Sub msg),
-    interpret :: InterpretEffs effs
-} -> Effect Unit
-app {init: Tuple state init, view, update, node, subscriptions, interpret} = appAux fn where
-    fn getS setS =
-        {state, view, node, init: init2, subscriptions, dispatch, dispatchEvent} where
-        go = onMatch {
-            getState: \(GetState cont) -> getS >>= cont,
-            setState: \(SetState f cont) -> (getS >>= (f >>> setS)) *> cont
-        } interpret
-        runAction :: Action state effs -> Effect Unit 
-        runAction = runCont go (\_ -> pure unit)
-
-        dispatch :: msg -> Effect Unit
-        dispatch = runAction <<< update
-
-        dispatchEvent :: Event -> (EventHandler msg) -> Effect Unit
-        dispatchEvent = \ev handler -> do
-            let {effect, msg} = handler ev
-            effect
-            case msg of
-                Nothing -> pure unit
-                Just m -> dispatch m
-        
-        init2 = runAction init 
-
--- | ```purescript
--- | sandbox :: ∀msg state effs. {
--- |     init :: state,
--- |     view :: state -> VDom msg,
--- |     update :: msg -> state -> state,
--- |     node :: String
--- | } -> Effect Unit
--- | ```
-
-sandbox :: ∀msg state. {
-    init :: state,
-    view :: state -> VDom msg,
-    update :: msg -> state -> state,
-    node :: String
-} -> Effect Unit
-
-sandbox {init, view, update, node} =
-    app 
-        {   init: Tuple init (pure unit)
-        ,   view: \st -> {title: "app", body: view st}
-        ,   update: \msg -> setState (update msg)
-        ,   node
-        ,   subscriptions: const []
-        ,   interpret: \_ -> pure unit
-        }
-
-type InterpretEffs effs = VariantF effs (Effect Unit) -> Effect Unit

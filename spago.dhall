@@ -5,7 +5,8 @@ You can edit this file as you like.
 { name = "pha"
 , license = "MIT"
 , dependencies =
-    [ "argonaut"
+    [ "aff"
+    , "argonaut"
     , "argonaut-core"
     , "console"
     , "debug"

@@ -20,14 +20,14 @@ import Pha.Events (onclick)
 type State = Int
 data Msg = Increment | Decrement
 
-init :: State
+init ∷ State
 init = 0
 
-update :: Msg -> State -> State
+update ∷ Msg → State → State
 update Increment = (_ + 1)
 update Decrement = (_ - 1)
 
-view :: State -> VDom Msg
+view ∷ State → VDom Msg
 view counter = 
     div []
     [   button [onclick Decrement] [text "-"]
@@ -35,7 +35,7 @@ view counter =
     ,   button [onclick Increment] [text "-"]
     ]
 
-main :: Effect Unit
+main ∷ Effect Unit
 main = sandbox {
     init,
     update,

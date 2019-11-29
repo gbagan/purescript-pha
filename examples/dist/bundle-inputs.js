@@ -3234,15 +3234,12 @@ var PS = {};
                       })(Run.send);
                       return Run.run(Run.monadRun)(handleState);
                   })();
-                  var test = function ($42) {
-                      return interpretState(v.interpret($42));
-                  };
-                  var runAction = function ($43) {
-                      return Effect_Aff.launchAff_(Run.runBaseAff(test($43)));
+                  var runAction = function ($42) {
+                      return Effect_Aff.launchAff_(Run.runBaseAff(interpretState(v.interpret($42))));
                   };
                   var init2 = runAction(v.init.value1);
-                  var dispatch = function ($44) {
-                      return runAction(v.update($44));
+                  var dispatch = function ($43) {
+                      return runAction(v.update($43));
                   };
                   var dispatchEvent = function (ev) {
                       return function (handler) {

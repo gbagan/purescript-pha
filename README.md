@@ -14,7 +14,7 @@ module Example.Counter where
 import Prelude hiding (div)
 import Effect (Effect)
 import Pha (VDom, text)
-impor Pha (sandbox, attachTo)
+import Pha (sandbox, attachTo)
 import Pha.Elements (div, span, button)
 import Pha.Events (onclick)
 

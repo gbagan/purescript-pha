@@ -2,7 +2,7 @@ module Example.Decoder where
 import Prelude hiding (div)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
-import Pha (VDom, maybeN, style)
+import Pha (VDom, (<??>), style)
 import Pha.App (sandbox, attachTo)
 import Pha.Elements (div)
 import Pha.Events (on, onpointerleave)
@@ -43,7 +43,7 @@ view position =
             onpointerleave (SetPosition Nothing)
         ] [
             svg [viewBox 0 0 100 100] [
-                maybeN $ position <#> \{x, y} →
+                position <??> \{x, y} →
                     circle [
                         r "7.0",
                         fill "red",

@@ -18,17 +18,17 @@ import Pha (sandbox, attachTo)
 import Pha.Elements (div, span, button)
 import Pha.Events (onclick)
 
-type State = Int
+type Model = Int
 data Msg = Increment | Decrement
 
-init ∷ State
+init ∷ Model
 init = 0
 
-update ∷ Msg → State → State
-update Increment = (_ + 1)
-update Decrement = (_ - 1)
+update ∷ Model → Msg → Model
+update n Increment = n + 1
+update n Decrement = n - 1
 
-view ∷ State → VDom Msg
+view ∷ Model → VDom Msg
 view counter = 
     div []
     [   button [onclick Decrement] [text "-"]

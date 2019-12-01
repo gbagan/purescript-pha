@@ -9,16 +9,13 @@ You can edit this file as you like.
     , "affjax"
     , "argonaut"
     , "argonaut-core"
-    , "console"
-    , "debug"
     , "effect"
     , "either"
     , "exists"
     , "foldable-traversable"
     , "foreign"
+    , "free"
     , "profunctor-lenses"
-    , "psci-support"
-    , "run"
     ]
 , packages = ./packages.dhall
 , repository = "git://github.com/gbagan/purescript-pha.git"

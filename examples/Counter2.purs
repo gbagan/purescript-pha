@@ -4,37 +4,33 @@ import Data.Int (even)
 import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import Pha (text, class_, class')
-import Pha.App (app, addInterpret, attachTo, Document)
-import Pha.Action (Action, setState)
-import Pha.Effects.Delay (DELAY, delay, interpretDelay)
+import Effect.Aff (Aff)
+import Pha (text, class_, class', purely, Transition)
+import Pha.App (app, attachTo, Document)
+import Pha.Effects.Delay (interpretDelay)
 import Pha.Subs as Subs
 import Pha.Elements (div, button, span)
 import Pha.Events (onclick)
 
-type State = {
+type Model = {
     counter ∷ Int
 }
 
--- effects used in this app
-type EFFS = (delay ∷ DELAY)
+data Effs msg = Delay Int msg
 
--- initial state
-state ∷ State
-state = {
+-- initial model
+imodel ∷ Model
+imodel = {
     counter: 0
 }
 
 data Msg = Increment | DelayedIncrement
 
-increment ∷ forall effs. Action State effs
-increment = setState \{counter} → {counter: counter + 1}
+update ∷ Model → Msg → Transition Model Msg Effs
+update model Increment = purely $ {counter: model.counter + 1}
+update model DelayedIncrement = model /\ [Delay 100 Increment]
 
-update ∷ Msg → Action State EFFS
-update Increment = increment
-update DelayedIncrement = delay 1000 *> increment
-
-view ∷ State → Document Msg
+view ∷ Model → Document Msg
 view {counter} = {
     title: "Counter example",
     body:
@@ -52,20 +48,25 @@ view {counter} = {
             ]
 
         ,   div [] [
-                text "press space to increment the counter"
+                text "press C to increment the counter"
             ]
         ]
 }
 
 keyDownHandler ∷ String → Maybe Msg
-keyDownHandler " " = Just Increment
+keyDownHandler "c" = Just Increment
 keyDownHandler _ = Nothing
+
+
+interpreter :: Effs Msg -> Aff Msg 
+interpreter (Delay n msg) = interpretDelay n msg
 
 main ∷ Effect Unit
 main = app {
-    init: state /\ pure unit,
+    init: purely imodel,
     view,
     update,
-    subscriptions: const [Subs.onKeyDown keyDownHandler]
-} # addInterpret interpretDelay
+    subscriptions: const [Subs.onKeyDown keyDownHandler],
+    interpreter
+}
   # attachTo "root"

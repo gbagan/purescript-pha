@@ -1,20 +1,14 @@
-module Pha.Lens (actionOver) where
+module Pha.Lens (mapTransition) where
 import Prelude
-import Data.Lens (Lens', (%~), view)
-import Control.Monad.Free (hoistFree)
-import Unsafe.Coerce (unsafeCoerce)
-import Run (Run(Run), SProxy(..), onMatch)
-import Data.Functor.Variant (VariantF, inj)
-import Pha.Action (Action, GETSTATE, SETSTATE, GetState(..), SetState(..))
-
-lensVariant ∷ ∀st1 st2 v. Lens' st1 st2 → VariantF (getState ∷ GETSTATE st2, setState ∷ SETSTATE st2 | v) ~>
-    VariantF (getState ∷ GETSTATE st1, setState ∷ SETSTATE st1 | v)
-lensVariant lens = onMatch {
-    getState: \(GetState cont) → inj (SProxy ∷ SProxy "getState") (GetState (cont <<< view lens)),
-    setState: \(SetState fn cont) → inj (SProxy ∷ SProxy "setState") (SetState (lens %~ fn) cont)
-} unsafeCoerce
+import Data.Lens (Lens', (.~), (^.))
+import Pha (Transition, (/\))
 
 -- | create an action which is applied on the target of the lens
-actionOver ∷ ∀st1 st2 effs. Lens' st1 st2 → Action st2 effs → Action st1 effs
-actionOver lens (Run f) = Run $ hoistFree (lensVariant lens) f
+mapTransition ∷ ∀st1 st2 msg1 msg2 effs. Functor effs =>
+                    Lens' st1 st2 → (msg2 → msg1) →
+                    (st2 → Transition st2 msg2 effs) → st1 → Transition st1 msg1 effs
+mapTransition lens msgmap ftrans st1 =
+    let st2 = st1^.lens
+        st2' /\ effects = ftrans st2
+    in (st1 # lens .~ st2')  /\ (effects <#> \effect -> effect <#> msgmap) 
 

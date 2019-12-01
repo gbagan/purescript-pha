@@ -13,6 +13,8 @@ You can edit this file as you like.
     , "debug"
     , "effect"
     , "either"
+    , "exists"
+    , "foldable-traversable"
     , "foreign"
     , "profunctor-lenses"
     , "psci-support"

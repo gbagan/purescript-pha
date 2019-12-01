@@ -3,53 +3,49 @@ import Prelude hiding (div)
 import Data.Int (toNumber)
 import Data.Maybe (Maybe(..))
 import Data.Array ((..), mapWithIndex)
-import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import Pha (text, class', style)
-import Pha.App (Document, app, addInterpret, attachTo)
-import Pha.Action (Action, getState, setState)
-import Pha.Effects.Random (RNG, randomInt, shuffle, sample, interpretRng)
+import Effect.Aff (Aff)
+import Pha (Transition, purely, text, class', style, (/\))
+import Pha.App (Document, app, attachTo)
+import Pha.Effects.Random (Random, GenWrapper, wrapGen, randomInt, shuffle, sample, interpretGenerate)
 import Pha.Elements (div, button)
 import Pha.Events (onclick)
 import Pha.Util (pc)
 
 data Card = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King
+cards :: Array Card
+cards = [Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King]
 
-type State = {
+type Model = {
     dice ∷ Int,
     puzzle ∷ Array Int,
     card ∷ Card
 }
 
-data Msg = RollDice | DrawCard | ShufflePuzzle
+data Msg = RollDice | DiceRolled Int | DrawCard | CardDrawn (Maybe Card) | ShufflePuzzle | Shuffled (Array Int)
 
 -- effects used in this app
-type EFFS = (rng ∷ RNG)
+data Effs msg = Generate (GenWrapper msg)
+generate :: forall a msg. Random a -> (a -> msg) -> Effs msg
+generate rdata fmsg = Generate (wrapGen rdata fmsg)
 
 -- initial state
-state ∷ State
-state = {
+imodel ∷ Model
+imodel = {
     dice: 1,
     puzzle: 0 .. 15,
     card: Ace
 }
 
-update ∷ Msg → Action State EFFS
-
-update RollDice = do
-    rolled ← randomInt 6 <#> (_ + 1)
-    setState _{dice = rolled}
-
-update DrawCard = do
-    drawn ← sample [Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King]
-    case drawn of
-        Just card → setState _{card = card}
-        Nothing → pure unit
-
-update ShufflePuzzle = do
-    {puzzle} ← getState
-    shuffled ← shuffle puzzle
-    setState _{puzzle = shuffled}
+update ∷ Model → Msg → Transition Model Msg Effs 
+update model = case _ of
+    RollDice -> model /\ [generate (randomInt 6) DiceRolled ]
+    DiceRolled rolled -> purely model{dice = rolled}  
+    DrawCard -> model /\ [generate (sample cards) CardDrawn]
+    CardDrawn (Just drawn) -> purely model{card = drawn}
+    CardDrawn Nothing -> purely model
+    ShufflePuzzle -> model /\ [generate (shuffle model.puzzle) Shuffled]
+    Shuffled p -> purely model{puzzle = p}
 
 viewCard ∷ Card → String
 viewCard Ace   = "🂡"
@@ -66,7 +62,7 @@ viewCard Jack  = "🂫"
 viewCard Queen = "🂭"
 viewCard King  = "🂮"
 
-view ∷ State → Document Msg
+view ∷ Model → Document Msg
 view {dice, puzzle, card} = {
     title: "Randomness example",
     body:
@@ -89,11 +85,15 @@ view {dice, puzzle, card} = {
         ]
 }
 
+interpreter :: Effs Msg -> Aff Msg 
+interpreter (Generate genWrap) = interpretGenerate genWrap
+
 main ∷ Effect Unit
 main = app {
-    init: state /\ update RollDice,
+    init: purely imodel,
     view,
     update,
-    subscriptions: const []
-} # addInterpret interpretRng
+    subscriptions: const [],
+    interpreter
+}
   # attachTo "root"

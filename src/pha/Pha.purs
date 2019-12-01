@@ -1,16 +1,15 @@
-module Pha (VDom, Prop, Sub, Event, h, text, emptyNode, key, attr, style, on_, class_, class', lazy,
-    when, (<&&>), maybeN, maybe, (<??>), unsafeOnWithEffect, module A,
+module Pha (VDom, Prop, Sub, Event, Transition, h, text, emptyNode, key, attr, style, on_, class_, class', lazy,
+    when, (<&&>), maybeN, maybe, (<??>), purely, unsafeOnWithEffect, module I,
       EventHandler) where
 
 import Prelude hiding (when)
 import Effect (Effect)
-import Pha.Action (Action) as A
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Tuple (Tuple(..))
+import Data.Tuple.Nested((/\)) as I
 
 foreign import data VDom ∷ Type → Type
 foreign import data Event ∷ Type
-
 
 type EventHandler msg = Event → {effect ∷ Effect Unit, msg ∷ Maybe msg}
 
@@ -79,7 +78,12 @@ maybe (Just a) f = f a
 maybe Nothing _ = emptyNode
 
 infix 1 maybe as <??>
-    
+
+type Transition model msg effs  = Tuple model (Array(effs msg))
+
+purely :: forall model msg effs. model → Transition model msg effs
+purely model = Tuple model []
+
 foreign import mapView ∷ ∀a b. (EventHandler a → EventHandler b) → VDom a → VDom b
 instance functorVDom ∷ Functor VDom where
     map fn = mapView mapH where

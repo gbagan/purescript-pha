@@ -9,7 +9,7 @@ import Pha.Elements (div, br, input)
 import Pha.Attributes (value, checked)
 import Pha.Events (onvaluechange, onchecked)
 
-type State = {
+type Model = {
     val1 ∷ String,
     val2 ∷ String,
     isMul ∷ Boolean
@@ -18,25 +18,25 @@ type State = {
 data Msg = ChangeVal1 String | ChangeVal2 String | ChangeOp Boolean
 
 -- initial state
-init ∷ State
+init ∷ Model
 init = {
     val1: "2",
     val2: "4",
     isMul: false
 }
 
-result ∷ State → String
+result ∷ Model → String
 result {val1, val2, isMul} = fromMaybe "invalid input" do
     x ← fromString val1
     y ← fromString val2
     pure $ show (if isMul then x * y else x + y)
 
-update ∷ Msg → State → State
-update (ChangeVal1 val) = _{val1 = val}
-update (ChangeVal2 val) = _{val2 = val}
-update (ChangeOp b) = _{isMul = b}
+update ∷ Model → Msg → Model
+update model (ChangeVal1 val) = model{val1 = val}
+update model (ChangeVal2 val) = model{val2 = val}
+update model (ChangeOp b) = model{isMul = b}
 
-view ∷ State → VDom Msg
+view ∷ Model → VDom Msg
 view st@{val1, val2, isMul} = 
     div [] [
         input "text" [attr "size" "5", onvaluechange ChangeVal1, value val1],

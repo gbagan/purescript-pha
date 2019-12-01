@@ -37,7 +37,6 @@ const lazy = st => view => ({
 
 exports.mapView = mapf => vnode => Object.assign({}, vnode, {mapf: compose(vnode.mapf, mapf)})
 exports.emptyNode = null
-exports.appAux = appAux
 exports.key = key => [0, key]
 exports.attr = k => v => [1, k, v]
 exports.class_ = cls => [2, cls]

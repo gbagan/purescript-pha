@@ -1,16 +1,14 @@
-module Pha.App (app, sandbox, addInterpret, attachTo, Document, App) where
+module Pha.App (app, sandbox, attachTo, Document, App) where
 import Prelude
 import Effect (Effect)
-import Effect.Aff (launchAff_)
-import Data.Maybe (Maybe(..))
+import Effect.Aff (Aff, launchAff_)
 import Effect.Class (liftEffect)
-import Pha (VDom, Event, Sub, EventHandler)
-import Run (Run,  onMatch, AFF)
-import Run as Run
+import Data.Maybe (Maybe(..))
+import Data.Traversable (for_)
+import Pha (VDom, Event, Sub, EventHandler, purely, Transition)
 import Data.Tuple (Tuple(..))
 import Pha.Internal (app) as Internal
-import Pha.Action (Action, setState,  GetState(..), SetState(..))
-import Unsafe.Coerce (unsafeCoerce)
+import Data.Const (Const(..))
 
 type Document msg = {
     title ∷ String,
@@ -19,14 +17,13 @@ type Document msg = {
 
 -- effs: effects in the app
 -- neffs: non interpreted effs
-newtype App msg state effs neffs = App {
-    init ∷ Tuple state (Action state effs),
-    view ∷ state → Document msg,
-    update ∷ msg → Action state effs,
-    subscriptions ∷ state → Array (Sub msg),
-    interpret ∷ Interpret state effs neffs
+newtype App model msg effs = App {
+    init ∷ Transition model msg effs,
+    view ∷ model → Document msg,
+    update ∷ model → msg → Transition model msg effs,
+    subscriptions ∷ model → Array (Sub msg),
+    interpreter ∷ Interpreter msg effs 
 }
-
 
 -- | ```purescript
 -- | app ∷ ∀msg state effs. {
@@ -37,46 +34,38 @@ newtype App msg state effs neffs = App {
 -- | } → App effs
 -- | ```
 
-addAff ∷ forall  a b. Run a b → Run (aff ∷ AFF | a) b
-addAff = unsafeCoerce
+--addAff ∷ forall a b. Run a b → Run (aff ∷ AFF | a) b
+--addAff = unsafeCoerce
 
-app ∷ ∀msg state effs. {
-    init ∷ Tuple state (Action state effs),
-    view ∷ state → Document msg,
-    update ∷ msg → Action state effs,
-    subscriptions ∷ state → Array (Sub msg)
-} → App msg state effs (aff ∷ AFF | effs)
-app {init, view, update, subscriptions} =
-    App {init, view, update, subscriptions, interpret: addAff}
+app ∷ ∀msg model effs. {
+    init ∷ Transition model msg effs,
+    view ∷ model → Document msg,
+    update ∷ model → msg → Transition model msg effs,
+    subscriptions ∷ model → Array (Sub msg),
+    interpreter ∷ Interpreter msg effs 
+} → App model msg effs
+app = App
 
-addInterpret ∷ ∀msg state effs effs1 effs2. Interpret state effs1 effs2 → App msg state effs effs1 → App msg state effs effs2
-addInterpret interpret (App a) = App a{interpret = a.interpret >>> interpret}
-
-attachTo ∷ ∀msg state effs. String → App msg state effs (aff ∷ AFF) → Effect Unit
-attachTo node (App {init: Tuple state init, view, update, subscriptions, interpret}) = Internal.app fn where
+{-
+withInterpret ∷ ∀msg state effs effs1 effs2. Interpret state effs1 effs2 → App msg state effs effs1 → App msg state effs effs2
+withInterpret interpret (App a) = App a{interpret = a.interpret >>> interpret}
+-}
+attachTo ∷ ∀msg model effs. String → App model msg effs → Effect Unit
+attachTo node (App {init, view, update, subscriptions, interpreter}) = Internal.app fn where
     fn getS setS =
-        {state, view, node, init: init2, subscriptions, dispatch, dispatchEvent} where
+        {view, node, init: init2, subscriptions, dispatch, dispatchEvent} where
 
-        interpretState ∷  Action state (aff ∷ AFF) → Run (aff ∷ AFF) Unit
-        interpretState  = Run.run handleState where
-            handleState = onMatch {
-                getState: \(GetState next) → Run.liftAff $ liftEffect do
-                    a <- getS
-                    pure (next a)
-            ,   setState: \(SetState f next) → Run.liftAff $ liftEffect do
-                    a <- getS
-                    setS (f a)
-                    pure next
-            } Run.send
-        
-        runAction ∷ Action state effs → Effect Unit
-        runAction = interpret
-                    >>> interpretState 
-                    >>> Run.runBaseAff 
-                    >>> launchAff_
+        runTransition ∷ Transition model msg effs → Effect Unit
+        runTransition (Tuple model effects) = do
+            setS model 
+            for_ effects \effect -> launchAff_ do
+                msg <- interpreter effect
+                liftEffect $ dispatch msg
 
         dispatch ∷ msg → Effect Unit
-        dispatch = runAction <<< update
+        dispatch msg = do
+            model <- getS
+            runTransition (update model msg)
 
         dispatchEvent ∷ Event → (EventHandler msg) → Effect Unit
         dispatchEvent = \ev handler → do
@@ -86,9 +75,8 @@ attachTo node (App {init: Tuple state init, view, update, subscriptions, interpr
                 Nothing → pure unit
                 Just m → dispatch m
         
-        init2 = runAction init 
-
-
+        init2 = runTransition init
+        
 
 -- | ```purescript
 -- | sandbox ∷ ∀msg state effs. {
@@ -99,18 +87,19 @@ attachTo node (App {init: Tuple state init, view, update, subscriptions, interpr
 -- | } → Effect Unit
 -- | ```
 
-sandbox ∷ ∀msg state. {
-    init ∷ state,
-    view ∷ state → VDom msg,
-    update ∷ msg → state → state
-} → App msg state () (aff ∷ AFF)
+sandbox ∷ ∀msg model. {
+    init ∷ model,
+    view ∷ model → VDom msg,
+    update ∷ model → msg → model
+} → App model msg  (Const Void)
 
 sandbox {init, view, update} =
     app 
-        {   init: Tuple init (pure unit)
+        {   init: purely init
         ,   view: \st → {title: "app", body: view st}
-        ,   update: \msg → setState (update msg)
+        ,   update: \model msg → purely (update model msg) 
         ,   subscriptions: const []
+        ,   interpreter: \(Const a) -> absurd a
         }
 
-type Interpret state effs effs2 = Action state effs → Action state effs2
+type Interpreter msg effs = effs msg -> Aff msg

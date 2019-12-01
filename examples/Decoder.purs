@@ -12,7 +12,7 @@ import Pha.Util (pc, translate)
 
 type Position = {x ∷ Number, y ∷ Number}
 
-type State = Maybe Position
+type Model = Maybe Position
 
 data Msg = SetPosition (Maybe Position)
 
@@ -26,13 +26,13 @@ decoder f = do
         y: (y - top) / height
     }
 -- initial state
-init ∷ State
+init ∷ Model
 init = Nothing
 
-update ∷ Msg → State → State
-update (SetPosition p) = const p 
+update ∷ Model → Msg → Model
+update _ (SetPosition p) = p 
 
-view ∷ State → VDom Msg
+view ∷ Model → VDom Msg
 view position = 
     div [] [
         div [

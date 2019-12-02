@@ -1,7 +1,6 @@
 module Pha.Effects.Random (RNG, randomNumber, randomInt, randomBool, shuffle, sample, interpretRng, Rng(..)) where
 import Prelude
 import Effect (Effect)
-import Effect.Class (liftEffect)
 import Data.Maybe (Maybe, fromMaybe)
 import Data.Tuple (Tuple(Tuple))
 import Data.Traversable (sequence)
@@ -40,11 +39,9 @@ sample t = index t <$> (randomInt $ length t)
 foreign import mathRandom ∷ Effect Number
 
 -- | default implementation for random effects
-interpretRng ∷ ∀r. Run (aff ∷ AFF, rng ∷ RNG | r) Unit → Run (aff ∷ AFF | r) Unit
-interpretRng  = Run.run(Run.on _rng handle Run.send) where
-    handle ∷ Rng ~> Run (aff ∷ AFF | r)
-    handle (RngInt m next) = do
-        x <- Run.liftAff $ liftEffect mathRandom 
-        pure $ next (floor(x * toNumber m))
-    handle (RngNumber next) =
-        Run.liftAff $ liftEffect mathRandom <#> next
+interpretRng ∷ Rng (Effect Unit) -> Effect Unit
+interpretRng (RngInt m next) = do
+        x <- mathRandom 
+        next (floor(x * toNumber m))
+interpretRng (RngNumber next) =
+        mathRandom >>= next

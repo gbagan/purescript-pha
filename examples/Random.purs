@@ -6,12 +6,14 @@ import Data.Array ((..), mapWithIndex)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Pha (text, class', style)
-import Pha.App (Document, app, addInterpret, attachTo)
+import Pha.App (Document, app, attachTo)
 import Pha.Action (Action, getState, setState)
-import Pha.Effects.Random (RNG, randomInt, shuffle, sample, interpretRng)
+import Pha.Random (randomInt, shuffle, sample)
+import Pha.Effects.Random (RNG, randomGenerate, interpretRng)
 import Pha.Elements (div, button)
 import Pha.Events (onclick)
 import Pha.Util (pc)
+import Run as Run
 
 data Card = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King
 
@@ -37,18 +39,18 @@ state = {
 update ∷ Msg → Action State EFFS
 
 update RollDice = do
-    rolled ← randomInt 6 <#> (_ + 1)
+    rolled ← randomGenerate $ randomInt 6 <#> (_ + 1)
     setState _{dice = rolled}
 
 update DrawCard = do
-    drawn ← sample [Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King]
+    drawn ← randomGenerate $ sample [Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King]
     case drawn of
         Just card → setState _{card = card}
         Nothing → pure unit
 
 update ShufflePuzzle = do
     {puzzle} ← getState
-    shuffled ← shuffle puzzle
+    shuffled ← randomGenerate $ shuffle puzzle
     setState _{puzzle = shuffled}
 
 viewCard ∷ Card → String
@@ -94,6 +96,8 @@ main = app {
     init: state /\ update RollDice,
     view,
     update,
-    subscriptions: const []
-} # addInterpret interpretRng
-  # attachTo "root"
+    subscriptions: const [],
+    interpreter: Run.match {
+        rng: interpretRng
+    }
+} # attachTo "root"

@@ -1,3 +1,51 @@
+module Pha.Effects.Random (Rng, RNG, randomGenerate, interpretRng) where
+import Prelude
+import Effect (Effect)
+import Data.Int (floor, toNumber)
+import Control.Monad.Free (runFreeM)
+import Run (Run, SProxy(..), FProxy)
+import Run as Run
+import Pha.Random (Random, RandomF(..))
+import Unsafe.Coerce (unsafeCoerce)
+
+data GenWrapper a b = GenWrapper (Random b) (b → a)
+
+data Rng a
+mkExists :: forall a b. GenWrapper a b -> Rng a
+mkExists = unsafeCoerce
+
+runExists :: forall a r. (forall b. GenWrapper a b -> r) -> Rng a -> r
+runExists = unsafeCoerce
+
+instance functorRng ∷ Functor Rng where
+    map f = runExists \(GenWrapper d g) -> mkExists (GenWrapper d (f <<< g))
+
+type RNG = FProxy Rng
+_rng = SProxy ∷ SProxy "rng"
+
+foreign import mathRandom ∷ Effect Number
+
+randomGenerate ∷ ∀a r. Random a → Run (rng ∷ RNG | r) a
+randomGenerate d = Run.lift _rng (mkExists (GenWrapper d identity))
+
+runRng :: forall a. Random a -> Effect a
+runRng = runFreeM go where
+    go (RandomInt m next) = do
+        x <- mathRandom
+        pure (next $ floor(x * toNumber m))
+    go (RandomNumber next) = do
+        mathRandom <#> next
+
+test :: forall b. GenWrapper (Effect Unit) b -> Effect Unit
+test (GenWrapper rndData next) = runRng rndData >>= next
+
+interpretRng ∷ Rng (Effect Unit) -> Effect Unit
+interpretRng a = a # runExists test
+ --   runRng rndData >>= next
+
+
+
+{-
 module Pha.Effects.Random (RNG, randomNumber, randomInt, randomBool, shuffle, sample, interpretRng, Rng(..)) where
 import Prelude
 import Effect (Effect)
@@ -13,28 +61,6 @@ data Rng a = RngInt Int (Int → a) | RngNumber (Number → a)
 derive instance functorRng ∷ Functor Rng
 type RNG = FProxy Rng
 _rng = SProxy ∷ SProxy "rng"
-
--- | generate a random integer in the range [0, n - 1]
-randomInt ∷ ∀r. Int → Run (rng ∷ RNG | r) Int
-randomInt n = Run.lift _rng (RngInt n identity)
-
--- | generate a random number in the range [0, 1)
-randomNumber ∷ ∀r. Run (rng ∷ RNG | r) Number
-randomNumber = Run.lift _rng (RngNumber identity)
-
--- | generate a random boolean 
-randomBool ∷ ∀r. Run (rng ∷ RNG | r) Boolean
-randomBool = randomInt 2 <#> eq 0
-
--- | randomly shuffle an array
-shuffle ∷ ∀a r. Array a → Run (rng ∷ RNG | r) (Array a)
-shuffle array = do
-    rnds ← sequence $ array # mapWithIndex \i x → Tuple x <$> randomInt (i+1)
-    pure $ rnds # foldl (\t (Tuple x i) → t # insertAt i x # fromMaybe []) []
-
--- | randomly select an element from the array
-sample ∷ ∀a r. Array a → Run (rng ∷ RNG | r) (Maybe a)
-sample t = index t <$> (randomInt $ length t)
 
 foreign import mathRandom ∷ Effect Number
 

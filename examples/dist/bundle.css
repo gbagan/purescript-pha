@@ -1,0 +1,34 @@
+.counter {
+    width: 5rem;
+    height: 2rem;
+    background-color: snow;
+    border: solid black thick;
+}
+
+.box {
+    width: 5rem;
+    height: 5rem;
+    background-color: snow;
+    border: solid black thick;
+}
+
+.box.even {
+    background-color: green;
+}
+
+.puzzle {
+    position: relative;
+    width: 12rem;
+    height: 12rem;
+}
+
+.puzzle-item {
+    position: absolute;
+    transition: all 500ms linear;
+    width: 25%;
+    height: 25%;
+    background-color: yellow;
+    border: solid grey thin;
+    text-align: center;
+    vertical-align: center;
+}

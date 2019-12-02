@@ -1,18 +1,16 @@
-module Pha.Effects.Http ( HTTP, get, ajax, interpretHttp, Http, module R) where
+module Pha.Example.Effects.Http ( HTTP, get, ajax, interpretHttp, Http, module R) where
 import Prelude
 
 import Affjax as AX
 import Affjax.ResponseFormat as R
 import Data.Argonaut.Core as J
 import Data.Either (Either(..))
-import Effect.Aff (launchAff)
+import Effect.Aff (Aff, launchAff)
 import Run (AFF)
 import Run as Run
-import Prelude
 import Data.Maybe (Maybe(..))
 import Run (Run, SProxy(..), FProxy, lift)
 import Effect (Effect)
-import Effect.Aff (Aff)
 
 data Http a = Get String (Maybe String → a) | Ajax String (Maybe J.Json → a)
 derive instance fHttp ∷ Functor Http

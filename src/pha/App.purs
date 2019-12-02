@@ -1,16 +1,13 @@
-module Pha.App (app, sandbox, addInterpret, attachTo, Document, App) where
+module Pha.App (app, sandbox, attachTo, Document, App) where
 import Prelude
 import Effect (Effect)
-import Effect.Aff (launchAff_)
 import Data.Maybe (Maybe(..))
-import Effect.Class (liftEffect)
 import Pha (VDom, Event, Sub, EventHandler)
-import Run (Run,  onMatch, AFF)
+import Run (onMatch, VariantF)
 import Run as Run
 import Data.Tuple (Tuple(..))
 import Pha.Internal (app) as Internal
 import Pha.Action (Action, setState,  GetState(..), SetState(..))
-import Unsafe.Coerce (unsafeCoerce)
 
 type Document msg = {
     title ∷ String,
@@ -19,12 +16,12 @@ type Document msg = {
 
 -- effs: effects in the app
 -- neffs: non interpreted effs
-newtype App msg state effs neffs = App {
+newtype App msg state effs = App {
     init ∷ Tuple state (Action state effs),
     view ∷ state → Document msg,
     update ∷ msg → Action state effs,
     subscriptions ∷ state → Array (Sub msg),
-    interpret ∷ Interpret state effs neffs
+    interpreter ∷ VariantF effs (Effect Unit) → Effect Unit
 }
 
 
@@ -37,44 +34,35 @@ newtype App msg state effs neffs = App {
 -- | } → App effs
 -- | ```
 
-addAff ∷ forall  a b. Run a b → Run (aff ∷ AFF | a) b
-addAff = unsafeCoerce
-
 app ∷ ∀msg state effs. {
     init ∷ Tuple state (Action state effs),
     view ∷ state → Document msg,
     update ∷ msg → Action state effs,
-    subscriptions ∷ state → Array (Sub msg)
-} → App msg state effs (aff ∷ AFF | effs)
-app {init, view, update, subscriptions} =
-    App {init, view, update, subscriptions, interpret: addAff}
+    subscriptions ∷ state → Array (Sub msg),
+    interpreter ∷ VariantF effs (Effect Unit) → Effect Unit
+} → App msg state effs
+app = App
 
-addInterpret ∷ ∀msg state effs effs1 effs2. Interpret state effs1 effs2 → App msg state effs effs1 → App msg state effs effs2
-addInterpret interpret (App a) = App a{interpret = a.interpret >>> interpret}
+--addInterpret ∷ ∀msg state effs effs1 effs2. Interpret state effs1 effs2 → App msg state effs effs1 → App msg state effs effs2
+--addInterpret interpret (App a) = App a{interpret = a.interpret >>> interpret}
 
-attachTo ∷ ∀msg state effs. String → App msg state effs (aff ∷ AFF) → Effect Unit
-attachTo node (App {init: Tuple state init, view, update, subscriptions, interpret}) = Internal.app fn where
+attachTo ∷ ∀msg state effs. String → App msg state effs → Effect Unit
+attachTo node (App {init: Tuple state init, view, update, subscriptions, interpreter}) = Internal.app fn where
     fn getS setS =
         {state, view, node, init: init2, subscriptions, dispatch, dispatchEvent} where
 
-        interpretState ∷  Action state (aff ∷ AFF) → Run (aff ∷ AFF) Unit
-        interpretState  = Run.run handleState where
+        runAction ∷ Action state effs → Effect Unit
+        runAction = Run.runCont handleState (const (pure unit)) where
             handleState = onMatch {
-                getState: \(GetState next) → Run.liftAff $ liftEffect do
+                getState: \(GetState next) → do
                     a <- getS
-                    pure (next a)
-            ,   setState: \(SetState f next) → Run.liftAff $ liftEffect do
+                    next a
+            ,   setState: \(SetState f next) → do
                     a <- getS
                     setS (f a)
-                    pure next
-            } Run.send
+                    next
+            } interpreter
         
-        runAction ∷ Action state effs → Effect Unit
-        runAction = interpret
-                    >>> interpretState 
-                    >>> Run.runBaseAff 
-                    >>> launchAff_
-
         dispatch ∷ msg → Effect Unit
         dispatch = runAction <<< update
 
@@ -94,8 +82,7 @@ attachTo node (App {init: Tuple state init, view, update, subscriptions, interpr
 -- | sandbox ∷ ∀msg state effs. {
 -- |     init ∷ state,
 -- |     view ∷ state → VDom msg,
--- |     update ∷ msg → state → state,
--- |     node ∷ String
+-- |     update ∷ msg → state → state
 -- | } → Effect Unit
 -- | ```
 
@@ -103,7 +90,7 @@ sandbox ∷ ∀msg state. {
     init ∷ state,
     view ∷ state → VDom msg,
     update ∷ msg → state → state
-} → App msg state () (aff ∷ AFF)
+} → App msg state ()
 
 sandbox {init, view, update} =
     app 
@@ -111,6 +98,6 @@ sandbox {init, view, update} =
         ,   view: \st → {title: "app", body: view st}
         ,   update: \msg → setState (update msg)
         ,   subscriptions: const []
+        ,   interpreter: const (pure unit)
         }
 
-type Interpret state effs effs2 = Action state effs → Action state effs2

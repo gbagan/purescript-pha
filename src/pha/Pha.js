@@ -1,6 +1,8 @@
 const LAZY_NODE = 2
 const TEXT_NODE = 3
 
+const compose = (f, g) => f && g ? x => f(g(x)) : f || g; 
+
 const h = name => ps => children => {
     const style = {};
     const props = {style};
@@ -37,7 +39,6 @@ const lazy = st => view => ({
 
 exports.mapView = mapf => vnode => Object.assign({}, vnode, {mapf: compose(vnode.mapf, mapf)})
 exports.emptyNode = null
-exports.appAux = appAux
 exports.key = key => [0, key]
 exports.attr = k => v => [1, k, v]
 exports.class_ = cls => [2, cls]

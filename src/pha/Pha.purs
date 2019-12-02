@@ -7,11 +7,12 @@ import Effect (Effect)
 import Pha.Action (Action) as A
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Tuple (Tuple(..))
+import Data.Tuple.Nested ((/\)) as A
 
 foreign import data VDom ∷ Type → Type
 foreign import data Event ∷ Type
 
-
+-- | the effect can be stopPropagation, preventDefault, releasePointerCapture, etc...
 type EventHandler msg = Event → {effect ∷ Effect Unit, msg ∷ Maybe msg}
 
 foreign import data Sub ∷ Type → Type

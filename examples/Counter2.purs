@@ -2,10 +2,10 @@ module Example.Counter2 where
 import Prelude hiding (div)
 import Data.Int (even)
 import Data.Maybe (Maybe(..))
-import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import Pha (text, class_, class')
-import Pha.App (app, addInterpret, attachTo, Document)
+import Pha (text, class_, class', (/\))
+import Pha.App (app, attachTo, Document)
+import Run as Run
 import Pha.Action (Action, setState)
 import Pha.Effects.Delay (DELAY, delay, interpretDelay)
 import Pha.Subs as Subs
@@ -66,6 +66,8 @@ main = app {
     init: state /\ pure unit,
     view,
     update,
-    subscriptions: const [Subs.onKeyDown keyDownHandler]
-} # addInterpret interpretDelay
-  # attachTo "root"
+    subscriptions: const [Subs.onKeyDown keyDownHandler],
+    interpreter: Run.match {
+        delay: interpretDelay
+    }
+} # attachTo "root"

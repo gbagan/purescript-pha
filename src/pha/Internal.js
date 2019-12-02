@@ -386,5 +386,4 @@ const app = props => () => {
     init();
 }
 
-exports.text = createTextVNode
 exports.app = app;

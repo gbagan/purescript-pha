@@ -57,6 +57,12 @@ stopPropagationOn eventname decoder = custom eventname (decoder >>> map \(Tuple 
     stopPropagation: stop
 })
 
+releasePointerCaptureOn ∷ ∀msg. String → Decoder (Maybe msg) → Prop msg
+releasePointerCaptureOn eventname decoder = unsafeOnWithEffect eventname handler where
+    handler ev =
+        case runExcept (decoder (unsafeToForeign ev)) of
+            Right msg → {msg, effect: releasePointerCaptureE ev}
+            _  → {effect: pure unit, msg: Nothing}
 
 onclick ∷ ∀msg. msg → Prop msg
 onclick = on "click" <<< always

@@ -2173,7 +2173,7 @@ var PS = {};
   var Data_Maybe = $PS["Data.Maybe"];
   var Foreign = $PS["Foreign"];
   var Pha = $PS["Pha"];
-  var Pha_Events_Decoder = $PS["Pha.Events.Decoder"];                
+  var Pha_Events_Decoder = $PS["Pha.Events.Decoder"];
   var on$prime = function (eventname) {
       return function (decoder) {
           var handler = function (ev) {
@@ -2189,26 +2189,26 @@ var PS = {};
   var on = function (eventname) {
       return function (decoder) {
           return on$prime(eventname)((function () {
-              var $35 = Data_Functor.map(Control_Monad_Except_Trans.functorExceptT(Data_Identity.functorIdentity))(Data_Maybe.Just.create);
-              return function ($36) {
-                  return $35(decoder($36));
+              var $38 = Data_Functor.map(Control_Monad_Except_Trans.functorExceptT(Data_Identity.functorIdentity))(Data_Maybe.Just.create);
+              return function ($39) {
+                  return $38(decoder($39));
               };
           })());
       };
   };
   var onchecked = function (f) {
       return on("change")((function () {
-          var $37 = Data_Functor.map(Control_Monad_Except_Trans.functorExceptT(Data_Identity.functorIdentity))(f);
-          return function ($38) {
-              return $37(Pha_Events_Decoder.currentTargetChecked($38));
+          var $40 = Data_Functor.map(Control_Monad_Except_Trans.functorExceptT(Data_Identity.functorIdentity))(f);
+          return function ($41) {
+              return $40(Pha_Events_Decoder.currentTargetChecked($41));
           };
       })());
   };   
   var onvaluechange = function (f) {
       return on("change")((function () {
-          var $57 = Data_Functor.map(Control_Monad_Except_Trans.functorExceptT(Data_Identity.functorIdentity))(f);
-          return function ($58) {
-              return $57(Pha_Events_Decoder.currentTargetValue($58));
+          var $60 = Data_Functor.map(Control_Monad_Except_Trans.functorExceptT(Data_Identity.functorIdentity))(f);
+          return function ($61) {
+              return $60(Pha_Events_Decoder.currentTargetValue($61));
           };
       })());
   };

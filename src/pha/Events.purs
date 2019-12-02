@@ -3,7 +3,7 @@ module Pha.Events (onclick, onclick',
     onpointerup, onpointerup', onpointerdown, onpointerdown', onpointerenter, onpointerenter', onpointerleave, onpointerleave',
     oncontextmenu, oncontextmenu',
     onvaluechange, onchecked,
-    on, on', custom, preventDefaultOn, stopPropagationOn) where
+    on, on', custom, preventDefaultOn, stopPropagationOn, releasePointerCaptureE) where
 
 import Prelude hiding (div)
 import Effect (Effect)

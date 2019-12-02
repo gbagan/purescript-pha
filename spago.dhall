@@ -16,6 +16,7 @@ You can edit this file as you like.
     , "foreign"
     , "free"
     , "profunctor-lenses"
+    , "run"
     ]
 , packages = ./packages.dhall
 , repository = "git://github.com/gbagan/purescript-pha.git"

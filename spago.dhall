@@ -5,10 +5,7 @@ You can edit this file as you like.
 { name = "pha"
 , license = "MIT"
 , dependencies =
-    [ "argonaut"
-    , "argonaut-core"
-    , "debug"
-    , "effect"
+    [ "effect"
     , "either"
     , "foldable-traversable"
     , "foreign"

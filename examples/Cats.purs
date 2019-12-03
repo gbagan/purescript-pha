@@ -1,17 +1,19 @@
 module Example.Cats where
 import Prelude hiding (div)
 import Data.Maybe (maybe)
-import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import Pha (VDom,  text, style)
-import Pha.App (attachTo, Document, app, addInterpret)
+import Run as Run
+import Pha (VDom, text, style, (/\))
+import Pha.App (Document, app, attachTo)
 import Pha.Action (Action, setState)
-import Pha.Effects.Http (ajax, HTTP, interpretHttp)
+import Pha.Example.Effects.Http (ajax, HTTP, interpretHttp)
 import Pha.Elements (div, h2, button, img)
 import Pha.Attributes (src)
 import Pha.Events (onclick)
-import Data.Argonaut as J
-import Foreign.Object as O
+import Control.Monad.Except (runExcept)
+import Data.Either (Either(..), hush)
+import Foreign (readString)
+import Foreign.Index ((!))
 
 data State = Failure | Loading | Success String
 
@@ -28,13 +30,9 @@ update ∷ Msg → Action State EFFS
 update RequestCat = do
     setState \_ → Loading
     res ← ajax "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cat"
-    let status = maybe Failure Success $ 
-                res
-                >>= J.toObject 
-                >>= O.lookup "data"
-                >>= J.toObject
-                >>= O.lookup "image_url" 
-                >>= J.toString
+    let status = maybe Failure Success $ do
+                    json ← res
+                    hush $ runExcept $ json ! "data" ! "image_url" >>= readString
     setState \_ → status
 
 view ∷ State → Document Msg
@@ -63,6 +61,8 @@ main = app {
     init: state /\ update RequestCat,
     view,
     update,
-    subscriptions: const []
-} # addInterpret interpretHttp
-  # attachTo "root"
+    subscriptions: const [],
+    interpreter: Run.match {
+        http: interpretHttp
+    }
+} # attachTo "root"

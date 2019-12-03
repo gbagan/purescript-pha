@@ -1,5 +1,5 @@
 # purescript-pha
-Yet another Elm-like library based on Hyperapp
+Elm-like library based on Hyperapp
 
 https://github.com/jorgebucaran/hyperapp
 

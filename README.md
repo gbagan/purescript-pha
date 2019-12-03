@@ -31,7 +31,7 @@ view counter =
     div []
     [   button [onclick Decrement] [text "-"]
     ,   span [] [text $ show counter]
-    ,   button [onclick Increment] [text "-"]
+    ,   button [onclick Increment] [text "+"]
     ]
 
 main ∷ Effect Unit

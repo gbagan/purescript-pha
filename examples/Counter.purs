@@ -13,15 +13,15 @@ init ∷ State
 init = 0
 
 update ∷ Msg → State → State
-update Increment = (_ + 1)
-update Decrement = (_ - 1)
+update Increment n = n + 1
+update Decrement n = n - 1
 
 view ∷ State → VDom Msg
 view counter = 
     div []
     [   button [onclick Decrement] [text "-"]
     ,   span [] [text $ show counter]
-    ,   button [onclick Increment] [text "-"]
+    ,   button [onclick Increment] [text "+"]
     ]
 
 main ∷ Effect Unit

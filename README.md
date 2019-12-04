@@ -22,9 +22,9 @@ data Msg = Increment | Decrement
 init ∷ Model
 init = 0
 
-update ∷ Model → Msg → Model
-update n Increment = n + 1
-update n Decrement = n - 1
+update ∷ Msg → Model → Model
+update Increment n = n + 1
+update Decrement n = n - 1
 
 view ∷ Model → VDom Msg
 view counter = 

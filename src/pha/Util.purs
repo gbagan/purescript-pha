@@ -5,6 +5,10 @@ import Prelude
 -- |  63.7 → "63.7px"
 px ∷ Number → String
 px x = show x <> "px"
+
+px' ∷ Int → String
+px' a = show a <> "px"
+
 -- |  0.7 → "70%"
 pc ∷ Number → String
 pc x = show (x * 100.0) <> "%"

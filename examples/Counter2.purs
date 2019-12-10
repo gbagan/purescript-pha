@@ -6,7 +6,7 @@ import Effect (Effect)
 import Pha (text, class_, class', (/\))
 import Pha.App (app, attachTo, Document)
 import Run as Run
-import Pha.Action (Action, setState)
+import Pha.Update (Update, setState)
 import Pha.Effects.Delay (DELAY, delay, interpretDelay)
 import Pha.Subs as Subs
 import Pha.Elements (div, button, span)
@@ -27,10 +27,10 @@ state = {
 
 data Msg = Increment | DelayedIncrement
 
-increment ∷ forall effs. Action State effs
+increment ∷ forall effs. Update State effs
 increment = setState \{counter} → {counter: counter + 1}
 
-update ∷ Msg → Action State EFFS
+update ∷ Msg → Update State EFFS
 update Increment = increment
 update DelayedIncrement = delay 1000 *> increment
 

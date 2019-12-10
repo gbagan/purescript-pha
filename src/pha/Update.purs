@@ -1,4 +1,4 @@
-module Pha.Action (Action, Action', getState, setState, setState', GETSTATE, SETSTATE,
+module Pha.Update (Update, getState, setState, setState', GETSTATE, SETSTATE,
     GetState(..), SetState(..)) where
 import Prelude
 import Run (FProxy, Run, SProxy(..), lift)
@@ -25,5 +25,7 @@ setState fn = lift (SProxy ∷ SProxy "setState") (SetState fn unit)
 setState' ∷ ∀effs st. (st → st) → Run (getState ∷ GETSTATE st, setState ∷ SETSTATE st | effs) st
 setState' fn = setState fn *> getState
 
-type Action' st effs a = Run (getState ∷ GETSTATE st, setState ∷ SETSTATE st | effs) a
-type Action st effs = Action' st effs Unit
+type Update st effs = Run (getState ∷ GETSTATE st, setState ∷ SETSTATE st | effs) Unit
+
+purely ∷ ∀st effs. (st → st) → Update st effs
+purely = setState

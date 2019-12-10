@@ -6,7 +6,7 @@ import Data.Array ((..), mapWithIndex)
 import Effect (Effect)
 import Pha (text, class', style, (/\))
 import Pha.App (Document, app, attachTo)
-import Pha.Action (Action, getState, setState)
+import Pha.Update (Update, getState, setState)
 import Pha.Random (randomInt, shuffle, sample)
 import Pha.Effects.Random (RNG, randomGenerate, interpretRng)
 import Pha.Elements (div, button)
@@ -35,7 +35,7 @@ state = {
     card: Ace
 }
 
-update ∷ Msg → Action State EFFS
+update ∷ Msg → Update State EFFS
 
 update RollDice = do
     rolled ← randomGenerate $ randomInt 6 <#> (_ + 1)

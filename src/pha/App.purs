@@ -7,7 +7,7 @@ import Run (onMatch, VariantF)
 import Run as Run
 import Data.Tuple (Tuple(..))
 import Pha.Internal (app) as Internal
-import Pha.Action (Action, setState,  GetState(..), SetState(..))
+import Pha.Update (Update, setState,  GetState(..), SetState(..))
 
 type Document msg = {
     title ∷ String,
@@ -17,9 +17,9 @@ type Document msg = {
 -- effs: effects in the app
 -- neffs: non interpreted effs
 newtype App msg state effs = App {
-    init ∷ Tuple state (Action state effs),
+    init ∷ Tuple state (Update state effs),
     view ∷ state → Document msg,
-    update ∷ msg → Action state effs,
+    update ∷ msg → Update state effs,
     subscriptions ∷ state → Array (Sub msg),
     interpreter ∷ VariantF effs (Effect Unit) → Effect Unit
 }
@@ -27,17 +27,17 @@ newtype App msg state effs = App {
 
 -- | ```purescript
 -- | app ∷ ∀msg state effs. {
--- |     init ∷ Tuple state (Action state effs),
+-- |     init ∷ Tuple state (Update state effs),
 -- |     view ∷ state → Document msg,
--- |     update ∷ msg → Action state effs,
+-- |     update ∷ msg → Update state effs,
 -- |     subscriptions ∷ state → Array (Sub msg)
 -- | } → App effs
 -- | ```
 
 app ∷ ∀msg state effs. {
-    init ∷ Tuple state (Action state effs),
+    init ∷ Tuple state (Update state effs),
     view ∷ state → Document msg,
-    update ∷ msg → Action state effs,
+    update ∷ msg → Update state effs,
     subscriptions ∷ state → Array (Sub msg),
     interpreter ∷ VariantF effs (Effect Unit) → Effect Unit
 } → App msg state effs
@@ -51,7 +51,7 @@ attachTo node (App {init: Tuple state init, view, update, subscriptions, interpr
     fn getS setS =
         {state, view, node, init: init2, subscriptions, dispatch, dispatchEvent} where
 
-        runAction ∷ Action state effs → Effect Unit
+        runAction ∷ Update state effs → Effect Unit
         runAction = Run.runCont handleState (const (pure unit)) where
             handleState = onMatch {
                 getState: \(GetState next) → do

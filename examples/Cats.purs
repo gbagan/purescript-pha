@@ -5,13 +5,13 @@ import Effect (Effect)
 import Run as Run
 import Pha (VDom, text, style, (/\))
 import Pha.App (Document, app, attachTo)
-import Pha.Action (Action, setState)
+import Pha.Update (Update, setState)
 import Pha.Example.Effects.Http (ajax, HTTP, interpretHttp)
 import Pha.Elements (div, h2, button, img)
 import Pha.Attributes (src)
 import Pha.Events (onclick)
 import Control.Monad.Except (runExcept)
-import Data.Either (Either(..), hush)
+import Data.Either (hush)
 import Foreign (readString)
 import Foreign.Index ((!))
 
@@ -26,7 +26,7 @@ type EFFS = (http ∷ HTTP)
 state ∷ State
 state = Loading
 
-update ∷ Msg → Action State EFFS
+update ∷ Msg → Update State EFFS
 update RequestCat = do
     setState \_ → Loading
     res ← ajax "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cat"

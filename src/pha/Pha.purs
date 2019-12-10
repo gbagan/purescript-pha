@@ -4,9 +4,8 @@ module Pha (VDom, Prop, Sub, Event, h, text, emptyNode, key, attr, style, on_, c
 
 import Prelude hiding (when)
 import Effect (Effect)
-import Pha.Action (Action) as A
+import Pha.Update (Update) as A
 import Data.Maybe (Maybe(..), fromMaybe)
-import Data.Tuple (Tuple(..))
 import Data.Tuple.Nested ((/\)) as A
 
 foreign import data VDom ∷ Type → Type

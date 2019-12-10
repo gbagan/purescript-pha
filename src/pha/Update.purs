@@ -1,4 +1,4 @@
-module Pha.Update (Update, getState, setState, setState', GETSTATE, SETSTATE,
+module Pha.Update (Update, purely, getState, setState, setState', GETSTATE, SETSTATE,
     GetState(..), SetState(..)) where
 import Prelude
 import Run (FProxy, Run, SProxy(..), lift)

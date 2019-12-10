@@ -6,15 +6,17 @@ import Data.Array ((..), mapWithIndex)
 import Effect (Effect)
 import Pha (text, class', style, (/\))
 import Pha.App (Document, app, attachTo)
-import Pha.Update (Update, getState, setState)
+import Pha.Update (Update)
 import Pha.Random (randomInt, shuffle, sample)
-import Pha.Effects.Random (RNG, randomGenerate, interpretRng)
+import Pha.Effects.Random (RNG, randomly, interpretRng)
 import Pha.Elements (div, button)
 import Pha.Events (onclick)
 import Pha.Util (pc)
 import Run as Run
 
 data Card = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King
+cards ∷ Array Card
+cards = [Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King]
 
 type State = {
     dice ∷ Int,
@@ -37,20 +39,12 @@ state = {
 
 update ∷ Msg → Update State EFFS
 
-update RollDice = do
-    rolled ← randomGenerate $ randomInt 6 <#> (_ + 1)
-    setState _{dice = rolled}
-
-update DrawCard = do
-    drawn ← randomGenerate $ sample [Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King]
-    case drawn of
-        Just card → setState _{card = card}
-        Nothing → pure unit
-
-update ShufflePuzzle = do
-    {puzzle} ← getState
-    shuffled ← randomGenerate $ shuffle puzzle
-    setState _{puzzle = shuffled}
+update RollDice = randomly \st → st{dice = _} <$> (randomInt 6 <#> (_ + 1))
+update DrawCard = randomly \st →
+    sample cards <#> case _ of
+        Just card → st{card = card}
+        Nothing → st
+update ShufflePuzzle = randomly \st → st{puzzle = _} <$> shuffle st.puzzle
 
 viewCard ∷ Card → String
 viewCard Ace   = "🂡"

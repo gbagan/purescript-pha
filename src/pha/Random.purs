@@ -1,4 +1,4 @@
-module Pha.Random (Random, randomNumber, randomInt, randomBool, shuffle, sample, sample', RandomF(..)) where
+module Pha.Random (Random, randomNumber, randomInt, randomInt', randomBool, shuffle, sample, sample', RandomF(..)) where
 import Prelude
 import Data.Maybe (Maybe, fromMaybe)
 import Data.Tuple (Tuple(Tuple))
@@ -17,7 +17,9 @@ randomInt' n = liftF (RandomInt n identity)
 
 -- | generate a random integer in the range [n, m]
 randomInt ∷ Int → Int → Random Int
-randomInt n m = randomInt' (m - n) <#> (_ + n)
+randomInt n m
+    | m < n = randomInt m n
+    | otherwise = randomInt' (m + 1 - n) <#> (_ + n)
 
 -- | generate a random number in the range [0, 1)
 randomNumber ∷ Random Number

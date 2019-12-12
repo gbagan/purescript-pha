@@ -2531,6 +2531,7 @@ var PS = {};
   var Control_Monad_Free = $PS["Control.Monad.Free"];
   var Data_Array = $PS["Data.Array"];
   var Data_Array_NonEmpty = $PS["Data.Array.NonEmpty"];
+  var Data_Boolean = $PS["Data.Boolean"];
   var Data_Foldable = $PS["Data.Foldable"];
   var Data_Functor = $PS["Data.Functor"];
   var Data_Maybe = $PS["Data.Maybe"];
@@ -2576,11 +2577,29 @@ var PS = {};
           })([  ])(v));
       });
   };
-  var randomInt = function (n) {
-      return function (m) {
-          return Data_Functor.mapFlipped(Control_Monad_Free.freeFunctor)(randomInt$prime(m - n | 0))(function (v) {
-              return v + n | 0;
-          });
+  var randomInt = function ($copy_n) {
+      return function ($copy_m) {
+          var $tco_var_n = $copy_n;
+          var $tco_done = false;
+          var $tco_result;
+          function $tco_loop(n, m) {
+              if (m < n) {
+                  $tco_var_n = m;
+                  $copy_m = n;
+                  return;
+              };
+              if (Data_Boolean.otherwise) {
+                  $tco_done = true;
+                  return Data_Functor.mapFlipped(Control_Monad_Free.freeFunctor)(randomInt$prime((m + 1 | 0) - n | 0))(function (v) {
+                      return v + n | 0;
+                  });
+              };
+              throw new Error("Failed pattern match at Pha.Random (line 19, column 1 - line 19, column 35): " + [ n.constructor.name, m.constructor.name ]);
+          };
+          while (!$tco_done) {
+              $tco_result = $tco_loop($tco_var_n, $copy_m);
+          };
+          return $tco_result;
       };
   };                                                                                                                         
   var functorRng = new Data_Functor.Functor(function (f) {

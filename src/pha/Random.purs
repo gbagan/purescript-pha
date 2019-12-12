@@ -1,4 +1,4 @@
-module Pha.Random (Random, randomNumber, randomInt, randomBool, shuffle, sample, RandomF(..)) where
+module Pha.Random (Random, randomNumber, randomInt, randomBool, shuffle, sample, sample', RandomF(..)) where
 import Prelude
 import Data.Maybe (Maybe, fromMaybe)
 import Data.Tuple (Tuple(Tuple))

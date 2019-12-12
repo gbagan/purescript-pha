@@ -47,9 +47,6 @@ view st@{val1, val2, isMul} =
         input "checkbox" [checked isMul, onchecked ChangeOp],
         text "Multiplication instead of addition"
     ]
+
 main ∷ Effect Unit
-main = sandbox {
-    init,
-    view,
-    update
-} # attachTo "root"
+main = sandbox {init, view, update} # attachTo "root"

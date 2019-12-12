@@ -25,8 +25,4 @@ view counter =
     ]
 
 main ∷ Effect Unit
-main = sandbox {
-    init,
-    update,
-    view
-} # attachTo "root"
+main = sandbox {init, update, view} # attachTo "root"

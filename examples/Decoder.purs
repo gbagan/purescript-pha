@@ -55,5 +55,4 @@ view position =
     ]
 
 main ∷ Effect Unit
-main = sandbox { init, view, update} 
-       # attachTo "root"
+main = sandbox { init, view, update} # attachTo "root"

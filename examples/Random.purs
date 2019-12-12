@@ -1,8 +1,8 @@
 module Example.Random where
 import Prelude hiding (div)
 import Data.Int (toNumber)
-import Data.Maybe (Maybe(..))
 import Data.Array ((..), mapWithIndex)
+import Data.Array.NonEmpty (NonEmptyArray, cons')
 import Effect (Effect)
 import Pha (text, class', style, (/\))
 import Pha.App (Document, app, attachTo)
@@ -15,8 +15,8 @@ import Pha.Util (pc)
 import Run as Run
 
 data Card = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King
-cards ∷ Array Card
-cards = [Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King]
+cards ∷ NonEmptyArray Card
+cards = cons' Ace [Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King]
 
 type State = {
     dice ∷ Int,
@@ -39,11 +39,8 @@ state = {
 
 update ∷ Msg → Update State EFFS
 
-update RollDice = randomly \st → st{dice = _} <$> (randomInt 6 <#> (_ + 1))
-update DrawCard = randomly \st →
-    sample cards <#> case _ of
-        Just card → st{card = card}
-        Nothing → st
+update RollDice = randomly \st → st{dice = _} <$> randomInt 1 6
+update DrawCard = randomly \st →  st{card = _} <$> sample cards
 update ShufflePuzzle = randomly \st → st{puzzle = _} <$> shuffle st.puzzle
 
 viewCard ∷ Card → String

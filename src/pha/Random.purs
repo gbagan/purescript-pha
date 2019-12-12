@@ -1,4 +1,4 @@
-module Pha.Random (Random, randomNumber, randomInt, randomInt', randomBool, shuffle, sample, sample', RandomF(..)) where
+module Pha.Random (Random, number, int, int', bool, shuffle, element, element', RandomF(..)) where
 import Prelude
 import Data.Maybe (Maybe, fromMaybe)
 import Data.Tuple (Tuple(Tuple))
@@ -12,33 +12,33 @@ derive instance functorRng ∷ Functor RandomF
 type Random = Free RandomF
 
 -- | generate a random integer in the range [0, n - 1]
-randomInt' ∷ Int → Random Int
-randomInt' n = liftF (RandomInt n identity)
+int' ∷ Int → Random Int
+int' n = liftF (RandomInt n identity)
 
 -- | generate a random integer in the range [n, m]
-randomInt ∷ Int → Int → Random Int
-randomInt n m
-    | m < n = randomInt m n
-    | otherwise = randomInt' (m + 1 - n) <#> (_ + n)
+int ∷ Int → Int → Random Int
+int n m
+    | m < n = int m n
+    | otherwise = int' (m + 1 - n) <#> (_ + n)
 
 -- | generate a random number in the range [0, 1)
-randomNumber ∷ Random Number
-randomNumber = liftF (RandomNumber identity)
+number ∷ Random Number
+number = liftF (RandomNumber identity)
 
 -- | generate a random boolean 
-randomBool ∷ Random Boolean
-randomBool = randomInt' 2 <#> eq 0
+bool ∷ Random Boolean
+bool = int' 2 <#> eq 0
 
 -- | randomly shuffle an array
 shuffle ∷ ∀a. Array a → Random (Array a)
 shuffle array = do
-    rnds ← sequence $ array # mapWithIndex \i x → Tuple x <$> randomInt' (i+1)
+    rnds ← sequence $ array # mapWithIndex \i x → Tuple x <$> int' (i+1)
     pure $ rnds # foldl (\t (Tuple x i) → t # insertAt i x # fromMaybe []) []
 
 -- | randomly select an element from the array
-sample ∷ ∀a. NEA.NonEmptyArray a → Random a
-sample t = fromMaybe (NEA.head t) <$> NEA.index t <$> randomInt' (NEA.length t)
+element ∷ ∀a. NEA.NonEmptyArray a → Random a
+element t = fromMaybe (NEA.head t) <$> NEA.index t <$> int' (NEA.length t)
 
 -- | randomly select an element from the array
-sample' ∷ ∀a. Array a → Random (Maybe a)
-sample' t = index t <$> randomInt' (length t)
+element' ∷ ∀a. Array a → Random (Maybe a)
+element' t = index t <$> int' (length t)

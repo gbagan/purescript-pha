@@ -2557,17 +2557,14 @@ var PS = {};
           return new RandomNumber(value0);
       };
       return RandomNumber;
-  })();                                                                                                                 
-  var randomInt$prime = function (n) {
+  })();                                                                                                           
+  var int$prime = function (n) {
       return Control_Monad_Free.liftF(new RandomInt(n, Control_Category.identity(Control_Category.categoryFn)));
-  };
-  var sample = function (t) {
-      return Data_Functor.map(Control_Monad_Free.freeFunctor)(Data_Functor.map(Data_Functor.functorFn)(Data_Maybe.fromMaybe(Data_Array_NonEmpty.head(t)))(Data_Array_NonEmpty.index(t)))(randomInt$prime(Data_Array_NonEmpty.length(t)));
   };
   var shuffle = function (array) {
       return Control_Bind.bind(Control_Monad_Free.freeBind)(Data_Traversable.sequence(Data_Traversable.traversableArray)(Control_Monad_Free.freeApplicative)(Data_Array.mapWithIndex(function (i) {
           return function (x) {
-              return Data_Functor.map(Control_Monad_Free.freeFunctor)(Data_Tuple.Tuple.create(x))(randomInt$prime(i + 1 | 0));
+              return Data_Functor.map(Control_Monad_Free.freeFunctor)(Data_Tuple.Tuple.create(x))(int$prime(i + 1 | 0));
           };
       })(array)))(function (v) {
           return Control_Applicative.pure(Control_Monad_Free.freeApplicative)(Data_Foldable.foldl(Data_Foldable.foldableArray)(function (t) {
@@ -2577,7 +2574,7 @@ var PS = {};
           })([  ])(v));
       });
   };
-  var randomInt = function ($copy_n) {
+  var $$int = function ($copy_n) {
       return function ($copy_m) {
           var $tco_var_n = $copy_n;
           var $tco_done = false;
@@ -2590,18 +2587,18 @@ var PS = {};
               };
               if (Data_Boolean.otherwise) {
                   $tco_done = true;
-                  return Data_Functor.mapFlipped(Control_Monad_Free.freeFunctor)(randomInt$prime((m + 1 | 0) - n | 0))(function (v) {
+                  return Data_Functor.mapFlipped(Control_Monad_Free.freeFunctor)(int$prime((m + 1 | 0) - n | 0))(function (v) {
                       return v + n | 0;
                   });
               };
-              throw new Error("Failed pattern match at Pha.Random (line 19, column 1 - line 19, column 35): " + [ n.constructor.name, m.constructor.name ]);
+              throw new Error("Failed pattern match at Pha.Random (line 19, column 1 - line 19, column 29): " + [ n.constructor.name, m.constructor.name ]);
           };
           while (!$tco_done) {
               $tco_result = $tco_loop($tco_var_n, $copy_m);
           };
           return $tco_result;
       };
-  };                                                                                                                         
+  };
   var functorRng = new Data_Functor.Functor(function (f) {
       return function (m) {
           if (m instanceof RandomInt) {
@@ -2613,9 +2610,12 @@ var PS = {};
           throw new Error("Failed pattern match at Pha.Random (line 11, column 1 - line 11, column 45): " + [ m.constructor.name ]);
       };
   });
-  exports["randomInt"] = randomInt;
+  var element = function (t) {
+      return Data_Functor.map(Control_Monad_Free.freeFunctor)(Data_Functor.map(Data_Functor.functorFn)(Data_Maybe.fromMaybe(Data_Array_NonEmpty.head(t)))(Data_Array_NonEmpty.index(t)))(int$prime(Data_Array_NonEmpty.length(t)));
+  };
+  exports["int"] = $$int;
   exports["shuffle"] = shuffle;
-  exports["sample"] = sample;
+  exports["element"] = element;
   exports["RandomInt"] = RandomInt;
   exports["RandomNumber"] = RandomNumber;
   exports["functorRng"] = functorRng;
@@ -3049,7 +3049,7 @@ var PS = {};
                       card: st.card,
                       puzzle: st.puzzle
                   };
-              })(Pha_Random.randomInt(1)(6));
+              })(Pha_Random["int"](1)(6));
           });
       };
       if (v instanceof DrawCard) {
@@ -3060,7 +3060,7 @@ var PS = {};
                       dice: st.dice,
                       puzzle: st.puzzle
                   };
-              })(Pha_Random.sample(cards));
+              })(Pha_Random.element(cards));
           });
       };
       if (v instanceof ShufflePuzzle) {

@@ -7,7 +7,7 @@ import Effect (Effect)
 import Pha (text, class', style, (/\))
 import Pha.App (Document, app, attachTo)
 import Pha.Update (Update)
-import Pha.Random (randomInt, shuffle, sample)
+import Pha.Random as R
 import Pha.Effects.Random (RNG, randomly, interpretRng)
 import Pha.Elements (div, button)
 import Pha.Events (onclick)
@@ -39,9 +39,9 @@ state = {
 
 update ∷ Msg → Update State EFFS
 
-update RollDice = randomly \st → st{dice = _} <$> randomInt 1 6
-update DrawCard = randomly \st →  st{card = _} <$> sample cards
-update ShufflePuzzle = randomly \st → st{puzzle = _} <$> shuffle st.puzzle
+update RollDice = randomly \st → st{dice = _} <$> R.int 1 6
+update DrawCard = randomly \st →  st{card = _} <$> R.element cards
+update ShufflePuzzle = randomly \st → st{puzzle = _} <$> R.shuffle st.puzzle
 
 viewCard ∷ Card → String
 viewCard Ace   = "🂡"

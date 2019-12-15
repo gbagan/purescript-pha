@@ -7,6 +7,7 @@ You can edit this file as you like.
 , dependencies =
     [ "effect"
     , "either"
+    , "exists"
     , "foldable-traversable"
     , "foreign"
     , "free"

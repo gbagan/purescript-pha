@@ -1330,44 +1330,38 @@ var PS = {};
   const defer = requestAnimationFrame || setTimeout
 
   const merge = (a, b) => Object.assign({}, a, b);
-
   const compose = (f, g) => f && g ? x => f(g(x)) : f || g; 
 
-  let divertHref = null;
-
-  const patchProperty = function(node, key, oldValue, newValue, listener, isSvg, mapf) {
-    if (key === "key") {
-    } else if (key === "style") {
-      for (var k in merge(oldValue, newValue)) {
-        oldValue = newValue == null || newValue[k] == null ? "" : newValue[k]
-        if (k[0] === "-") {
-          node[key].setProperty(k, oldValue)
-        } else {
-          node[key][k] = oldValue
-        }
+  const patchProperty = (node, key, oldValue, newValue, listener, isSvg, mapf) => {
+      if (key === "key") {
       }
-    } else if (typeof newValue === "function") {
-      if (
-        !((node.actions || (node.actions = {}))[key] = mapf ? mapf(newValue) : newValue)
-      ) {
-        node.removeEventListener(key, listener)
-      } else if (!oldValue) {
-        node.addEventListener(key, listener)
+      else if (key === "style") {
+          for (let k in merge(oldValue, newValue)) {
+              oldValue = newValue == null || newValue[k] == null ? "" : newValue[k]
+              if (k[0] === "-") {
+                  node[key].setProperty(k, oldValue)
+              } else {
+                  node[key][k] = oldValue
+              }
+          }
+      } else if (typeof newValue === "function") {
+          if (
+              !((node.actions || (node.actions = {}))[key] = mapf ? mapf(newValue) : newValue)
+          ) {
+              node.removeEventListener(key, listener)
+          } else if (!oldValue) {
+              node.addEventListener(key, listener)
+          }
+      } else if (!isSvg && key !== "list" && key in node) {
+          node[key] = newValue
+      } else if (newValue == null || newValue === false || (key === "class" && !newValue)) {
+          node.removeAttribute(key)
+      } else {
+          node.setAttribute(key, newValue)
       }
-    } else if (!isSvg && key !== "list" && key in node) {
-      node[key] = newValue
-    } else if (
-      newValue == null ||
-      newValue === false ||
-      (key === "class" && !newValue)
-    ) {
-      node.removeAttribute(key)
-    } else {
-      node.setAttribute(key, newValue)
-    }
   }
 
-  const createNode = function(vnode, listener, isSvg, mapf) {
+  const createNode = (vnode, listener, isSvg, mapf) => {
       const node =
           vnode.type === TEXT_NODE
           ? document.createTextNode(vnode.name)
@@ -1375,9 +1369,6 @@ var PS = {};
           ? document.createElementNS("http://www.w3.org/2000/svg", vnode.name)
           : document.createElement(vnode.name)
       const props = vnode.props
-      if (divertHref && vnode.name === "a") {
-          node.addEventListener("click", ev => divertHref(ev)());
-      }
       mapf = compose(mapf, vnode.mapf); 
 
       for (let k in props) {
@@ -1417,17 +1408,17 @@ var PS = {};
         parent.removeChild(oldVNode.node)
       }
     } else {
-      var tmpVKid
-      var oldVKid
+      let tmpVKid
+      let oldVKid
 
-      var oldKey
-      var newKey
+      let oldKey
+      let newKey
 
-      var oldVProps = oldVNode.props
-      var newVProps = newVNode.props
+      const oldVProps = oldVNode.props
+      const newVProps = newVNode.props
 
-      var oldVKids = oldVNode.children
-      var newVKids = newVNode.children
+      const oldVKids = oldVNode.children
+      const newVKids = newVNode.children
 
       let oldHead = 0
       let newHead = 0
@@ -1437,7 +1428,7 @@ var PS = {};
       mapf = compose(mapf, newVNode.mapf);
       isSvg = isSvg || newVNode.name === "svg"
 
-      for (var i in merge(oldVProps, newVProps)) {
+      for (let i in merge(oldVProps, newVProps)) {
         if (
           (i === "value" || i === "selected" || i === "checked"
             ? node[i]
@@ -1604,22 +1595,22 @@ var PS = {};
   }
 
   const propsChanged = function(a, b) {
-    for (var k in a) if (a[k] !== b[k]) return true
-    for (var k in b) if (a[k] !== b[k]) return true
+    for (let k in a) if (a[k] !== b[k]) return true
+    for (let k in b) if (a[k] !== b[k]) return true
   }
 
   const getVNode = (newVNode, oldVNode) =>
-    newVNode.type === LAZY_NODE
+      newVNode.type === LAZY_NODE
       ? ((!oldVNode || propsChanged(oldVNode.lazy, newVNode.lazy)) &&
           ((oldVNode = newVNode.lazy.view(newVNode.lazy)).lazy = newVNode.lazy),
-        oldVNode)
+          oldVNode)
       : newVNode
 
   const createVNode = (name, props, children, node, key, type) =>
     ({name, props, children, node, type, key})
 
   const recycleNode = node =>
-    node.nodeType === TEXT_NODE
+      node.nodeType === TEXT_NODE
       ? createTextVNode(node.nodeValue, node)
       : createVNode(
           node.nodeName.toLowerCase(),
@@ -1628,30 +1619,29 @@ var PS = {};
           node,
           null,
           RECYCLED_NODE
-        )
+      )
 
   const shouldRestart = (a, b) => {
-          if (a !== b) {
-            for (var k in merge(a, b)) {
-              if (a[k] !== b[k] && !isSameAction(a[k], b[k])) return true
+      if (a !== b) {
+          for (var k in merge(a, b)) {
+              if (a[k] !== b[k] && !isSameAction(a[k], b[k]))
+                  return true
               b[k] = a[k]
-            }
           }
-        }
+      }
+  }
       
-      const patchSubs = (oldSubs, newSubs, dispatch) => {
-          for (var
-                i = 0, oldSub, newSub, subs = [];
-            i < oldSubs.length || i < newSubs.length;
-            i++
-          ) {
-            oldSub = oldSubs[i]
-            newSub = newSubs[i]
-            subs.push(
+  const patchSubs = (oldSubs, newSubs, dispatch) => {
+      for (var
+              i = 0, oldSub, newSub, subs = [];
+          i < oldSubs.length || i < newSubs.length;
+          i++
+      ) {
+          oldSub = oldSubs[i]
+          newSub = newSubs[i]
+          subs.push(
               newSub
-                ? !oldSub ||
-                  newSub.fn !== oldSub.fn ||
-                  shouldRestart(newSub[0], oldSub[1])
+              ? !oldSub || newSub.fn !== oldSub.fn || shouldRestart(newSub[0], oldSub[1])
                   ? [
                       newSub[0],
                       newSub[1],
@@ -1659,12 +1649,11 @@ var PS = {};
                       oldSub && oldSub[2]()
                     ]
                   : oldSub
-                : oldSub && oldSub[2]()
-            )
-          }
-          return subs
-        }
-
+              : oldSub && oldSub[2]()
+          )
+      }
+      return subs
+  }
 
   const app = props => {
       let state = {}
@@ -1675,7 +1664,7 @@ var PS = {};
           dispatchEvent(event)(this.actions[event.type])()
       }
  
-      const getState = () => state;
+      const getState = () => state
 
       const setState = newState => () => {
           if (state !== newState) {
@@ -1703,18 +1692,18 @@ var PS = {};
           )
       }
 
-      const {render, subscriptions, dispatch, dispatchEvent, init} = props({getS: getState, setS: setState, renderVDom});
+      const {render, subscriptions, dispatch, dispatchEvent, init} = props({getS: getState, setS: setState, renderVDom})
 
       return rootnode => () => {
-          node = document.getElementById(rootnode);
+          node = document.getElementById(rootnode)
           if (!node)
-              return;
-          vdom = node && recycleNode(node);
-          init();
+              return
+          vdom = node && recycleNode(node)
+          init()
       }
   }
 
-  exports.app = app;
+  exports.app = app
 })(PS["Pha.Internal"] = PS["Pha.Internal"] || {});
 (function($PS) {
   // Generated by purs version 0.13.5

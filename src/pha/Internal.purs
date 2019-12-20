@@ -20,4 +20,3 @@ type App msg state =
 type AppBuilder msg state = AppPrimitives msg state → App msg state
 
 foreign import app ∷ ∀msg state. AppBuilder msg state → String → Effect Unit
-foreign import withDivertHref ∷ (Event → Effect Unit) → Effect Unit → Effect Unit

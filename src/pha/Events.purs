@@ -14,6 +14,7 @@ import Pha.Events.Decoder (Decoder, always, currentTargetChecked, currentTargetV
 import Foreign (unsafeToForeign)
 import Data.Either (Either(..))
 import Control.Monad.Except (runExcept)
+import Web.Event.Event as E
 
 on ∷ ∀msg. String → Decoder msg → Prop msg
 on eventname decoder = on' eventname (decoder >>> map(Just))
@@ -25,8 +26,6 @@ on' eventname decoder = on_ eventname handler where
             Right a → a
             _  → Nothing
 
-foreign import stopPropagationE ∷ Event → Effect Unit
-foreign import preventDefaultE ∷ Event → Effect Unit
 foreign import setPointerCaptureE ∷ Event → Effect Unit
 foreign import releasePointerCaptureE ∷ Event → Effect Unit
 
@@ -35,12 +34,11 @@ custom eventname decoder = unsafeOnWithEffect eventname handler where
     handler ev =
         case runExcept (decoder (unsafeToForeign ev)) of
             Right {message, stopPropagation, preventDefault} →
-                {
-                     effect: do
-                        when stopPropagation (stopPropagationE ev)
-                        when preventDefault (preventDefaultE ev)
-                    ,
-                     msg: message }
+                {   effect: do
+                        when stopPropagation (E.stopPropagation ev)
+                        when preventDefault (E.preventDefault ev)
+                ,   msg: message
+                }
             _  → {effect: pure unit, msg: Nothing}
 
 preventDefaultOn ∷ ∀msg. String → Decoder (Tuple (Maybe msg) Boolean) → Prop msg

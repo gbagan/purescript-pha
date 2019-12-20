@@ -14,7 +14,7 @@ data GenWrapper a b = GenWrapper (Random b) (b → a)
 newtype Rng a = Rng (Exists (GenWrapper a)) 
 
 instance functorRng ∷ Functor Rng where
-    map f (Rng r) = Rng $ r # runExists \(GenWrapper d g) -> mkExists (GenWrapper d (f <<< g))
+    map f (Rng r) = Rng $ r # runExists \(GenWrapper d g) → mkExists (GenWrapper d (f <<< g))
 
 type RNG = FProxy Rng
 _rng = SProxy ∷ SProxy "rng"
@@ -30,7 +30,7 @@ randomly f = do
     st2 <- randomGenerate (f st)
     setState \_ → st2
 
-runRng :: forall a. Random a -> Effect a
+runRng :: forall a. Random a → Effect a
 runRng = runFreeM go where
     go (RandomInt m next) = do
         x <- mathRandom
@@ -38,7 +38,7 @@ runRng = runFreeM go where
     go (RandomNumber next) = do
         mathRandom <#> next
 
-interpretRng ∷ Rng (Effect Unit) -> Effect Unit
+interpretRng ∷ Rng (Effect Unit) → Effect Unit
 interpretRng (Rng a) = runExists f a where
-    f :: forall b. GenWrapper (Effect Unit) b -> Effect Unit
+    f :: forall b. GenWrapper (Effect Unit) b → Effect Unit
     f (GenWrapper rndData next) = runRng rndData >>= next

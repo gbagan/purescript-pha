@@ -5,7 +5,8 @@ import Pha (text, (/\))
 import Data.String (stripPrefix, Pattern(..))
 import Data.Int (fromString)
 import Data.Maybe (fromMaybe)
-import Pha.App (Document, appWithRouter, attachTo, Url, UrlRequest(..))
+import Pha.App (Document, attachTo)
+import Pha.App.Router (appWithRouter, Url, UrlRequest(..))
 import Pha.Update (Update, purely, getState)
 import Pha.Elements (div, button, h1, a)
 import Pha.Attributes (href)
@@ -21,7 +22,7 @@ data Msg = OnUrlChange Url | OnUrlRequest UrlRequest | NextPage
 -- effects used in this app
 type EFFS = (nav ∷ NAV)
 
-extractNumber :: String -> Int
+extractNumber :: String → Int
 extractNumber = (stripPrefix (Pattern "/page") >=> fromString) >>> fromMaybe 0
 
 update ∷ Msg → Update State EFFS

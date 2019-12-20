@@ -49,3 +49,5 @@ Decoder (decoding events) [Code](https://github.com/gbagan/purescript-pha/blob/m
 Inputs (event effects, text and checkbox inputs) [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/Inputs.purs) | [Demo](http://htmlpreview.github.io/?https://github.com/gbagan/purescript-pha/blob/master/examples/dist/ex-inputs.html)
 
 Cats (HTTP, json) [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/Cats.purs) | [Demo](http://htmlpreview.github.io/?https://github.com/gbagan/purescript-pha/blob/master/examples/dist/ex-cats.html)
+
+Routing [Code](https://github.com/gbagan/purescript-pha/blob/master/examples/Routing.purs) | [Demo](http://jsfiddle.net/tnuvcm17/)

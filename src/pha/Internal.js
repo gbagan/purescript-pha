@@ -343,7 +343,7 @@ const shouldRestart = (a, b) => {
       }
 
 
-const app = props => () => {
+const app = props => {
     let state = {};
     let lock = false
     let subs = [];
@@ -363,12 +363,10 @@ const app = props => () => {
         return state
     }
 
-    const {state: istate, view, subscriptions, dispatch, dispatchEvent, init, node: rootnode} = props(getState)(setState);
+    const {view, subscriptions, dispatch, dispatchEvent, init} = props(getState)(setState);
 
-    let node = document.getElementById(rootnode);
-    if (!node)
-        return;
-    let vdom = node && recycleNode(node);
+    let node = null;
+    let vdom = null;
 
     const render = () => {
         const {title, body} = view(state); 
@@ -382,8 +380,14 @@ const app = props => () => {
             listener
         )
     }
-    setState(istate)();
-    init();
+
+    return rootnode => {
+        node = document.getElementById(rootnode);
+        if (!node)
+            return;
+        vdom = node && recycleNode(node);
+        init();
+    }
 }
 
 exports.app = app;

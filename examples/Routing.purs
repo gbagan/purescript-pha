@@ -2,8 +2,11 @@ module Example.Routing where
 import Prelude hiding (div)
 import Effect (Effect)
 import Pha (text, (/\))
+import Data.String (stripPrefix, Pattern(..))
+import Data.Int (fromString)
+import Data.Maybe (fromMaybe)
 import Pha.App (Document, appWithRouter, attachTo, Url(..), UrlRequest(..))
-import Pha.Update (Update, purely, getState, setState)
+import Pha.Update (Update, purely, getState)
 import Pha.Elements (div, button, h1, a)
 import Pha.Attributes (href)
 import Pha.Events (onclick)
@@ -11,48 +14,47 @@ import Pha.Effects.Nav (NAV, interpretNav)
 import Pha.Effects.Nav as Nav
 import Run as Run
 
-type State = 
-    {   page :: String
-    ,   counter :: Int
-    }
+type State = Url
 
 data Msg = OnUrlChange Url | OnUrlRequest UrlRequest | NextPage
 
 -- effects used in this app
 type EFFS = (nav ∷ NAV)
 
-update ∷ Msg → Update State EFFS
+extractNumber :: String -> Int
+extractNumber = (stripPrefix (Pattern "/page") >=> fromString) >>> fromMaybe 0 
 
-update (OnUrlChange (Url url)) = purely $ _{page = url.pathname}
+update ∷ Msg → Update State EFFS
+update (OnUrlChange url) = purely $ const url
 update (OnUrlRequest (Internal (Url url))) = Nav.goTo url.href
 update (OnUrlRequest (External url)) = Nav.load url
 update NextPage = do
-    state <- getState
-    setState _{counter = state.counter + 1}
-    Nav.goTo $ "/page" <> show (state.counter + 1)
+    (Url {pathname}) <- getState
+    Nav.goTo $ "/page" <> show (extractNumber pathname + 1)
+
 
 view ∷ State → Document Msg
-view {counter, page} = {
+view (Url {href: href', pathname}) = {
     title: "Routing example",
     body:
         div [] 
-        [   h1 [] [text $ "Page: " <> page]
-        ,   a [href $ "/page" <> show counter] [text "Previous page"]
+        [   h1 [] [text $ "Page: " <> href']
+        ,   a 
+                [href $ "/page" <> show (extractNumber pathname - 1)]
+                [text "Previous page"]
         ,   button [onclick NextPage] [text "Next page"]
         ]
 }
 
-
-
 main ∷ Effect Unit
-main = appWithRouter {
-    init: \(Url url) -> {counter: 0, page: ""} /\ Nav.redirectTo "/0",
-    view,
-    update,
-    subscriptions: const [],
-    onUrlChange: OnUrlChange,
-    onUrlRequest: OnUrlRequest,
-    interpreter: Run.match {
-        nav: interpretNav
-    }
-} # attachTo "root"
+main = appWithRouter 
+    {   init: (_ /\ Nav.redirectTo "/page0")
+    ,   view
+    ,   update
+    ,   subscriptions: const []
+    ,   onUrlChange: OnUrlChange
+    ,   onUrlRequest: OnUrlRequest
+    ,   interpreter: Run.match {
+            nav: interpretNav
+        }
+    } # attachTo "root"

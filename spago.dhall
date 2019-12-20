@@ -5,7 +5,8 @@ You can edit this file as you like.
 { name = "pha"
 , license = "MIT"
 , dependencies =
-    [ "effect"
+    [ "debug"
+    , "effect"
     , "either"
     , "exists"
     , "foldable-traversable"

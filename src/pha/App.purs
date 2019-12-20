@@ -155,7 +155,7 @@ appWithRouter {init, view, update, subscriptions, onUrlRequest, onUrlChange, int
         case makeUrl href baseUrl.href of
             Nothing -> pure unit
             Just url ->
-                dispatch $ onUrlRequest $ urlRequest url (Url baseUrl)
+                dispatch $ onUrlRequest $ urlRequest (Url baseUrl) url
 
     popStateHandler url ev = do
         url2 <- getLocationUrl

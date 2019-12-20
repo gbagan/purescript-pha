@@ -13,6 +13,8 @@ You can edit this file as you like.
     , "free"
     , "profunctor-lenses"
     , "run"
+    , "web-events"
+    , "web-html"
     ]
 , packages = ./packages.dhall
 , repository = "git://github.com/gbagan/purescript-pha.git"

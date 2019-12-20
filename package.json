@@ -13,6 +13,7 @@
     "build-example-random": "spago bundle-app -m Example.Random --to examples/dist/bundle-random.js",
     "build-example-decoder": "spago bundle-app -m Example.Decoder --to examples/dist/bundle-decoder.js",
     "build-example-inputs": "spago bundle-app -m Example.Inputs --to examples/dist/bundle-inputs.js",
-    "build-example-cats": "spago bundle-app -m Example.Cats --to examples/dist/bundle-cats.js"
+    "build-example-cats": "spago bundle-app -m Example.Cats --to examples/dist/bundle-cats.js",
+    "build-example-routing": "spago bundle-app -m Example.Routing --to examples/dist/bundle-routing.js"
   }
 }

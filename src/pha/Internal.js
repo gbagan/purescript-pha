@@ -14,6 +14,8 @@ const merge = (a, b) => Object.assign({}, a, b);
 
 const compose = (f, g) => f && g ? x => f(g(x)) : f || g; 
 
+let divertHref = null;
+
 const patchProperty = function(node, key, oldValue, newValue, listener, isSvg, mapf) {
   if (key === "key") {
   } else if (key === "style") {
@@ -47,32 +49,34 @@ const patchProperty = function(node, key, oldValue, newValue, listener, isSvg, m
 }
 
 const createNode = function(vnode, listener, isSvg, mapf) {
-  var node =
-    vnode.type === TEXT_NODE
-      ? document.createTextNode(vnode.name)
-      : (isSvg = isSvg || vnode.name === "svg")
-      ? document.createElementNS("http://www.w3.org/2000/svg", vnode.name)
-      : document.createElement(vnode.name)
-  var props = vnode.props
+    const node =
+        vnode.type === TEXT_NODE
+        ? document.createTextNode(vnode.name)
+        : (isSvg = isSvg || vnode.name === "svg")
+        ? document.createElementNS("http://www.w3.org/2000/svg", vnode.name)
+        : document.createElement(vnode.name)
+    const props = vnode.props
+    if (divertHref && vnode.name === "a") {
+        node.addEventListener("click", ev => divertHref(ev)());
+    }
+    mapf = compose(mapf, vnode.mapf); 
 
-  mapf = compose(mapf, vnode.mapf); 
+    for (let k in props) {
+        patchProperty(node, k, null, props[k], listener, isSvg, mapf)
+    }
 
-  for (let k in props) {
-    patchProperty(node, k, null, props[k], listener, isSvg, mapf)
-  }
+    for (let i = 0, len = vnode.children.length; i < len; i++) {
+        node.appendChild(
+            createNode(
+                (vnode.children[i] = getVNode(vnode.children[i])),
+                listener,
+                isSvg,
+                mapf
+            )
+        )
+    }
 
-  for (let i = 0, len = vnode.children.length; i < len; i++) {
-    node.appendChild(
-      createNode(
-        (vnode.children[i] = getVNode(vnode.children[i])),
-        listener,
-        isSvg,
-        mapf
-      )
-    )
-  }
-
-  return (vnode.node = node)
+    return (vnode.node = node)
 }
 
 const getKey = vnode => vnode == null ? null : vnode.key;
@@ -344,12 +348,12 @@ const shouldRestart = (a, b) => {
 
 
 const app = props => {
-    let state = {};
+    let state = {}
     let lock = false
-    let subs = [];
+    let subs = []
 
     const listener = function(event) {
-        dispatchEvent(event)(this.actions[event.type])();
+        dispatchEvent(event)(this.actions[event.type])()
     }
  
     const getState = () => state;
@@ -358,30 +362,31 @@ const app = props => {
         if (state !== newState) {
             state = newState
             subs = patchSubs(subs, subscriptions(state), dispatch)
-            if (view && !lock) defer(render, (lock = true))
+            if (!lock) {
+                lock = true
+                defer(() => render(state)());
+            }
         }
         return state
     }
 
-    const {view, subscriptions, dispatch, dispatchEvent, init} = props(getState)(setState);
-
     let node = null;
     let vdom = null;
 
-    const render = () => {
-        const {title, body} = view(state); 
-        document.title = title;
+    const renderVDom = newVdom => () => { 
         lock = false
         node = patch(
             node.parentNode,
             node,
             vdom,
-            vdom = body,
+            vdom = newVdom,
             listener
         )
     }
 
-    return rootnode => {
+    const {render, subscriptions, dispatch, dispatchEvent, init} = props({getS: getState, setS: setState, renderVDom});
+
+    return rootnode => () => {
         node = document.getElementById(rootnode);
         if (!node)
             return;
@@ -391,3 +396,8 @@ const app = props => {
 }
 
 exports.app = app;
+exports.withDivertHref = fn => action => () => {
+    divertHref = fn
+    action();
+    divertHref = null;
+};

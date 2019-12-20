@@ -1,21 +1,20 @@
-module Pha (VDom, Prop, Sub, Event, h, text, emptyNode, key, attr, style, on_, class_, class', lazy,
-    when, (<&&>), maybeN, maybe, (<??>), unsafeOnWithEffect, module A,
+module Pha (VDom, Prop, Sub, h, text, emptyNode, key, attr, style, on_, class_, class', lazy,
+    when, (<&&>), maybeN, maybe, (<??>), unsafeOnWithEffect, module A, module E,
       EventHandler) where
-
 import Prelude hiding (when)
 import Effect (Effect)
 import Pha.Update (Update) as A
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Tuple.Nested ((/\)) as A
-
+import Web.Event.Event (Event) as E
+import Web.Event.Event (Event)
 foreign import data VDom ∷ Type → Type
-foreign import data Event ∷ Type
+
 
 -- | the effect can be stopPropagation, preventDefault, releasePointerCapture, etc...
 type EventHandler msg = Event → {effect ∷ Effect Unit, msg ∷ Maybe msg}
 
 foreign import data Sub ∷ Type → Type
-
 foreign import data Prop ∷ Type → Type
   
 -- | add a key to the vnode

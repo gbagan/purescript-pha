@@ -2001,7 +2001,7 @@ var PS = {};
   var Web_HTML = $PS["Web.HTML"];
   var Web_HTML_HTMLDocument = $PS["Web.HTML.HTMLDocument"];
   var Web_HTML_Location = $PS["Web.HTML.Location"];
-  var Web_HTML_Window = $PS["Web.HTML.Window"];
+  var Web_HTML_Window = $PS["Web.HTML.Window"];                
   var Internal = (function () {
       function Internal(value0) {
           this.value0 = value0;
@@ -2020,13 +2020,13 @@ var PS = {};
       };
       return External;
   })();
-  var urlRequest = function (v) {
-      return function (v1) {
-          var $35 = v.protocol === v1.protocol && (v.host === v1.host && v.port === v1.port);
-          if ($35) {
-              return new Internal(v1);
+  var urlRequest = function (base) {
+      return function (url) {
+          var $30 = base.protocol === url.protocol && (base.host === url.host && base.port === url.port);
+          if ($30) {
+              return new Internal(url);
           };
-          return new External(v1.href);
+          return new External(url.href);
       };
   };
   var makeUrl = $foreign.makeUrlAux(Data_Maybe.Nothing.value)(Data_Maybe.Just.create);
@@ -2068,8 +2068,8 @@ var PS = {};
                       })(interpreter);
                       return Run.runCont(handleState)(Data_Function["const"](Control_Applicative.pure(Effect.applicativeEffect)(Data_Unit.unit)));
                   })();
-                  var dispatch = function ($116) {
-                      return runAction(update($116));
+                  var dispatch = function ($109) {
+                      return runAction(update($109));
                   };
                   var dispatchEvent = function (ev) {
                       return function (handler) {
@@ -2114,16 +2114,16 @@ var PS = {};
                   };
               };
           };
-          var hrefHandler = function (v3) {
+          var hrefHandler = function (baseUrl) {
               return function (href) {
-                  var v4 = makeUrl(href)(v3.href);
-                  if (v4 instanceof Data_Maybe.Nothing) {
+                  var v3 = makeUrl(href)(baseUrl.href);
+                  if (v3 instanceof Data_Maybe.Nothing) {
                       return Control_Applicative.pure(Effect.applicativeEffect)(Data_Unit.unit);
                   };
-                  if (v4 instanceof Data_Maybe.Just) {
-                      return v2.dispatch(v.onUrlRequest(urlRequest(v3)(v4.value0)));
+                  if (v3 instanceof Data_Maybe.Just) {
+                      return v2.dispatch(v.onUrlRequest(urlRequest(baseUrl)(v3.value0)));
                   };
-                  throw new Error("Failed pattern match at Pha.App (line 155, column 9 - line 158, column 71): " + [ v4.constructor.name ]);
+                  throw new Error("Failed pattern match at Pha.App (line 155, column 9 - line 158, column 65): " + [ v3.constructor.name ]);
               };
           };
           var init2 = function __do() {

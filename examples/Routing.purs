@@ -5,7 +5,7 @@ import Pha (text, (/\))
 import Data.String (stripPrefix, Pattern(..))
 import Data.Int (fromString)
 import Data.Maybe (fromMaybe)
-import Pha.App (Document, appWithRouter, attachTo, Url(..), UrlRequest(..))
+import Pha.App (Document, appWithRouter, attachTo, Url, UrlRequest(..))
 import Pha.Update (Update, purely, getState)
 import Pha.Elements (div, button, h1, a)
 import Pha.Attributes (href)
@@ -22,19 +22,19 @@ data Msg = OnUrlChange Url | OnUrlRequest UrlRequest | NextPage
 type EFFS = (nav ∷ NAV)
 
 extractNumber :: String -> Int
-extractNumber = (stripPrefix (Pattern "/page") >=> fromString) >>> fromMaybe 0 
+extractNumber = (stripPrefix (Pattern "/page") >=> fromString) >>> fromMaybe 0
 
 update ∷ Msg → Update State EFFS
 update (OnUrlChange url) = purely $ const url
-update (OnUrlRequest (Internal (Url url))) = Nav.goTo url.href
+update (OnUrlRequest (Internal url)) = Nav.goTo url.href
 update (OnUrlRequest (External url)) = Nav.load url
 update NextPage = do
-    (Url {pathname}) <- getState
+    {pathname} <- getState
     Nav.goTo $ "/page" <> show (extractNumber pathname + 1)
 
 
 view ∷ State → Document Msg
-view (Url {href: href', pathname}) = {
+view {href: href', pathname} = {
     title: "Routing example",
     body:
         div [] 
@@ -42,7 +42,9 @@ view (Url {href: href', pathname}) = {
         ,   a 
                 [href $ "/page" <> show (extractNumber pathname - 1)]
                 [text "Previous page"]
-        ,   button [onclick NextPage] [text "Next page"]
+        ,   button
+                [onclick NextPage]
+                [text "Next page"]
         ]
 }
 

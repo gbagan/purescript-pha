@@ -87,7 +87,7 @@ sandbox {init, view, update} {getS, setS, renderVDom} =
     {dispatch, dispatchEvent} = getDispatchers getS setS update2 (const (pure unit))
     render = renderVDom <<< view
 
-newtype Url = Url
+type Url =
     {   hash ∷ String
     ,   host ∷ String
     ,   hostname ∷ String
@@ -115,18 +115,18 @@ getLocationUrl = do
     port <- L.port loc
     protocol <- L.protocol loc
     search <- L.search loc
-    pure $ Url {hash, host, hostname, href, origin, pathname, port, protocol, search}
+    pure $ {hash, host, hostname, href, origin, pathname, port, protocol, search}
 
 foreign import dispatchPopState ∷ Effect Unit
 
 data UrlRequest = Internal Url | External String
 
 urlRequest ∷ Url → Url → UrlRequest
-urlRequest (Url base) (Url url) =
+urlRequest base url =
     if base.protocol == url.protocol &&
         base.host == url.host &&
         base.port == url.port then
-        Internal (Url url)
+        Internal url
     else
         External url.href
 
@@ -151,11 +151,11 @@ appWithRouter {init, view, update, subscriptions, onUrlRequest, onUrlChange, int
         window >>= document >>= setTitle title
         renderVDom body
 
-    hrefHandler (Url baseUrl) href  =
+    hrefHandler baseUrl href  =
         case makeUrl href baseUrl.href of
             Nothing -> pure unit
             Just url ->
-                dispatch $ onUrlRequest $ urlRequest (Url baseUrl) url
+                dispatch $ onUrlRequest $ urlRequest baseUrl url
 
     popStateHandler url ev = do
         url2 <- getLocationUrl

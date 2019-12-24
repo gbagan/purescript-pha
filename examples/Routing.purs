@@ -61,3 +61,8 @@ main = appWithRouter
             nav: interpretNav
         }
     } # attachTo "root"
+import { h, app } from "https://unpkg.com/hyperapp"
+  
+  const init = {
+		status: false
+	}

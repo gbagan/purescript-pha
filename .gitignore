@@ -10,3 +10,4 @@
 /.spago
 /yarn.lock
 /packages.dhall
+package-lock.json

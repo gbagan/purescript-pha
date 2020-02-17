@@ -1,7 +1,5 @@
 # purescript-pha
-Elm-like library based on Hyperapp
-
-https://github.com/jorgebucaran/hyperapp
+Elm-like library
 
 ### Documentation
 Documentation is [published on Pursuit](https://pursuit.purescript.org/packages/purescript-pha)

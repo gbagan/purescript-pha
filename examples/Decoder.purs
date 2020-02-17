@@ -7,7 +7,7 @@ import Pha.App (sandbox, attachTo)
 import Pha.Elements (div)
 import Pha.Events (on, onpointerleave)
 import Pha.Events.Decoder (Decoder, readNumber, readProp, currentTarget, getBoundingClientRect)
-import Pha.Svg (svg, viewBox, circle, r, fill, stroke)
+import Pha.Svg (svg, viewBox, circle, r_, fill, stroke)
 import Pha.Util (pc, translate)
 
 type Position = {x ∷ Number, y ∷ Number}
@@ -45,7 +45,7 @@ view position =
             svg [viewBox 0 0 100 100] [
                 maybeN $ position <#> \{x, y} →
                     circle [
-                        r "7.0",
+                        r_ "7.0",
                         fill "red",
                         stroke "black",
                         style "transform" $ translate (pc x) (pc y)

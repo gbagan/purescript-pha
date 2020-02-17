@@ -45,8 +45,8 @@ cy = attr "cy"
 r_ ∷ ∀msg. String → Prop msg
 r_ = attr "r"
 
-d ∷ ∀msg. String → Prop msg
-d = attr "d"
+d_ ∷ ∀msg. String → Prop msg
+d_ = attr "d"
 
 width ∷ ∀msg. String → Prop msg
 width = attr "width"

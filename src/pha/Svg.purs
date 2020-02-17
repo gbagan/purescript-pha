@@ -11,17 +11,17 @@ svg = h "svg"
 rect ∷ ∀msg. Array (Prop msg) → VDom msg
 rect props = h "rect" props []
     
-path ∷ ∀msg. String → Array (Prop msg) → VDom msg
-path d props = h "path" ([attr "d" d] <> props) []
+path ∷ ∀msg. Array (Prop msg) → VDom msg
+path props = h "path" props []
     
 line ∷  ∀msg. Array (Prop msg) → VDom msg
-line props = h "line"  props []
+line props = h "line" props []
     
 circle ∷ ∀msg. Array (Prop msg) → VDom msg
 circle props = h "circle" props []
 
-use ∷ ∀msg. String → Array (Prop msg) → VDom msg
-use ref props = h "use" ([attr "href" ref] <> props) []
+use ∷ ∀msg. Array (Prop msg) → VDom msg
+use props = h "use" props []
     
 text' ∷ ∀msg. String → Array (Prop msg) → VDom msg
 text' t props = h "text" props [text t]
@@ -30,20 +30,23 @@ x_ ∷ ∀msg. String → Prop msg
 x_ = attr "x"
 y_ ∷ ∀msg. String → Prop msg
 y_ = attr "y"
-x1 ∷ ∀msg. String → Prop msg
-x1 = attr "x1"
-y1 ∷ ∀msg. String → Prop msg
-y1 = attr "y1"
-x2 ∷ ∀msg. String → Prop msg
-x2 = attr "x2"
-y2 ∷ ∀msg. String → Prop msg
-y2 = attr "y2"
+x1_ ∷ ∀msg. String → Prop msg
+x1_ = attr "x1"
+y1_ ∷ ∀msg. String → Prop msg
+y1_ = attr "y1"
+x2_ ∷ ∀msg. String → Prop msg
+x2_ = attr "x2"
+y2_ ∷ ∀msg. String → Prop msg
+y2_ = attr "y2"
 cx ∷ ∀msg. String → Prop msg
 cx = attr "cx"
 cy ∷ ∀msg. String → Prop msg
 cy = attr "cy"
-r ∷ ∀msg. String → Prop msg
-r = attr "r"
+r_ ∷ ∀msg. String → Prop msg
+r_ = attr "r"
+
+d ∷ ∀msg. String → Prop msg
+d = attr "d"
 
 width ∷ ∀msg. String → Prop msg
 width = attr "width"

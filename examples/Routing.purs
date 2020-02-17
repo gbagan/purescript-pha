@@ -22,6 +22,7 @@ data Msg = OnUrlChange Url | OnUrlRequest UrlRequest | NextPage
 -- effects used in this app
 type EFFS = (nav ∷ NAV)
 
+-- |  "/page32" -> 32
 extractNumber :: String → Int
 extractNumber = (stripPrefix (Pattern "/page") >=> fromString) >>> fromMaybe 0
 
@@ -32,7 +33,6 @@ update (OnUrlRequest (External url)) = Nav.load url
 update NextPage = do
     {pathname} <- getState
     Nav.goTo $ "/page" <> show (extractNumber pathname + 1)
-
 
 view ∷ State → Document Msg
 view {href: href', pathname} = {
@@ -61,8 +61,3 @@ main = appWithRouter
             nav: interpretNav
         }
     } # attachTo "root"
-import { h, app } from "https://unpkg.com/hyperapp"
-  
-  const init = {
-		status: false
-	}

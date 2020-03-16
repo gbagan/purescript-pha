@@ -1,7 +1,6 @@
 module Pha.Random (Random, number, int, int', bool, shuffle, element, element', RandomF(..)) where
 import Prelude
 import Data.Maybe (Maybe, fromMaybe)
-import Data.Tuple (Tuple(Tuple))
 import Data.Traversable (sequence)
 import Data.Array (length, mapWithIndex, foldl, index, insertAt)
 import Data.Array.NonEmpty as NEA
@@ -32,8 +31,8 @@ bool = int' 2 <#> eq 0
 -- | randomly shuffle an array
 shuffle ∷ ∀a. Array a → Random (Array a)
 shuffle array = do
-    rnds ← sequence $ array # mapWithIndex \i x → Tuple x <$> int' (i+1)
-    pure $ rnds # foldl (\t (Tuple x i) → t # insertAt i x # fromMaybe []) []
+    rnds ← sequence $ array # mapWithIndex \i value → {value, index: _} <$> int' (i+1)
+    pure $ rnds # foldl (\t {value, index} → fromMaybe [] (insertAt index value t)) []
 
 -- | randomly select an element from the array
 element ∷ ∀a. NEA.NonEmptyArray a → Random a

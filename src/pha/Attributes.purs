@@ -2,6 +2,9 @@ module Pha.Attributes where
 
 import Pha (Prop, attr)
 
+alt ∷ ∀msg. String → Prop msg
+alt = attr "alt"
+
 disabled ∷ ∀msg. Boolean → Prop msg
 disabled b = attr "disabled" (if b then "true" else "")
 
@@ -16,4 +19,7 @@ src = attr "src"
 
 value ∷ ∀msg. String → Prop msg
 value = attr "value"
+
+target ∷ ∀msg. String → Prop msg
+target = attr "target"
 

@@ -18,6 +18,9 @@ div = h "div"
 footer ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
 footer = h "footer"
 
+form ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
+form = h "form"
+
 img ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
 img = h "img"
 
@@ -33,8 +36,20 @@ h2 = h "h2"
 h3 ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
 h3 = h "h3"
 
+h4 ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
+h4 = h "h4"
+
+h5 ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
+h5 = h "h5"
+
+h6 ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
+h6 = h "h6"
+
 header ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
 header = h "header"
+
+hr ∷ ∀msg. Array (Prop msg) → VDom msg
+hr attrs = h "hr" attrs []
 
 li ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
 li = h "li"

@@ -25,17 +25,14 @@ foreign import windowLoad ∷ String → Effect Unit
 foreign import triggerPopState ∷ Effect Unit
 foreign import emptyObj ∷ Foreign
 
-emptyTitle ∷ DocumentTitle
-emptyTitle = DocumentTitle ""
-
 -- | default implementation of the effect delay
 interpretNav ∷ Nav (Effect Unit) → Effect Unit
 interpretNav (GoTo url next) = do
-    window >>= history >>= pushState emptyObj emptyTitle (URL url)
+    window >>= history >>= pushState emptyObj (DocumentTitle "") (URL url)
     triggerPopState
     next
 interpretNav (RedirectTo url next) = do
-    window >>= history >>= replaceState emptyObj emptyTitle (URL url)
+    window >>= history >>= replaceState emptyObj (DocumentTitle "") (URL url)
     triggerPopState
     next
 interpretNav (Load url _) = windowLoad url

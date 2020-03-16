@@ -18,6 +18,6 @@ exports.handleClickOnAnchor = handler => ev => () => {
     const a = ev.target.closest("a");
     if (a) {
         ev.preventDefault();
-        handler(a.href)();
+        handler(a.getAttribute("href"))();
     }
 }

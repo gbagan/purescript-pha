@@ -38,14 +38,14 @@ update (ChangeOp b) = _{isMul = b}
 
 view ∷ State → VDom Msg
 view st@{val1, val2, isMul} = 
-    div [] [
-        input "text" [attr "size" "5", onvaluechange ChangeVal1, value val1],
-        text (if isMul then " * " else " + "),
-        input "text" [attr "size" "5", onvaluechange ChangeVal2, value val2],
-        text $ " = " <> result st,
-        br,
-        input "checkbox" [checked isMul, onchecked ChangeOp],
-        text "Multiplication instead of addition"
+    div []
+    [   input "text" [attr "size" "5", onvaluechange ChangeVal1, value val1]
+    ,   text (if isMul then " * " else " + ")
+    ,   input "text" [attr "size" "5", onvaluechange ChangeVal2, value val2]
+    ,   text $ " = " <> result st
+    ,   br
+    ,   input "checkbox" [checked isMul, onchecked ChangeOp]
+    ,   text "Multiplication instead of addition"
     ]
 
 main ∷ Effect Unit

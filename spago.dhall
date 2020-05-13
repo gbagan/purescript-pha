@@ -6,5 +6,5 @@ You can edit this file as you like.
 , dependencies =
   [ "console", "effect", "foreign", "profunctor-lenses", "psci-support", "run", "web-html" ]
 , packages = ./packages.dhall
-, sources = [ "src/**/*.purs", "test/**/*.purs" ]
+, sources = [ "src/**/*.purs", "examples/**/*.purs", "test/**/*.purs" ]
 }

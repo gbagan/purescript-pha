@@ -3,16 +3,15 @@ import Prelude
 import Data.Lens (Lens', (%~), view)
 import Control.Monad.Free (hoistFree)
 import Unsafe.Coerce (unsafeCoerce)
-import Run (Run(Run), SProxy(..), onMatch)
+import Run (Run(Run), SProxy(..), on)
 import Data.Functor.Variant (VariantF, inj)
-import Pha.Update (Update, GETSTATE, SETSTATE, GetState(..), SetState(..))
+import Pha.Update (Update, STATE, State(..))
 
-lensVariant ∷ ∀st1 st2 v. Lens' st1 st2 → VariantF (getState ∷ GETSTATE st2, setState ∷ SETSTATE st2 | v) ~>
-    VariantF (getState ∷ GETSTATE st1, setState ∷ SETSTATE st1 | v)
-lensVariant lens = onMatch {
-    getState: \(GetState cont) → inj (SProxy ∷ SProxy "getState") (GetState (cont <<< view lens)),
-    setState: \(SetState fn cont) → inj (SProxy ∷ SProxy "setState") (SetState (lens %~ fn) cont)
-} unsafeCoerce
+lensVariant ∷ ∀st1 st2 v. Lens' st1 st2 → VariantF (state ∷ STATE st2 | v) ~> VariantF (state ∷ STATE st1 | v)
+lensVariant lens = on (SProxy ∷ SProxy "state") (case _ of
+        GetState cont → inj (SProxy ∷ SProxy "state") (GetState (cont <<< view lens))
+        SetState fn cont → inj (SProxy ∷ SProxy "state") (SetState (lens %~ fn) cont)
+    ) unsafeCoerce
 
 -- | create an action which is applied on the target of the lens
 updateOver ∷ ∀st1 st2 effs. Lens' st1 st2 → Update st2 effs → Update st1 effs

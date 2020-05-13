@@ -5,7 +5,7 @@ import Data.Int (floor, toNumber)
 import Control.Monad.Free (runFreeM)
 import Run (Run, SProxy(..), FProxy)
 import Run as Run
-import Pha.Update (Update, getState, setState)
+import Pha.Update (Update, get, put)
 import Pha.Random (Random, RandomF(..))
 import Data.Exists (Exists, mkExists, runExists)
 
@@ -26,9 +26,9 @@ randomGenerate d = Run.lift _rng (Rng $ mkExists (GenWrapper d identity))
 
 randomly ∷ ∀st effs. (st → Random st) → Update st (rng ∷ RNG | effs)
 randomly f = do
-    st <- getState
+    st <- get
     st2 <- randomGenerate (f st)
-    setState \_ → st2
+    put st2
 
 runRng :: forall a. Random a → Effect a
 runRng = runFreeM go where

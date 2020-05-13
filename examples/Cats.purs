@@ -5,7 +5,7 @@ import Effect (Effect)
 import Run as Run
 import Pha (VDom, text, style, (/\))
 import Pha.App (Document, app, attachTo)
-import Pha.Update (Update, setState)
+import Pha.Update (Update, put)
 import Pha.Example.Effects.Http (ajax, HTTP, interpretHttp)
 import Pha.Elements (div, h2, button, img)
 import Pha.Attributes (src)
@@ -28,12 +28,12 @@ state = Loading
 
 update ∷ Msg → Update State EFFS
 update RequestCat = do
-    setState \_ → Loading
+    put Loading
     res ← ajax "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cat"
     let status = maybe Failure Success $ do
                     json ← res
                     hush $ runExcept $ json ! "data" ! "image_url" >>= readString
-    setState \_ → status
+    put status
 
 view ∷ State → Document Msg
 view st = {

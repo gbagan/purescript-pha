@@ -8,7 +8,7 @@ import Pha (VDom, Sub)
 import Data.Tuple (Tuple(..))
 import Pha.App.Internal as Internal
 import Pha.App.Internal (Interpreter) as Exports
-import Pha.Update (Update, setState)
+import Pha.Update (Update, modify)
 
 type Document msg = {
     title ∷ String,
@@ -52,7 +52,7 @@ sandbox ∷ ∀msg state. {
 
 sandbox {init, view, update} {getS, setS, renderVDom} = 
     {render, init: setS init, subscriptions: const [], dispatch, dispatchEvent} where
-    update2 msg = setState (update msg)
+    update2 msg = modify (update msg)
     {dispatch, dispatchEvent} = Internal.getDispatchers getS setS update2 (const (pure unit))
     render = renderVDom <<< view
 

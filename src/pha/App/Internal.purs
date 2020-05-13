@@ -3,8 +3,8 @@ import Prelude
 import Effect (Effect)
 import Data.Maybe (Maybe(..))
 import Pha (VDom, Event, EventHandler, Sub)
-import Pha.Update (Update, GetState(..), SetState(..))
-import Run (VariantF, onMatch, runCont)
+import Pha.Update (Update, _state, State(..))
+import Run (VariantF, on, runCont)
 
 type Interpreter effs = VariantF effs (Effect Unit) → Effect Unit
 
@@ -34,10 +34,10 @@ getDispatchers ∷ ∀msg state effs. Effect state → (state → Effect Unit) �
 
 getDispatchers getS setS update interpreter = {runAction, dispatch, dispatchEvent} where
     runAction = runCont handleState (const (pure unit)) where
-        handleState = onMatch {
-            getState: \(GetState next) → getS >>= next
-        ,   setState: \(SetState f next) → (getS <#> f >>= setS) *> next
-        } interpreter
+        handleState = on _state (case _ of
+            GetState next → getS >>= next
+            SetState f next → (getS <#> f >>= setS) *> next
+         ) interpreter
     dispatch = runAction <<< update
     dispatchEvent ev handler = do
             let {effect, msg} = handler ev

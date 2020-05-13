@@ -7,7 +7,7 @@ import Data.Int (fromString)
 import Data.Maybe (fromMaybe)
 import Pha.App (Document, attachTo)
 import Pha.App.Router (appWithRouter, Url, UrlRequest(..))
-import Pha.Update (Update, purely, getState)
+import Pha.Update (Update, get, put)
 import Pha.Elements (div, button, h1, a)
 import Pha.Attributes (href)
 import Pha.Events (onclick)
@@ -27,11 +27,11 @@ extractNumber :: String → Int
 extractNumber = (stripPrefix (Pattern "/page") >=> fromString) >>> fromMaybe 0
 
 update ∷ Msg → Update State EFFS
-update (OnUrlChange url) = purely $ const url
+update (OnUrlChange url) = put url
 update (OnUrlRequest (Internal url)) = Nav.goTo url.href
 update (OnUrlRequest (External url)) = Nav.load url
 update NextPage = do
-    {pathname} <- getState
+    {pathname} <- get
     Nav.goTo $ "/page" <> show (extractNumber pathname + 1)
 
 view ∷ State → Document Msg

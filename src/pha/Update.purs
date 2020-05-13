@@ -1,31 +1,27 @@
-module Pha.Update (Update, purely, getState, setState, setState', GETSTATE, SETSTATE,
-    GetState(..), SetState(..)) where
+module Pha.Update (Update, get, modify, modify', put, STATE, State(..), _state) where
 import Prelude
 import Run (FProxy, Run, SProxy(..), lift)
 
 foreign import data Event ∷ Type
 
-data GetState st a = GetState (st → a)
-derive instance functorGetState ∷ Functor (GetState st)
-type GETSTATE st = FProxy (GetState st)
+data State st a = GetState (st → a) | SetState (st → st) a
+derive instance functorState ∷ Functor (State st)
+type STATE st = FProxy (State st)
+_state = SProxy ∷ SProxy "state"
 
 -- | return the current state
-getState ∷ ∀st r. Run (getState ∷ GETSTATE st | r) st
-getState = lift (SProxy ∷ SProxy "getState") (GetState identity)
-
-data SetState st a = SetState (st → st) a
-derive instance functorSetState ∷ Functor (SetState st)
-type SETSTATE st = FProxy (SetState st)
+get ∷ ∀st r. Run (state ∷ STATE st | r) st
+get = lift (SProxy ∷ SProxy "state") (GetState identity)
 
 -- | evaluate a function over the current state and set the result to the state
-setState ∷ ∀st r. (st → st) → Run (setState ∷ SETSTATE st | r) Unit
-setState fn = lift (SProxy ∷ SProxy "setState") (SetState fn unit)
+modify ∷ ∀st r. (st → st) → Run (state ∷ STATE st | r) Unit
+modify fn = lift (SProxy ∷ SProxy "state") (SetState fn unit)
 
 -- | same as setState except it returns the current state after applying the function
-setState' ∷ ∀effs st. (st → st) → Run (getState ∷ GETSTATE st, setState ∷ SETSTATE st | effs) st
-setState' fn = setState fn *> getState
+modify' ∷ ∀effs st. (st → st) → Run (state ∷ STATE st | effs) st
+modify' fn = modify fn *> get
 
-type Update st effs = Run (getState ∷ GETSTATE st, setState ∷ SETSTATE st | effs) Unit
+put ∷ ∀effs st. st → Run (state ∷ STATE st | effs) Unit
+put x = modify \_ → x
 
-purely ∷ ∀st effs. (st → st) → Update st effs
-purely = setState
+type Update st effs = Run (state ∷ STATE st | effs) Unit

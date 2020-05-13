@@ -46,14 +46,14 @@ view st = {
 }
 
 viewGif ∷ State → VDom Msg
-viewGif Failure = div [] [
-        text "I could not load a random cat for some reason. ",
-        button [onclick RequestCat] [ text "Try Again!" ]
-    ]
+viewGif Failure = div [] 
+        [   text "I could not load a random cat for some reason. "
+        ,   button [onclick RequestCat] [ text "Try Again!" ]
+        ]
 viewGif Loading = text "Loading..."
-viewGif (Success url) = div [] [
-        button [ onclick RequestCat, style "display" "block" ] [ text "More Please!" ],
-        img [ src url ] []
+viewGif (Success url) = div [] 
+    [   button [ onclick RequestCat, style "display" "block" ] [ text "More Please!" ]
+    ,   img [ src url ] []
     ]
 
 main ∷ Effect Unit

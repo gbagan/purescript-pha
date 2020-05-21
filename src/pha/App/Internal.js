@@ -11,7 +11,7 @@ const map = EMPTY_ARR.map
 const defer = requestAnimationFrame || setTimeout
 
 const merge = (a, b) => Object.assign({}, a, b);
-const compose = (f, g) => f && g ? x => f(g(x)) : f || g; 
+const compose = (f, g) => f && g ? x => f(g(x)) : f || g;
 
 const patchProperty = (node, key, oldValue, newValue, listener, isSvg, mapf) => {
     if (key === "key") {
@@ -45,12 +45,12 @@ const patchProperty = (node, key, oldValue, newValue, listener, isSvg, mapf) => 
 const createNode = (vnode, listener, isSvg, mapf) => {
     const node =
         vnode.type === TEXT_NODE
-        ? document.createTextNode(vnode.name)
-        : (isSvg = isSvg || vnode.name === "svg")
-        ? document.createElementNS("http://www.w3.org/2000/svg", vnode.name)
-        : document.createElement(vnode.name)
+            ? document.createTextNode(vnode.name)
+            : (isSvg = isSvg || vnode.name === "svg")
+                ? document.createElementNS("http://www.w3.org/2000/svg", vnode.name)
+                : document.createElement(vnode.name)
     const props = vnode.props
-    mapf = compose(mapf, vnode.mapf); 
+    mapf = compose(mapf, vnode.mapf);
 
     for (let k in props) {
         patchProperty(node, k, null, props[k], listener, isSvg, mapf)
@@ -72,246 +72,247 @@ const createNode = (vnode, listener, isSvg, mapf) => {
 
 const getKey = vnode => vnode == null ? null : vnode.key;
 
-const patch = function(parent, node, oldVNode, newVNode, listener, isSvg, mapf) {
-  if (oldVNode === newVNode) {
-  } else if (
-    oldVNode != null &&
-    oldVNode.type === TEXT_NODE &&
-    newVNode.type === TEXT_NODE
-  ) {
-    if (oldVNode.name !== newVNode.name) node.nodeValue = newVNode.name
-  } else if (oldVNode == null || oldVNode.name !== newVNode.name) {
-    node = parent.insertBefore(
-      createNode((newVNode = getVNode(newVNode)), listener, isSvg, mapf),
-      node
-    )
-    if (oldVNode != null) {
-      parent.removeChild(oldVNode.node)
-    }
-  } else {
-    let tmpVKid
-    let oldVKid
-
-    let oldKey
-    let newKey
-
-    const oldVProps = oldVNode.props
-    const newVProps = newVNode.props
-
-    const oldVKids = oldVNode.children
-    const newVKids = newVNode.children
-
-    let oldHead = 0
-    let newHead = 0
-    let oldTail = oldVKids.length - 1
-    let newTail = newVKids.length - 1
-
-    mapf = compose(mapf, newVNode.mapf);
-    isSvg = isSvg || newVNode.name === "svg"
-
-    for (let i in merge(oldVProps, newVProps)) {
-      if (
-        (i === "value" || i === "selected" || i === "checked"
-          ? node[i]
-          : oldVProps[i]) !== newVProps[i]
-      ) {
-        patchProperty(node, i, oldVProps[i], newVProps[i], listener, isSvg, mapf)
-      }
-    }
-
-    while (newHead <= newTail && oldHead <= oldTail) {
-      if (
-        (oldKey = getKey(oldVKids[oldHead])) == null ||
-        oldKey !== getKey(newVKids[newHead])
-      ) {
-        break
-      }
-
-      patch(
-        node,
-        oldVKids[oldHead].node,
-        oldVKids[oldHead],
-        (newVKids[newHead] = getVNode(
-          newVKids[newHead++],
-          oldVKids[oldHead++]
-        )),
-        listener,
-        isSvg,
-        mapf
-      )
-    }
-
-    while (newHead <= newTail && oldHead <= oldTail) {
-      if (
-        (oldKey = getKey(oldVKids[oldTail])) == null ||
-        oldKey !== getKey(newVKids[newTail])
-      ) {
-        break
-      }
-
-      patch(
-        node,
-        oldVKids[oldTail].node,
-        oldVKids[oldTail],
-        (newVKids[newTail] = getVNode(
-          newVKids[newTail--],
-          oldVKids[oldTail--]
-        )),
-        listener,
-        isSvg,
-        mapf
-      )
-    }
-
-    if (oldHead > oldTail) {
-      while (newHead <= newTail) {
-        node.insertBefore(
-          createNode(
-            (newVKids[newHead] = getVNode(newVKids[newHead++])),
-            listener,
-            isSvg,
-            mapf
-          ),
-          (oldVKid = oldVKids[oldHead]) && oldVKid.node
+const patch = function (parent, node, oldVNode, newVNode, listener, isSvg, mapf) {
+    if (oldVNode === newVNode) {
+    } else if (
+        oldVNode != null &&
+        oldVNode.type === TEXT_NODE &&
+        newVNode.type === TEXT_NODE
+    ) {
+        if (oldVNode.name !== newVNode.name)
+            node.nodeValue = newVNode.name
+    } else if (oldVNode == null || oldVNode.name !== newVNode.name) {
+        node = parent.insertBefore(
+            createNode((newVNode = getVNode(newVNode)), listener, isSvg, mapf),
+            node
         )
-      }
-    } else if (newHead > newTail) {
-      while (oldHead <= oldTail) {
-        node.removeChild(oldVKids[oldHead++].node)
-      }
+        if (oldVNode != null) {
+            parent.removeChild(oldVNode.node)
+        }
     } else {
-      for (var i = oldHead, keyed = {}, newKeyed = {}; i <= oldTail; i++) {
-        if ((oldKey = oldVKids[i].key) != null) {
-          keyed[oldKey] = oldVKids[i]
-        }
-      }
+        let tmpVKid
+        let oldVKid
 
-      while (newHead <= newTail) {
-        oldKey = getKey((oldVKid = oldVKids[oldHead]))
-        newKey = getKey(
-          (newVKids[newHead] = getVNode(newVKids[newHead], oldVKid))
-        )
+        let oldKey
+        let newKey
 
-        if (
-          newKeyed[oldKey] ||
-          (newKey != null && newKey === getKey(oldVKids[oldHead + 1]))
-        ) {
-          if (oldKey == null) {
-            node.removeChild(oldVKid.node)
-          }
-          oldHead++
-          continue
-        }
+        const oldVProps = oldVNode.props
+        const newVProps = newVNode.props
 
-        if (newKey == null || oldVNode.type === RECYCLED_NODE) {
-          if (oldKey == null) {
-            patch(
-              node,
-              oldVKid && oldVKid.node,
-              oldVKid,
-              newVKids[newHead],
-              listener,
-              isSvg,
-              mapf
-            )
-            newHead++
-          }
-          oldHead++
-        } else {
-          if (oldKey === newKey) {
-            patch(
-              node,
-              oldVKid.node,
-              oldVKid,
-              newVKids[newHead],
-              listener,
-              isSvg,
-              mapf
-            )
-            newKeyed[newKey] = true
-            oldHead++
-          } else {
-            if ((tmpVKid = keyed[newKey]) != null) {
-              patch(
-                node,
-                node.insertBefore(tmpVKid.node, oldVKid && oldVKid.node),
-                tmpVKid,
-                newVKids[newHead],
-                listener,
-                isSvg,
-                mapf
-              )
-              newKeyed[newKey] = true
-            } else {
-              patch(
-                node,
-                oldVKid && oldVKid.node,
-                null,
-                newVKids[newHead],
-                listener,
-                isSvg,
-                mapf
-              )
+        const oldVKids = oldVNode.children
+        const newVKids = newVNode.children
+
+        let oldHead = 0
+        let newHead = 0
+        let oldTail = oldVKids.length - 1
+        let newTail = newVKids.length - 1
+
+        mapf = compose(mapf, newVNode.mapf);
+        isSvg = isSvg || newVNode.name === "svg"
+
+        for (let i in merge(oldVProps, newVProps)) {
+            if (
+                (i === "value" || i === "selected" || i === "checked"
+                    ? node[i]
+                    : oldVProps[i]) !== newVProps[i]
+            ) {
+                patchProperty(node, i, oldVProps[i], newVProps[i], listener, isSvg, mapf)
             }
-          }
-          newHead++
         }
-      }
 
-      while (oldHead <= oldTail) {
-        if (getKey((oldVKid = oldVKids[oldHead++])) == null) {
-          node.removeChild(oldVKid.node)
-        }
-      }
+        while (newHead <= newTail && oldHead <= oldTail) {
+            if (
+                (oldKey = getKey(oldVKids[oldHead])) == null ||
+                oldKey !== getKey(newVKids[newHead])
+            ) {
+                break
+            }
 
-      for (var i in keyed) {
-        if (newKeyed[i] == null) {
-          node.removeChild(keyed[i].node)
+            patch(
+                node,
+                oldVKids[oldHead].node,
+                oldVKids[oldHead],
+                (newVKids[newHead] = getVNode(
+                    newVKids[newHead++],
+                    oldVKids[oldHead++]
+                )),
+                listener,
+                isSvg,
+                mapf
+            )
         }
-      }
+
+        while (newHead <= newTail && oldHead <= oldTail) {
+            if (
+                (oldKey = getKey(oldVKids[oldTail])) == null ||
+                oldKey !== getKey(newVKids[newTail])
+            ) {
+                break
+            }
+
+            patch(
+                node,
+                oldVKids[oldTail].node,
+                oldVKids[oldTail],
+                (newVKids[newTail] = getVNode(
+                    newVKids[newTail--],
+                    oldVKids[oldTail--]
+                )),
+                listener,
+                isSvg,
+                mapf
+            )
+        }
+
+        if (oldHead > oldTail) {
+            while (newHead <= newTail) {
+                node.insertBefore(
+                    createNode(
+                        (newVKids[newHead] = getVNode(newVKids[newHead++])),
+                        listener,
+                        isSvg,
+                        mapf
+                    ),
+                    (oldVKid = oldVKids[oldHead]) && oldVKid.node
+                )
+            }
+        } else if (newHead > newTail) {
+            while (oldHead <= oldTail) {
+                node.removeChild(oldVKids[oldHead++].node)
+            }
+        } else {
+            for (var i = oldHead, keyed = {}, newKeyed = {}; i <= oldTail; i++) {
+                if ((oldKey = oldVKids[i].key) != null) {
+                    keyed[oldKey] = oldVKids[i]
+                }
+            }
+
+            while (newHead <= newTail) {
+                oldKey = getKey((oldVKid = oldVKids[oldHead]))
+                newKey = getKey(
+                    (newVKids[newHead] = getVNode(newVKids[newHead], oldVKid))
+                )
+
+                if (
+                    newKeyed[oldKey] ||
+                    (newKey != null && newKey === getKey(oldVKids[oldHead + 1]))
+                ) {
+                    if (oldKey == null) {
+                        node.removeChild(oldVKid.node)
+                    }
+                    oldHead++
+                    continue
+                }
+
+                if (newKey == null) {
+                    if (oldKey == null) {
+                        patch(
+                            node,
+                            oldVKid && oldVKid.node,
+                            oldVKid,
+                            newVKids[newHead],
+                            listener,
+                            isSvg,
+                            mapf
+                        )
+                        newHead++
+                    }
+                    oldHead++
+                } else {
+                    if (oldKey === newKey) {
+                        patch(
+                            node,
+                            oldVKid.node,
+                            oldVKid,
+                            newVKids[newHead],
+                            listener,
+                            isSvg,
+                            mapf
+                        )
+                        newKeyed[newKey] = true
+                        oldHead++
+                    } else {
+                        if ((tmpVKid = keyed[newKey]) != null) {
+                            patch(
+                                node,
+                                node.insertBefore(tmpVKid.node, oldVKid && oldVKid.node),
+                                tmpVKid,
+                                newVKids[newHead],
+                                listener,
+                                isSvg,
+                                mapf
+                            )
+                            newKeyed[newKey] = true
+                        } else {
+                            patch(
+                                node,
+                                oldVKid && oldVKid.node,
+                                null,
+                                newVKids[newHead],
+                                listener,
+                                isSvg,
+                                mapf
+                            )
+                        }
+                    }
+                    newHead++
+                }
+            }
+
+            while (oldHead <= oldTail) {
+                if (getKey((oldVKid = oldVKids[oldHead++])) == null) {
+                    node.removeChild(oldVKid.node)
+                }
+            }
+
+            for (let i in keyed) {
+                if (newKeyed[i] == null) {
+                    node.removeChild(keyed[i].node)
+                }
+            }
+        }
     }
-  }
 
-  return (newVNode.node = node)
+    return (newVNode.node = node)
 }
 
-const propsChanged = function(a, b) {
-  for (let k in a) if (a[k] !== b[k]) return true
-  for (let k in b) if (a[k] !== b[k]) return true
+const propsChanged = function (a, b) {
+    for (let k in a) if (a[k] !== b[k]) return true
+    for (let k in b) if (a[k] !== b[k]) return true
 }
 
 const getVNode = (newVNode, oldVNode) =>
-    newVNode.type === LAZY_NODE
-    ? ((!oldVNode || propsChanged(oldVNode.lazy, newVNode.lazy)) &&
-        ((oldVNode = newVNode.lazy.view(newVNode.lazy)).lazy = newVNode.lazy),
-        oldVNode)
-    : newVNode
+    typeof newVNode.type === "function"
+        ? ((!oldVNode || oldVNode.memo == null || propsChanged(oldVNode.memo, newVNode.memo)) &&
+            ((oldVNode = newVNode.type(newVNode.memo)).memo = newVNode.memo),
+            oldVNode)
+        : newVNode
 
 const createVNode = (name, props, children, node, key, type) =>
-  ({name, props, children, node, type, key})
+    ({ name, props, children, node, type, key })
 
 const recycleNode = node =>
     node.nodeType === TEXT_NODE
-    ? createTextVNode(node.nodeValue, node)
-    : createVNode(
-        node.nodeName.toLowerCase(),
-        EMPTY_OBJ,
-        map.call(node.childNodes, recycleNode),
-        node,
-        null,
-        RECYCLED_NODE
-    )
+        ? createTextVNode(node.nodeValue, node)
+        : createVNode(
+            node.nodeName.toLowerCase(),
+            EMPTY_OBJ,
+            map.call(node.childNodes, recycleNode),
+            node,
+            null,
+            RECYCLED_NODE
+        )
 
 const shouldRestart = (a, b) => {
     if (a !== b) {
-        for (var k in merge(a, b)) {
+        for (let k in merge(a, b)) {
             if (a[k] !== b[k] && !isSameAction(a[k], b[k]))
                 return true
             b[k] = a[k]
         }
     }
 }
-      
+
 const patchSubs = (oldSubs, newSubs, dispatch) => {
     for (
         var i = 0, oldSub, newSub, subs = [];
@@ -322,15 +323,15 @@ const patchSubs = (oldSubs, newSubs, dispatch) => {
         newSub = newSubs[i]
         subs.push(
             newSub
-            ? !oldSub || newSub.fn !== oldSub.fn || shouldRestart(newSub[0], oldSub[1])
-                ? [
-                    newSub[0],
-                    newSub[1],
-                    newSub[0](dispatch)(newSub[1])(),
-                    oldSub && oldSub[2]()
-                  ]
-                : oldSub
-            : oldSub && oldSub[2]()
+                ? !oldSub || newSub.fn !== oldSub.fn || shouldRestart(newSub[0], oldSub[1])
+                    ? [
+                        newSub[0],
+                        newSub[1],
+                        newSub[0](dispatch)(newSub[1])(),
+                        oldSub && oldSub[2]()
+                    ]
+                    : oldSub
+                : oldSub && oldSub[2]()
         )
     }
     return subs
@@ -341,10 +342,10 @@ const app = props => {
     let lock = false
     let subs = []
 
-    const listener = function(event) {
+    const listener = function (event) {
         dispatchEvent(event)(this.actions[event.type])()
     }
- 
+
     const getState = () => state
 
     const setState = newState => () => {
@@ -362,7 +363,7 @@ const app = props => {
     let node = null;
     let vdom = null;
 
-    const renderVDom = newVdom => () => { 
+    const renderVDom = newVdom => () => {
         lock = false
         node = patch(
             node.parentNode,
@@ -373,7 +374,7 @@ const app = props => {
         )
     }
 
-    const {render, subscriptions, dispatch, dispatchEvent, init} = props({getS: getState, setS: setState, renderVDom})
+    const { render, subscriptions, dispatch, dispatchEvent, init } = props({ getS: getState, setS: setState, renderVDom })
 
     return rootnode => () => {
         node = document.getElementById(rootnode)

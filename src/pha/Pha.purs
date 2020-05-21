@@ -1,4 +1,4 @@
-module Pha (VDom, Prop, Sub, h, text, emptyNode, key, attr, style, on_, class_, class', lazy,
+module Pha (VDom, Prop, Sub, h, text, emptyNode, key, attr, style, on_, class_, class', memo,
     when, (<&&>), maybeN, maybe, (<??>), unsafeOnWithEffect, module A, module E,
       EventHandler) where
 import Prelude hiding (when)
@@ -54,7 +54,7 @@ foreign import emptyNode ∷ ∀msg. VDom msg
 -- |
 -- | i.e. generate only if the first argument has changed.
 -- | otherwise, return the previous generated virtual dom
-foreign import lazy ∷ ∀a msg. a → (a → VDom msg) → VDom msg
+foreign import memo ∷ ∀a msg. a → (a → VDom msg) → VDom msg
 
 -- | ```purescript
 -- | when true = vdom unit

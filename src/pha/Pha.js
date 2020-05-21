@@ -29,14 +29,6 @@ const createTextVNode = text => ({
     type: 3
 })
 
-const lazy = st => view => ({
-    type: LAZY_NODE,
-    lazy: {
-        view: (x => view(x.state)),
-        state: st
-    }
-});
-
 exports.mapView = mapf => vnode => Object.assign({}, vnode, {mapf: compose(vnode.mapf, mapf)})
 exports.emptyNode = null
 exports.key = key => [0, key]
@@ -47,4 +39,4 @@ exports.unsafeOnWithEffect = k => v => [1, k, v]
 exports.style = k => v => [3, k, v]
 exports.h = h
 exports.text = createTextVNode
-exports.lazy = lazy
+exports.memo = st => view => ({ memo: st, type: view});

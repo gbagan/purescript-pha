@@ -17,17 +17,17 @@ type EventHandler msg = Event → {effect ∷ Effect Unit, msg ∷ Maybe msg}
 foreign import data Sub ∷ Type → Type
 foreign import data Prop ∷ Type → Type
   
--- | add a key to the vnode
+-- | adds a key to the vnode
 foreign import key ∷ ∀msg. String → Prop msg
   
--- | add or change an attribute
+-- | adds or change an attribute
 foreign import attr ∷ ∀msg. String → String → Prop msg
   
--- | add a class name to the vnode
+-- | adds a class name to the vnode
 foreign import class_ ∷ ∀msg. String → Prop msg
 
 foreign import noProp ∷ ∀msg. Prop msg
--- | add a class name to the vnode if the second argument is true
+-- | adds a class name to the vnode if the second argument is true
 class' ∷ ∀msg. String → Boolean → Prop msg
 class' c b = if b then class_ c else noProp
 
@@ -36,23 +36,23 @@ foreign import unsafeOnWithEffect ∷ ∀msg. String → EventHandler msg → Pr
 on_ ∷ ∀msg. String → (Event → Maybe msg) → Prop msg 
 on_ n handler = unsafeOnWithEffect n \ev → {effect: pure unit, msg: handler ev}
 
--- | add or change a style attribute
+-- | adds or changes a style attribute
 foreign import style ∷ ∀msg. String → String → Prop msg
 
 -- | h tag attributes children
 foreign import h ∷ ∀msg. String → Array (Prop msg) → Array (VDom msg) → VDom msg
 
--- | create a text virtual node
+-- | creates a text virtual node
 foreign import text ∷ ∀msg. String → VDom msg
 
--- | represent an empty virtual node
+-- | represents an empty virtual node
 -- | 
 -- | does not generate HTML content. Only used for commodity
 foreign import emptyNode ∷ ∀msg. VDom msg
 
--- | lazily generate a virtual dom
+-- | lazily generates a virtual dom
 -- |
--- | i.e. generate only if the first argument has changed.
+-- | i.e. generates only if the first argument has changed.
 -- | otherwise, return the previous generated virtual dom
 foreign import memo ∷ ∀a msg. a → (a → VDom msg) → VDom msg
 

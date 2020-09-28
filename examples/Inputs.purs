@@ -3,11 +3,11 @@ import Prelude hiding (div)
 import Data.Maybe (fromMaybe)
 import Data.Int (fromString)
 import Effect (Effect)
-import Pha (VDom, text, attr)
 import Pha.App (sandbox, attachTo)
-import Pha.Elements (div, br, input)
-import Pha.Attributes (value, checked)
-import Pha.Events (onvaluechange, onchecked)
+import Pha as H
+import Pha.Elements as HH
+import Pha.Attributes as P
+import Pha.Events as E
 
 type State = {
     val1 ∷ String,
@@ -36,16 +36,16 @@ update (ChangeVal1 val) = _{val1 = val}
 update (ChangeVal2 val) = _{val2 = val}
 update (ChangeOp b) = _{isMul = b}
 
-view ∷ State → VDom Msg
+view ∷ State → H.VDom Msg
 view st@{val1, val2, isMul} = 
-    div []
-    [   input "text" [attr "size" "5", onvaluechange ChangeVal1, value val1]
-    ,   text (if isMul then " * " else " + ")
-    ,   input "text" [attr "size" "5", onvaluechange ChangeVal2, value val2]
-    ,   text $ " = " <> result st
-    ,   br
-    ,   input "checkbox" [checked isMul, onchecked ChangeOp]
-    ,   text "Multiplication instead of addition"
+    HH.div []
+    [   HH.input "text" [H.attr "size" "5", E.onvaluechange ChangeVal1, P.value val1]
+    ,   H.text (if isMul then " * " else " + ")
+    ,   HH.input "text" [H.attr "size" "5", E.onvaluechange ChangeVal2, P.value val2]
+    ,   H.text $ " = " <> result st
+    ,   HH.br
+    ,   HH.input "checkbox" [P.checked isMul, E.onchecked ChangeOp]
+    ,   H.text "Multiplication instead of addition"
     ]
 
 main ∷ Effect Unit

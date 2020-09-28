@@ -3,14 +3,15 @@ import Prelude hiding (div)
 import Data.Int (even)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
-import Pha (text, class_, class', (/\))
-import Pha.App (app, attachTo, Document)
+import Pha as H
+import Pha ((/\))
 import Run as Run
 import Pha.Update (Update, modify)
+import Pha.App (app, attachTo, Document)
 import Pha.Effects.Delay (DELAY, delay, interpretDelay)
 import Pha.Subs as Subs
-import Pha.Elements (div, button, span)
-import Pha.Events (onclick)
+import Pha.Elements as HH
+import Pha.Events as E
 
 type State = {
     counter ∷ Int
@@ -38,21 +39,21 @@ view ∷ State → Document Msg
 view {counter} = {
     title: "Counter example",
     body:
-        div []
-        [   div [class_ "counter"] [text $ show counter]
-        ,       button [onclick Increment] [text "Increment"]
-        ,       button [onclick DelayedIncrement] [text "Delayed Increment"]
+        HH.div []
+        [   HH.div [H.class_ "counter"] [H.text $ show counter]
+        ,       HH.button [E.onclick Increment] [H.text "Increment"]
+        ,       HH.button [E.onclick DelayedIncrement] [H.text "Delayed Increment"]
 
-        ,   div []
-            [   span [] [text "green when the counter is even"]
-            ,   div
-                [   class_ "box"
-                ,   class' "even" (even counter)
+        ,   HH.div []
+            [   HH.span [] [H.text "green when the counter is even"]
+            ,   HH.div
+                [   H.class_ "box"
+                ,   H.class' "even" (even counter)
                 ] []
             ]
 
-        ,   div [] [
-                text "press space to increment the counter"
+        ,   HH.div [] [
+                H.text "press space to increment the counter"
             ]
         ]
 }

@@ -2,6 +2,7 @@ module Pha.Elements where
 
 import Prelude
 import Pha (VDom, Prop, h, attr)
+import Pha as P
 
 a ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
 a = h "a"
@@ -74,3 +75,30 @@ span = h "span"
 
 ul ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
 ul = h "ul"
+
+
+--- SVG
+
+svg ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
+svg = h "svg"
+
+g ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
+g = h "g"
+        
+rect ∷ ∀msg. Array (Prop msg) → VDom msg
+rect props = h "rect" props []
+    
+path ∷ ∀msg. Array (Prop msg) → VDom msg
+path props = h "path" props []
+    
+line ∷  ∀msg. Array (Prop msg) → VDom msg
+line props = h "line" props []
+    
+circle ∷ ∀msg. Array (Prop msg) → VDom msg
+circle props = h "circle" props []
+
+use ∷ ∀msg. Array (Prop msg) → VDom msg
+use props = h "use" props []
+    
+text ∷ ∀msg. String → Array (Prop msg) → VDom msg
+text t props = h "text" props [P.text t]

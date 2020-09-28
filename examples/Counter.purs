@@ -3,8 +3,8 @@ import Prelude hiding (div)
 import Effect (Effect)
 import Pha (VDom, text)
 import Pha.App (sandbox, attachTo)
-import Pha.Elements (div, span, button)
-import Pha.Events (onclick)
+import Pha.Elements as H
+import Pha.Events as E
 
 type State = Int
 data Msg = Increment | Decrement
@@ -18,10 +18,10 @@ update Decrement n = n - 1
 
 view ∷ State → VDom Msg
 view counter = 
-    div []
-    [   button [onclick Decrement] [text "-"]
-    ,   span [] [text $ show counter]
-    ,   button [onclick Increment] [text "+"]
+    H.div []
+    [   H.button [E.onclick Decrement] [text "-"]
+    ,   H.span [] [text $ show counter]
+    ,   H.button [E.onclick Increment] [text "+"]
     ]
 
 main ∷ Effect Unit

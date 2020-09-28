@@ -2156,7 +2156,7 @@ var PS = {};
   "use strict";
   $PS["Pha.Elements"] = $PS["Pha.Elements"] || {};
   var exports = $PS["Pha.Elements"];
-  var Pha = $PS["Pha"];
+  var Pha = $PS["Pha"];  
   var span = Pha.h("span");    
   var div = Pha.h("div");
   var button = Pha.h("button");
@@ -2487,7 +2487,7 @@ var PS = {};
       if (v instanceof DelayedIncrement) {
           return Control_Apply.applySecond(Run.applyRun)(Pha_Effects_Delay.delay(1000))(increment);
       };
-      throw new Error("Failed pattern match at Example.Counter2 (line 33, column 1 - line 33, column 33): " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Example.Counter2 (line 34, column 1 - line 34, column 33): " + [ v.constructor.name ]);
   };
   var main = Pha_App.attachTo("root")(Pha_App.app({
       init: new Data_Tuple.Tuple(state, Control_Applicative.pure(Run.applicativeRun)(Data_Unit.unit)),

@@ -1,11 +1,11 @@
 {
   "dependencies": {
     "bower": "^1.8.8",
-    "pulp": "^14.0.0",
-    "purescript": "^0.13.6",
-    "spago": "^0.15.2",
-    "terser": "^4.7.0",
-    "yarn": "^1.22.0"
+    "pulp": "^15.0.0",
+    "purescript": "^0.13.8",
+    "spago": "^0.16.0",
+    "terser": "^5.3.3",
+    "yarn": "^1.22.10"
   },
   "scripts": {
     "init": "spago init",

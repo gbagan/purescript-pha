@@ -4,13 +4,14 @@ import Data.Int (toNumber)
 import Data.Array ((..), mapWithIndex)
 import Data.Array.NonEmpty (NonEmptyArray, cons')
 import Effect (Effect)
-import Pha (text, class', style, (/\))
+import Pha ((/\))
+import Pha as H
 import Pha.App (Document, app, attachTo)
 import Pha.Update (Update)
 import Pha.Random as R
 import Pha.Effects.Random (RNG, randomly, interpretRng)
-import Pha.Elements (div, button)
-import Pha.Events (onclick)
+import Pha.Elements as HH
+import Pha.Events as E
 import Pha.Util (pc)
 import Run as Run
 
@@ -62,22 +63,22 @@ view ∷ State → Document Msg
 view {dice, puzzle, card} = {
     title: "Randomness example",
     body:
-        div [] [
-            div [class' "counter" true] [text $ show dice],
-            button [onclick RollDice] [text "Roll dice"],
+        HH.div [] [
+            HH.div [H.class' "counter" true] [H.text $ show dice],
+            HH.button [E.onclick RollDice] [H.text "Roll dice"],
 
-            div [style "font-size" "12em" ] [ text $ viewCard card ],
-            button [onclick DrawCard] [ text "Draw" ],
+            HH.div [H.style "font-size" "12em" ] [H.text $ viewCard card ],
+            HH.button [E.onclick DrawCard] [H.text "Draw" ],
 
-            div [class' "puzzle" true] (
+            HH.div [H.class' "puzzle" true] (
                 puzzle # mapWithIndex \i j →
-                    div [
-                        class' "puzzle-item" true,
-                        style "left" $ pc (0.25 * toNumber (j / 4)),
-                        style "top" $ pc (0.25 * toNumber (j `mod` 4)) 
-                    ] [text $ show i]
+                    HH.div [
+                        H.class' "puzzle-item" true,
+                        H.style "left" $ pc (0.25 * toNumber (j / 4)),
+                        H.style "top" $ pc (0.25 * toNumber (j `mod` 4)) 
+                    ] [H.text $ show i]
             ),
-            button [onclick ShufflePuzzle] [text "Shuffle"]
+            HH.button [E.onclick ShufflePuzzle] [H.text "Shuffle"]
         ]
 }
 

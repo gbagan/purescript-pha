@@ -2,12 +2,12 @@ module Example.Decoder where
 import Prelude hiding (div)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
-import Pha (VDom, maybeN, style)
 import Pha.App (sandbox, attachTo)
-import Pha.Elements (div)
-import Pha.Events (on, onpointerleave)
+import Pha as H
+import Pha.Elements as HH
+import Pha.Attributes as P
+import Pha.Events as E
 import Pha.Events.Decoder (Decoder, readNumber, readProp, currentTarget, getBoundingClientRect)
-import Pha.Svg (svg, viewBox, circle, r_, fill, stroke)
 import Pha.Util (pc, translate)
 
 type Position = {x ∷ Number, y ∷ Number}
@@ -32,23 +32,23 @@ init = Nothing
 update ∷ Msg → State → State
 update (SetPosition p) = const p 
 
-view ∷ State → VDom Msg
+view ∷ State → H.VDom Msg
 view position = 
-    div [] [
-        div [
-            style "width" "400px",
-            style "height" "400px",
-            style "border" "solid grey thin",
-            on "pointermove" (\f → SetPosition <$> Just <$> decoder f),
-            onpointerleave (SetPosition Nothing)
+    HH.div [] [
+        HH.div [
+            H.style "width" "400px",
+            H.style "height" "400px",
+            H.style "border" "solid grey thin",
+            E.on "pointermove" (\f → SetPosition <$> Just <$> decoder f),
+            E.onpointerleave (SetPosition Nothing)
         ] [
-            svg [viewBox 0 0 100 100] [
-                maybeN $ position <#> \{x, y} →
-                    circle [
-                        r_ "7.0",
-                        fill "red",
-                        stroke "black",
-                        style "transform" $ translate (pc x) (pc y)
+            HH.svg [P.viewBox 0 0 100 100] [
+                H.maybeN $ position <#> \{x, y} →
+                    HH.circle [
+                        P.r "7.0",
+                        P.fill "red",
+                        P.stroke "black",
+                        H.style "transform" $ translate (pc x) (pc y)
                     ]
             ]
         ]

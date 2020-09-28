@@ -1,16 +1,17 @@
 module Example.Routing where
 import Prelude hiding (div)
 import Effect (Effect)
-import Pha (text, (/\))
 import Data.String (stripPrefix, Pattern(..))
 import Data.Int (fromString)
 import Data.Maybe (fromMaybe)
 import Pha.App (Document, attachTo)
 import Pha.App.Router (appWithRouter, Url, UrlRequest(..))
 import Pha.Update (Update, get, put)
-import Pha.Elements (div, button, h1, a)
-import Pha.Attributes (href)
-import Pha.Events (onclick)
+import Pha ((/\))
+import Pha as H
+import Pha.Elements as HH
+import Pha.Attributes as P
+import Pha.Events as E
 import Pha.Effects.Nav (NAV, interpretNav)
 import Pha.Effects.Nav as Nav
 import Run as Run
@@ -35,17 +36,17 @@ update NextPage = do
     Nav.goTo $ "/page" <> show (extractNumber pathname + 1)
 
 view ∷ State → Document Msg
-view {href: href', pathname} = {
+view {href, pathname} = {
     title: "Routing example",
     body:
-        div [] 
-        [   h1 [] [text $ "Page: " <> href']
-        ,   a 
-                [href $ "/page" <> show (extractNumber pathname - 1)]
-                [text "Previous page"]
-        ,   button
-                [onclick NextPage]
-                [text "Next page"]
+        HH.div [] 
+        [   HH.h1 [] [H.text $ "Page: " <> href]
+        ,   HH.a
+                [P.href $ "/page" <> show (extractNumber pathname - 1)]
+                [H.text "Previous page"]
+        ,   HH.button
+                [E.onclick NextPage]
+                [H.text "Next page"]
         ]
 }
 

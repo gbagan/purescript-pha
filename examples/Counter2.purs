@@ -58,7 +58,7 @@ keyDownHandler _ = Nothing
 
 main ∷ Effect Unit
 main = app {
-    init: {state, effect: \_ → pure unit},
+    init: {state, action: Nothing},
     view,
     update,
     subscriptions: const [Subs.onKeyDown keyDownHandler]

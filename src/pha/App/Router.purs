@@ -60,7 +60,7 @@ urlRequest base url =
 
 
 type AppWithRouter msg state = 
-    {   init ∷ Url → {state :: state, effect :: ((state → state) → Effect Unit) → Effect Unit}
+    {   init ∷ Url → {state :: state, action :: Maybe msg}
     ,   view ∷ state → Document msg
     ,   update ∷ ((state → state) → Effect Unit) → msg → Effect Unit
     ,   subscriptions ∷ state → Array (Sub msg)
@@ -89,7 +89,7 @@ loadUrl url = window >>= W.location >>= L.setHref url
 appWithRouter ∷ ∀msg state. AppWithRouter msg state → Internal.AppBuilder msg state
 appWithRouter {init, view, update, subscriptions, onUrlRequest, onUrlChange} {getS, setS, renderVDom} =
     {render, init: init2, subscriptions, dispatch, dispatchEvent} where
-    {modify, dispatch, dispatchEvent} = Internal.getDispatchers getS setS update
+    {dispatch, dispatchEvent} = Internal.getDispatchers getS setS update
     render state = do
         let {body, title} = view state
         window >>= W.document >>= D.setTitle title
@@ -107,10 +107,12 @@ appWithRouter {init, view, update, subscriptions, onUrlRequest, onUrlChange} {ge
 
     init2 = do
         url <- getLocationUrl
-        let {state, effect} = init url
+        let {state, action} = init url
         listener <- eventListener (popStateHandler url)
         window <#> W.toEventTarget >>= addEventListener (EventType "popstate") listener false
         clickListener <- eventListener (handleClickOnAnchor (hrefHandler url))
         window <#> W.toEventTarget >>= addEventListener (EventType "click") clickListener false
         setS state
-        effect modify
+        case action of
+            Just msg → dispatch msg
+            Nothing → pure unit

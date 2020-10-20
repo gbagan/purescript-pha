@@ -1,18 +1,19 @@
-module Pha.App.Router (appWithRouter, Url, UrlRequest(..), AppWithRouter) where
+module Pha.App.Router (appWithRouter, goTo, redirectTo, loadUrl, Url, UrlRequest(..), AppWithRouter) where
 import Prelude
 import Effect (Effect)
-import Pha (Update, Sub)
+import Pha (Sub)
 import Pha.App (Document)
 import Pha.App.Internal as Internal
 import Data.Maybe (Maybe(..))
-import Data.Tuple (Tuple(..))
 import Web.HTML (window)
-import Web.HTML.Window (document, location)
 import Web.HTML.Window as W
 import Web.HTML.Location as L
+import Web.HTML.HTMLDocument as D
+import Web.HTML.History as H
+import Foreign (Foreign)
 import Web.Event.Event (Event, EventType(..))
 import Web.Event.EventTarget (eventListener, addEventListener)
-import Web.HTML.HTMLDocument (setTitle)
+
 
 type Url =
     {   hash ∷ String
@@ -32,7 +33,7 @@ makeUrl = makeUrlAux Nothing Just
 
 getLocationUrl ∷ Effect Url
 getLocationUrl = do
-    loc <- window >>= location
+    loc <- window >>= W.location
     hash <- L.hash loc
     host <- L.host loc
     hostname <- L.hostname loc
@@ -58,25 +59,40 @@ urlRequest base url =
         External url.href
 
 
-type AppWithRouter msg state effs = 
-    {   init ∷ Url → Tuple state (Update state effs)
+type AppWithRouter msg state = 
+    {   init ∷ Url → {state :: state, effect :: ((state → state) → Effect Unit) → Effect Unit}
     ,   view ∷ state → Document msg
-    ,   update ∷ msg → Update state effs
+    ,   update ∷ ((state → state) → Effect Unit) → msg → Effect Unit
     ,   subscriptions ∷ state → Array (Sub msg)
     ,   onUrlRequest ∷ UrlRequest → msg
     ,   onUrlChange ∷ Url → msg
-    ,   interpreter ∷ Internal.Interpreter effs
     }
 
 foreign import handleClickOnAnchor ∷ (String → Effect Unit)  → Event → Effect Unit
+foreign import triggerPopState ∷ Effect Unit
+foreign import emptyObj ∷ Foreign
 
-appWithRouter ∷ ∀msg state effs. AppWithRouter msg state effs → Internal.AppBuilder msg state
-appWithRouter {init, view, update, subscriptions, onUrlRequest, onUrlChange, interpreter} {getS, setS, renderVDom} =
+goTo ∷ String → Effect Unit
+goTo url = do
+    window >>= W.history >>= H.pushState emptyObj (H.DocumentTitle "") (H.URL url)
+    triggerPopState
+
+redirectTo ∷ String → Effect Unit
+redirectTo url = do
+    window >>= W.history >>= H.replaceState emptyObj (H.DocumentTitle "") (H.URL url)
+    triggerPopState
+
+loadUrl ∷ String → Effect Unit
+loadUrl url = window >>= W.location >>= L.setHref url
+
+
+appWithRouter ∷ ∀msg state. AppWithRouter msg state → Internal.AppBuilder msg state
+appWithRouter {init, view, update, subscriptions, onUrlRequest, onUrlChange} {getS, setS, renderVDom} =
     {render, init: init2, subscriptions, dispatch, dispatchEvent} where
-    {runAction, dispatch, dispatchEvent} = Internal.getDispatchers getS setS update interpreter
+    {modify, dispatch, dispatchEvent} = Internal.getDispatchers getS setS update
     render state = do
         let {body, title} = view state
-        window >>= document >>= setTitle title
+        window >>= W.document >>= D.setTitle title
         renderVDom body
 
     hrefHandler baseUrl href  =
@@ -91,10 +107,10 @@ appWithRouter {init, view, update, subscriptions, onUrlRequest, onUrlChange, int
 
     init2 = do
         url <- getLocationUrl
-        let Tuple state init3 = init url
+        let {state, effect} = init url
         listener <- eventListener (popStateHandler url)
         window <#> W.toEventTarget >>= addEventListener (EventType "popstate") listener false
         clickListener <- eventListener (handleClickOnAnchor (hrefHandler url))
         window <#> W.toEventTarget >>= addEventListener (EventType "click") clickListener false
         setS state
-        runAction init3
+        effect modify

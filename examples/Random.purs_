@@ -4,12 +4,9 @@ import Data.Int (toNumber)
 import Data.Array ((..), mapWithIndex)
 import Data.Array.NonEmpty (NonEmptyArray, cons')
 import Effect (Effect)
-import Pha ((/\))
 import Pha as H
 import Pha.App (Document, app, attachTo)
-import Pha.Update (Update)
 import Pha.Random as R
-import Pha.Effects.Random (RNG, randomly, interpretRng)
 import Pha.Elements as HH
 import Pha.Events as E
 import Pha.Util (pc)
@@ -26,9 +23,6 @@ type State = {
 }
 
 data Msg = RollDice | DrawCard | ShufflePuzzle
-
--- effects used in this app
-type EFFS = (rng ∷ RNG)
 
 -- initial state
 state ∷ State
@@ -67,7 +61,7 @@ view {dice, puzzle, card} = {
             HH.div [H.class' "counter" true] [H.text $ show dice],
             HH.button [E.onclick RollDice] [H.text "Roll dice"],
 
-            HH.div [H.style "font-size" "12em" ] [H.text $ viewCard card ],
+            HH.div [H.style "font-size" "12em" ] [H.text $ viewCard card],
             HH.button [E.onclick DrawCard] [H.text "Draw" ],
 
             HH.div [H.class' "puzzle" true] (
@@ -84,11 +78,8 @@ view {dice, puzzle, card} = {
 
 main ∷ Effect Unit
 main = app {
-    init: state /\ update RollDice,
+    init: {state, effect: \m → update m RollDice},
     view,
     update,
-    subscriptions: const [],
-    interpreter: Run.match {
-        rng: interpretRng
-    }
+    subscriptions: const []
 } # attachTo "root"

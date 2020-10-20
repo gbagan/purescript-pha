@@ -1,4 +1,4 @@
-module Pha.App (app, sandbox, attachTo, Document, App, module Exports) where
+module Pha.App (app, sandbox, attachTo, Document, App) where
 import Prelude
 import Effect (Effect)
 import Web.HTML (window)
@@ -7,8 +7,6 @@ import Web.HTML.HTMLDocument (setTitle)
 import Pha (VDom, Sub)
 import Data.Tuple (Tuple(..))
 import Pha.App.Internal as Internal
-import Pha.App.Internal (Interpreter) as Exports
-import Pha.Update (Update, modify)
 
 type Document msg = {
     title ∷ String,
@@ -16,18 +14,17 @@ type Document msg = {
 }
 
 type App msg state effs = 
-    {   init ∷ Tuple state (Update state effs)
+    {   init ∷ {state :: state, effect :: ((state → state) → Effect Unit) → Effect Unit}
     ,   view ∷ state → Document msg
-    ,   update ∷ msg → Update state effs
+    ,   update ∷ ((state → state) → Effect Unit) → msg → Effect Unit
     ,   subscriptions ∷ state → Array (Sub msg)
-    ,   interpreter ∷ Internal.Interpreter effs
     }
 
 app ∷ ∀msg state effs. App msg state effs → Internal.AppBuilder msg state
-app {init: Tuple istate init, view, update, subscriptions, interpreter} {getS, setS, renderVDom} = 
+app {init, view, update, subscriptions} {getS, setS, renderVDom} = 
     {render, init: init2, subscriptions, dispatch, dispatchEvent} where
-    {runAction, dispatch, dispatchEvent} = Internal.getDispatchers getS setS update interpreter
-    init2 = setS istate *> runAction init
+    {modify, dispatch, dispatchEvent} = Internal.getDispatchers getS setS update
+    init2 = setS init.state *> init.effect modify
     render state = do
         let {body, title} = view state
         window >>= document >>= setTitle title
@@ -50,9 +47,17 @@ sandbox ∷ ∀msg state. {
     update ∷ msg → state → state
 } → Internal.AppBuilder msg state
 
-sandbox {init, view, update} {getS, setS, renderVDom} = 
-    {render, init: setS init, subscriptions: const [], dispatch, dispatchEvent} where
-    update2 msg = modify (update msg)
-    {dispatch, dispatchEvent} = Internal.getDispatchers getS setS update2 (const (pure unit))
-    render = renderVDom <<< view
+sandbox {init, view, update} = app {
+        init: {state: init, effect: \_ -> pure unit}
+    ,   view: \st -> {title: "Pha App", body: view st}
+    ,   update: (_ <<< update)
+    ,   subscriptions: const []
+    }
 
+{-}
+ {getS, setS, renderVDom} = 
+    {render, init: setS init, subscriptions: const [], dispatch, dispatchEvent} where
+    update2 fn = dispatch <<< update 
+    {modify, dispatch, dispatchEvent} = Internal.getDispatchers getS setS update (const (pure unit))
+    render = renderVDom <<< view
+-}

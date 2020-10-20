@@ -4,11 +4,7 @@ import Data.Int (even)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Pha as H
-import Pha ((/\))
-import Run as Run
-import Pha.Update (Update, modify)
 import Pha.App (app, attachTo, Document)
-import Pha.Effects.Delay (DELAY, delay, interpretDelay)
 import Pha.Subs as Subs
 import Pha.Elements as HH
 import Pha.Events as E
@@ -18,7 +14,6 @@ type State = {
 }
 
 -- effects used in this app
-type EFFS = (delay ∷ DELAY)
 
 -- initial state
 state ∷ State
@@ -28,12 +23,11 @@ state = {
 
 data Msg = Increment | DelayedIncrement
 
-increment ∷ forall effs. Update State effs
-increment = modify \{counter} → {counter: counter + 1}
-
-update ∷ Msg → Update State EFFS
-update Increment = increment
-update DelayedIncrement = delay 1000 *> increment
+update ∷ ((State → State) → Effect Unit) → Msg → Effect Unit
+update modify Increment = modify \{counter} → {counter: counter + 1}
+update modify DelayedIncrement = do
+    -- delay 1000 *>
+    modify \{counter} → {counter: counter + 1}
 
 view ∷ State → Document Msg
 view {counter} = {
@@ -64,11 +58,8 @@ keyDownHandler _ = Nothing
 
 main ∷ Effect Unit
 main = app {
-    init: state /\ pure unit,
+    init: {state, effect: \_ → pure unit},
     view,
     update,
-    subscriptions: const [Subs.onKeyDown keyDownHandler],
-    interpreter: Run.match {
-        delay: interpretDelay
-    }
+    subscriptions: const [Subs.onKeyDown keyDownHandler]
 } # attachTo "root"

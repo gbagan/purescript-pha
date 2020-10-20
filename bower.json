@@ -16,9 +16,6 @@
     ],
     "dependencies": {
         "purescript-effect": "^v2.0.1",
-        "purescript-profunctor-lenses": "^v6.2.0",
-        "purescript-foreign": "^v5.0.0",
-        "purescript-run": "^v3.0.1",
         "purescript-web-html": "^v2.3.0"
     }
 }

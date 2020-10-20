@@ -1,1 +1,0 @@
-exports.getBoundingClientRectAux = e => e && e.getBoundingClientRect && e.getBoundingClientRect();

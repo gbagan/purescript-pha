@@ -21,3 +21,9 @@ exports.handleClickOnAnchor = handler => ev => () => {
         handler(a.getAttribute("href"))();
     }
 }
+
+exports.emptyObj = {}
+exports.triggerPopState = () => {
+    const ev = new PopStateEvent('popstate', {});
+    dispatchEvent(ev);
+}

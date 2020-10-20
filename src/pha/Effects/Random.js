@@ -1,1 +1,0 @@
-exports.mathRandom = Math.random;

@@ -3,7 +3,7 @@ import Prelude hiding (div)
 import Data.Maybe (maybe)
 import Effect (Effect)
 import Run as Run
-import Pha (VDom, text, style, (/\))
+import Pha (VDom, text, style)
 import Pha.App (Document, app, attachTo)
 import Pha.Update (Update, put)
 import Pha.Example.Effects.Http (ajax, HTTP, interpretHttp)

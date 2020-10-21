@@ -10,9 +10,11 @@ module Pha.Events where
 import Prelude hiding (div)
 import Effect (Effect)
 import Pha (Prop, Event, EventHandler, unsafeOnWithEffect)
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), maybe)
 import Data.Tuple (Tuple(..))
 import Web.Event.Event as Event
+import Web.UIEvent.MouseEvent (MouseEvent)
+import Web.UIEvent.MouseEvent as ME
 import Web.HTML.HTMLInputElement as HTMLInput
 
 always ∷ ∀ev msg. msg → ev → Effect (Maybe msg)
@@ -63,46 +65,64 @@ onclick ∷ ∀msg. msg → Prop msg
 onclick = on "click" <<< always
 onclick' ∷ ∀msg. Maybe msg → Prop msg
 onclick' = on "click" <<< always'
+onclick_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onclick_ handler = on "click" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
 onmouseup ∷ ∀msg. msg → Prop msg
 onmouseup = on "mouseup" <<< always
 onmouseup' ∷ ∀msg. Maybe msg → Prop msg
 onmouseup' = on "mouseup" <<< always'
+onmouseup_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onmouseup_ handler = on "mouseup" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
 onmousedown ∷ ∀msg. msg → Prop msg
 onmousedown = on "mousedown" <<< always
 onmousedown' ∷ ∀msg. Maybe msg → Prop msg
 onmousedown' = on "mousedown" <<< always'
+onmousedown_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onmousedown_ handler = on "mousedown" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
 onmouseenter ∷ ∀msg. msg → Prop msg
 onmouseenter = on "mouseenter" <<< always
 onmouseenter' ∷ ∀msg. Maybe msg → Prop msg
 onmouseenter' = on "mousenter" <<< always'
+onmouseenter_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onmouseenter_ handler = on "mouseenter" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
 onmouseleave ∷ ∀msg. msg → Prop msg
 onmouseleave = on "mouseleave" <<< always
 onmouseleave' ∷ ∀msg. Maybe msg → Prop msg
 onmouseleave' = on "mouseleave" <<< always'
+onmouseleave_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onmouseleave_ handler = on "mouseleave" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
 onpointerup ∷ ∀msg. msg → Prop msg
 onpointerup = on "pointerup" <<< always
 onpointerup' ∷ ∀msg. Maybe msg → Prop msg
 onpointerup' = on "pointerup" <<< always'
+onpointerup_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onpointerup_ handler = on "pointerup" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
 onpointerdown ∷ ∀msg. msg → Prop msg
 onpointerdown = on "pointerdown" <<< always
 onpointerdown' ∷ ∀msg. Maybe msg → Prop msg
 onpointerdown' = on "pointerdown" <<< always'
+onpointerdown_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onpointerdown_ handler = on "pointerdown" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
 onpointerenter ∷ ∀msg. msg → Prop msg
-onpointerenter = on "pointerenter" <<< always
+onpointerenter = on "pointerdown" <<< always
 onpointerenter' ∷ ∀msg. Maybe msg → Prop msg
 onpointerenter' = on "pointerenter" <<< always'
+onpointerenter_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onpointerenter_ handler = on "pointerenter" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
 onpointerleave ∷ ∀msg. msg → Prop msg
 onpointerleave = on "pointerleave" <<< always
 onpointerleave' ∷ ∀msg. Maybe msg → Prop msg
 onpointerleave' = on "pointerleave" <<< always'
+onpointerleave_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onpointerleave_ handler = on "pointerleave" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
 -- | note: trigger preventDefault 
 oncontextmenu ∷ ∀msg. msg → Prop msg

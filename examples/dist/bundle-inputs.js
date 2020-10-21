@@ -866,7 +866,10 @@ var PS = {};
                       return setS(fn($2))();
                   };
               };
-              var dispatch = update(modify);
+              var dispatch = update({
+                  get: getS,
+                  modify: modify
+              });
               var dispatchEvent = function (ev) {
                   return function (handler) {
                       return function __do() {
@@ -877,7 +880,7 @@ var PS = {};
                           if (msg instanceof Data_Maybe.Just) {
                               return dispatch(msg.value0)();
                           };
-                          throw new Error("Failed pattern match at Pha.App.Internal (line 36, column 13 - line 38, column 36): " + [ msg.constructor.name ]);
+                          throw new Error("Failed pattern match at Pha.App.Internal (line 38, column 13 - line 40, column 36): " + [ msg.constructor.name ]);
                       };
                   };
               };
@@ -1001,8 +1004,8 @@ var PS = {};
               };
           },
           update: function (v1) {
-              return function ($27) {
-                  return v1(v.update($27));
+              return function (msg) {
+                  return v1.modify(v.update(msg));
               };
           },
           subscriptions: Data_Function["const"]([  ])

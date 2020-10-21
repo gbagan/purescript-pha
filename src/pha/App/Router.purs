@@ -62,7 +62,7 @@ urlRequest base url =
 type AppWithRouter msg state = 
     {   init ∷ Url → {state :: state, action :: Maybe msg}
     ,   view ∷ state → Document msg
-    ,   update ∷ ((state → state) → Effect Unit) → msg → Effect Unit
+    ,   update ∷ {get ∷ Effect state, modify ∷ (state → state) → Effect Unit} → msg → Effect Unit
     ,   subscriptions ∷ state → Array (Sub msg)
     ,   onUrlRequest ∷ UrlRequest → msg
     ,   onUrlChange ∷ Url → msg

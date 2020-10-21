@@ -16,7 +16,7 @@ type Document msg = {
 type App msg state = 
     {   init ∷ {state :: state, action :: Maybe msg}
     ,   view ∷ state → Document msg
-    ,   update ∷ ((state → state) → Effect Unit) → msg → Effect Unit
+    ,   update ∷ {get ∷ Effect state, modify ∷ (state → state) → Effect Unit} → msg → Effect Unit
     ,   subscriptions ∷ state → Array (Sub msg)
     }
 
@@ -54,6 +54,6 @@ sandbox ∷ ∀msg state. {
 sandbox {init, view, update} = app {
         init: {state: init, action: Nothing}
     ,   view: \st -> {title: "Pha App", body: view st}
-    ,   update: (_ <<< update)
+    ,   update: \{modify} msg -> modify (update msg)
     ,   subscriptions: const []
     }

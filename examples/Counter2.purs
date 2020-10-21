@@ -23,9 +23,9 @@ state = {
 
 data Msg = Increment | DelayedIncrement
 
-update ∷ ((State → State) → Effect Unit) → Msg → Effect Unit
-update modify Increment = modify \{counter} → {counter: counter + 1}
-update modify DelayedIncrement = do
+update ∷ {get ∷ Effect State, modify ∷ (State → State) → Effect Unit} → Msg → Effect Unit
+update {modify} Increment = modify \{counter} → {counter: counter + 1}
+update {modify} DelayedIncrement = do
     -- delay 1000 *>
     modify \{counter} → {counter: counter + 1}
 

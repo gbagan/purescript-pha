@@ -55,11 +55,11 @@ stopPropagationOn eventname decoder = custom eventname (decoder >>> map (map \(T
     stopPropagation: stop
 }))
 
-releasePointerCaptureOn ∷ ∀msg. String → EventHandler (Maybe msg) → Prop msg
-releasePointerCaptureOn eventname hander = unsafeOnWithEffect eventname handler where
+releasePointerCaptureOn ∷ ∀msg. String → EventHandler msg → Prop msg
+releasePointerCaptureOn eventname decoder = unsafeOnWithEffect eventname handler where
     handler ev = do
         releasePointerCaptureE ev
-        handler ev
+        decoder ev
 
 onclick ∷ ∀msg. msg → Prop msg
 onclick = on "click" <<< always
@@ -85,7 +85,7 @@ onmousedown_ handler = on "mousedown" \ev → ME.fromEvent ev # maybe (pure Noth
 onmouseenter ∷ ∀msg. msg → Prop msg
 onmouseenter = on "mouseenter" <<< always
 onmouseenter' ∷ ∀msg. Maybe msg → Prop msg
-onmouseenter' = on "mousenter" <<< always'
+onmouseenter' = on "mouseenter" <<< always'
 onmouseenter_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
 onmouseenter_ handler = on "mouseenter" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
@@ -111,7 +111,7 @@ onpointerdown_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
 onpointerdown_ handler = on "pointerdown" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
 onpointerenter ∷ ∀msg. msg → Prop msg
-onpointerenter = on "pointerdown" <<< always
+onpointerenter = on "pointerenter" <<< always
 onpointerenter' ∷ ∀msg. Maybe msg → Prop msg
 onpointerenter' = on "pointerenter" <<< always'
 onpointerenter_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg

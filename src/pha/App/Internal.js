@@ -3,7 +3,6 @@
 // modified by Guillaume Bagan
 
 const RECYCLED_NODE = 1
-const LAZY_NODE = 2
 const TEXT_NODE = 3
 const EMPTY_OBJ = {}
 const EMPTY_ARR = []
@@ -181,7 +180,9 @@ const patch = function (parent, node, oldVNode, newVNode, listener, isSvg, mapf)
                 node.removeChild(oldVKids[oldHead++].node)
             }
         } else {
-            for (var i = oldHead, keyed = {}, newKeyed = {}; i <= oldTail; i++) {
+            const keyed = {}
+            const newKeyed = {}
+            for (let i = oldHead; i <= oldTail; i++) {
                 if ((oldKey = oldVKids[i].key) != null) {
                     keyed[oldKey] = oldVKids[i]
                 }
@@ -303,33 +304,19 @@ const recycleNode = node =>
             RECYCLED_NODE
         )
 
-const shouldRestart = (a, b) => {
-    if (a !== b) {
-        for (let k in merge(a, b)) {
-            if (a[k] !== b[k] && !isSameAction(a[k], b[k]))
-                return true
-            b[k] = a[k]
-        }
-    }
-}
-
 const patchSubs = (oldSubs, newSubs, dispatch) => {
+    const subs = []
     for (
-        var i = 0, oldSub, newSub, subs = [];
+        let i = 0;
         i < oldSubs.length || i < newSubs.length;
         i++
     ) {
-        oldSub = oldSubs[i]
-        newSub = newSubs[i]
+        const oldSub = oldSubs[i]
+        const newSub = newSubs[i]
         subs.push(
             newSub
-                ? !oldSub || newSub.fn !== oldSub.fn || shouldRestart(newSub[0], oldSub[1])
-                    ? [
-                        newSub[0],
-                        newSub[1],
-                        newSub[0](dispatch)(newSub[1])(),
-                        oldSub && oldSub[2]()
-                    ]
+                ? !oldSub || newSub[0] !== oldSub[0] || newSub[1] !== oldSub[1]
+                    ? [newSub[0], newSub[1], newSub[0](dispatch)(newSub[1])(), oldSub && oldSub[2]()]
                     : oldSub
                 : oldSub && oldSub[2]()
         )
@@ -338,13 +325,11 @@ const patchSubs = (oldSubs, newSubs, dispatch) => {
 }
 
 const app = props => {
-    let state = {}
+    let state = null
     let lock = false
     let subs = []
 
-    const listener = function (event) {
-        dispatchEvent(event)(this.actions[event.type])()
-    }
+    const listener = e => dispatchEvent(e)(e.currentTarget.actions[e.type])()
 
     const getState = () => state
 
@@ -357,7 +342,6 @@ const app = props => {
                 defer(() => render(state)());
             }
         }
-        return state
     }
 
     let node = null;

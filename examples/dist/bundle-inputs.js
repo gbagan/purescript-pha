@@ -765,33 +765,20 @@ var PS = {};
               RECYCLED_NODE
           )
 
-  const shouldRestart = (a, b) => {
-      if (a !== b) {
-          for (let k in merge(a, b)) {
-              if (a[k] !== b[k] && !isSameAction(a[k], b[k]))
-                  return true
-              b[k] = a[k]
-          }
-      }
-  }
-
   const patchSubs = (oldSubs, newSubs, dispatch) => {
-      for (var
-              i = 0, oldSub, newSub, subs = [];
+      const subs = []
+      for (let
+              i = 0;
           i < oldSubs.length || i < newSubs.length;
           i++
       ) {
-          oldSub = oldSubs[i]
-          newSub = newSubs[i]
+
+          const oldSub = oldSubs[i]
+          const [fn, data] = newSubs[i]
           subs.push(
               newSub
-                  ? !oldSub || newSub.fn !== oldSub.fn || shouldRestart(newSub[0], oldSub[1])
-                      ? [
-                          newSub[0],
-                          newSub[1],
-                          newSub[0](dispatch)(newSub[1])(),
-                          oldSub && oldSub[2]()
-                      ]
+                  ? !oldSub || fn !== oldSub[0] || data !== oldSub[1]
+                      ? [fn, data, fn(dispatch)(data)(), oldSub && oldSub[2]()]
                       : oldSub
                   : oldSub && oldSub[2]()
           )

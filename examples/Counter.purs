@@ -2,7 +2,7 @@ module Example.Counter where
 import Prelude hiding (div)
 import Effect (Effect)
 import Pha (VDom, text)
-import Pha.App (sandbox, attachTo)
+import Pha.App (sandbox)
 import Pha.Elements as H
 import Pha.Events as E
 
@@ -25,4 +25,4 @@ view counter =
     ]
 
 main ∷ Effect Unit
-main = sandbox {init, update, view} # attachTo "root"
+main = sandbox {init, update, view, selector: "#root"}

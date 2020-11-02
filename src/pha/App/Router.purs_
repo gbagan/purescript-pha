@@ -10,7 +10,7 @@ import Web.HTML.Window as W
 import Web.HTML.Location as L
 import Web.HTML.HTMLDocument as D
 import Web.HTML.History as H
-import Foreign (Foreign)
+import Foreign (unsafeToForeign)
 import Web.Event.Event (Event, EventType(..))
 import Web.Event.EventTarget (eventListener, addEventListener)
 
@@ -45,8 +45,6 @@ getLocationUrl = do
     search <- L.search loc
     pure $ {hash, host, hostname, href, origin, pathname, port, protocol, search}
 
-foreign import dispatchPopState ∷ Effect Unit
-
 data UrlRequest = Internal Url | External String
 
 urlRequest ∷ Url → Url → UrlRequest
@@ -70,16 +68,15 @@ type AppWithRouter msg state =
 
 foreign import handleClickOnAnchor ∷ (String → Effect Unit)  → Event → Effect Unit
 foreign import triggerPopState ∷ Effect Unit
-foreign import emptyObj ∷ Foreign
 
 goTo ∷ String → Effect Unit
 goTo url = do
-    window >>= W.history >>= H.pushState emptyObj (H.DocumentTitle "") (H.URL url)
+    window >>= W.history >>= H.pushState (unsafeToForeign {}) (H.DocumentTitle "") (H.URL url)
     triggerPopState
 
 redirectTo ∷ String → Effect Unit
 redirectTo url = do
-    window >>= W.history >>= H.replaceState emptyObj (H.DocumentTitle "") (H.URL url)
+    window >>= W.history >>= H.replaceState (unsafeToForeign {}) (H.DocumentTitle "") (H.URL url)
     triggerPopState
 
 loadUrl ∷ String → Effect Unit

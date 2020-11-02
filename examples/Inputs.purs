@@ -3,7 +3,7 @@ import Prelude hiding (div)
 import Data.Maybe (fromMaybe)
 import Data.Int (fromString)
 import Effect (Effect)
-import Pha.App (sandbox, attachTo)
+import Pha.App (sandbox)
 import Pha as H
 import Pha.Elements as HH
 import Pha.Attributes as P
@@ -49,4 +49,4 @@ view st@{val1, val2, isMul} =
     ]
 
 main ∷ Effect Unit
-main = sandbox {init, view, update} # attachTo "root"
+main = sandbox {init, view, update, selector: "#root"}

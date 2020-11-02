@@ -7,7 +7,6 @@ const TEXT_NODE = 3
 const EMPTY_OBJ = {}
 const EMPTY_ARR = []
 const map = EMPTY_ARR.map
-const defer = requestAnimationFrame || setTimeout
 
 const merge = (a, b) => Object.assign({}, a, b);
 const compose = (f, g) => f && g ? x => f(g(x)) : f || g;
@@ -324,49 +323,6 @@ const patchSubs = (oldSubs, newSubs, dispatch) => {
     return subs
 }
 
-const app = props => {
-    let state = null
-    let lock = false
-    let subs = []
-
-    const listener = e => dispatchEvent(e)(e.currentTarget.actions[e.type])()
-
-    const getState = () => state
-
-    const setState = newState => () => {
-        if (state !== newState) {
-            state = newState
-            subs = patchSubs(subs, subscriptions(state), dispatch)
-            if (!lock) {
-                lock = true
-                defer(() => render(state)());
-            }
-        }
-    }
-
-    let node = null;
-    let vdom = null;
-
-    const renderVDom = newVdom => () => {
-        lock = false
-        node = patch(
-            node.parentNode,
-            node,
-            vdom,
-            vdom = newVdom,
-            listener
-        )
-    }
-
-    const { render, subscriptions, dispatch, dispatchEvent, init } = props({ getS: getState, setS: setState, renderVDom })
-
-    return rootnode => () => {
-        node = document.getElementById(rootnode)
-        if (!node)
-            return
-        vdom = node && recycleNode(node)
-        init()
-    }
-}
-
-exports.app = app
+exports.getAction = target => type => () => target.actions[type]
+exports.patchSubs = oldSubs => newSubs => dispatch => () => patchSubs (oldSubs, newSubs, dispatch)
+exports.patch = parent => node => oldVDom => newVDom => listener => () => patch(parent, node, oldVDom, newVDom, e => listener(e)())

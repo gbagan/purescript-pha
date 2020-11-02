@@ -1,6 +1,3 @@
-const LAZY_NODE = 2
-const TEXT_NODE = 3
-
 const compose = (f, g) => f && g ? x => f(g(x)) : f || g; 
 
 const h = name => ps => children => {

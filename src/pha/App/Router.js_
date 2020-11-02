@@ -1,4 +1,4 @@
-exports.dispatchPopState = () => {
+exports.triggerPopState = () => {
     const popStateEvent = new PopStateEvent('popstate', {});
     dispatchEvent(popStateEvent);
 }
@@ -17,13 +17,7 @@ exports.handleClickOnAnchor = handler => ev => () => {
         return;
     const a = ev.target.closest("a");
     if (a) {
-        ev.preventDefault();
-        handler(a.getAttribute("href"))();
+        ev.preventDefault()
+        handler(a.href)()
     }
-}
-
-exports.emptyObj = {}
-exports.triggerPopState = () => {
-    const ev = new PopStateEvent('popstate', {});
-    dispatchEvent(ev);
 }

@@ -27,8 +27,8 @@ type Url =
     ,   search ∷ String
     }
 
-foreign import makeUrlAux :: (∀a. Maybe a) → (∀a. a → Maybe a) → String → String → Maybe Url
-makeUrl :: String → String → Maybe Url
+foreign import makeUrlAux ∷ (∀a. Maybe a) → (∀a. a → Maybe a) → String → String → Maybe Url
+makeUrl ∷ String → String → Maybe Url
 makeUrl = makeUrlAux Nothing Just
 
 getLocationUrl ∷ Effect Url
@@ -58,7 +58,7 @@ urlRequest base url =
 
 
 type AppWithRouter msg state = 
-    {   init ∷ Url → {state :: state, action :: Maybe msg}
+    {   init ∷ Url → {state ∷ state, action ∷ Maybe msg}
     ,   view ∷ state → Document msg
     ,   update ∷ {get ∷ Effect state, modify ∷ (state → state) → Effect Unit} → msg → Effect Unit
     ,   subscriptions ∷ state → Array (Sub msg)

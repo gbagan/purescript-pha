@@ -23,8 +23,8 @@ data Msg = OnUrlChange Url | OnUrlRequest UrlRequest | NextPage
 -- effects used in this app
 type EFFS = (nav ∷ NAV)
 
--- |  "/page32" -> 32
-extractNumber :: String → Int
+-- |  "/page32" → 32
+extractNumber ∷ String → Int
 extractNumber = (stripPrefix (Pattern "/page") >=> fromString) >>> fromMaybe 0
 
 update ∷ Msg → Update State EFFS

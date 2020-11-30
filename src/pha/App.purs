@@ -15,7 +15,7 @@ import Web.DOM.Element as El
 import Web.DOM.ParentNode (QuerySelector(..), querySelector)
 
 app ∷ ∀msg state.
-    {   init ∷ {state :: state, action :: Maybe msg}
+    {   init ∷ {state ∷ state, action ∷ Maybe msg}
     ,   view ∷ state → VDom msg
     ,   update ∷ {get ∷ Effect state, modify ∷ (state → state) → Effect Unit} → msg → Effect Unit
     ,   subscriptions ∷ state → Array (Sub msg)
@@ -25,8 +25,8 @@ app {init: {state: st, action}, update, view, subscriptions, selector} = do
     parentNode <- window >>= document <#> toParentNode
     selected <- map El.toNode <$> querySelector (QuerySelector selector) parentNode
     case selected of
-        Nothing -> pure unit
-        Just node_ -> do
+        Nothing → pure unit
+        Just node_ → do
             state <- Ref.new st
             lock <- Ref.new false
             subs <- Ref.new []
@@ -37,47 +37,46 @@ app {init: {state: st, action}, update, view, subscriptions, selector} = do
     go state lock subs node vdom = do
         setState st
         case action of
-            Just a -> dispatch a
-            Nothing -> pure unit
+            Just a → dispatch a
+            Nothing → pure unit
         where
-        render :: VDom msg -> Effect Unit
+        render ∷ VDom msg → Effect Unit
         render newVDom = do
                 Ref.write false lock
                 oldVDom <- Ref.read vdom
                 node1 <- Ref.read node
                 pnode <- Node.parentNode node1
                 case pnode of
-                    Nothing -> pure unit
-                    Just pnode' -> do
+                    Nothing → pure unit
+                    Just pnode' → do
                         node2 <- I.patch pnode' node1 oldVDom newVDom listener
                         Ref.write node2 node
                         Ref.write newVDom vdom
  
  
-        getState :: Effect state
+        getState ∷ Effect state
         getState = Ref.read state
 
-        setState :: state -> Effect Unit
+        setState ∷ state → Effect Unit
         setState newState = do
                     Ref.write newState state
                     subs1 <- Ref.read subs
                     subs2 <- I.patchSubs subs1 (subscriptions newState) dispatch
                     Ref.write subs2 subs
                     lock1 <- Ref.read lock
-                    if not lock1 then do
+                    unless lock1 do
                         Ref.write true lock
                         -- void $ window >>= requestAnimationFrame (
                         render $ view newState
-                    else
-                        pure unit
-        modify :: (state -> state) -> Effect Unit 
+
+        modify ∷ (state → state) → Effect Unit 
         modify fn = getState >>= (setState <<< fn)
         
-        dispatch :: msg -> Effect Unit
+        dispatch ∷ msg → Effect Unit
         -- eta expansion pour casser la dépendance cyclique
-        dispatch = update {get: getState, modify: \f -> modify f}
+        dispatch = update {get: getState, modify: \f → modify f}
 
-        dispatchEvent :: Event -> EventHandler msg -> Effect Unit
+        dispatchEvent ∷ Event → EventHandler msg → Effect Unit
         dispatchEvent ev handler = do
                         msg <- handler ev
                         case msg of
@@ -112,7 +111,7 @@ sandbox ∷ ∀msg state. {
 sandbox {init, view, update, selector} = app {
         init: {state: init, action: Nothing}
     ,   view
-    ,   update: \{modify} msg -> modify (update msg)
+    ,   update: \{modify} msg → modify (update msg)
     ,   subscriptions: const []
     ,   selector
     }

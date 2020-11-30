@@ -1,5 +1,5 @@
 module Pha (VDom, Prop, Sub, h, text, emptyNode, key, attr, style, on_, class_, class', memo,
-    when, (<&&>), maybeN, maybe, (<??>), unsafeOnWithEffect, module E,
+    when, maybeN, maybe, unsafeOnWithEffect, module E,
       EventHandler) where
 import Prelude hiding (when)
 import Effect (Effect)
@@ -53,14 +53,11 @@ foreign import emptyNode ∷ ∀msg. VDom msg
 foreign import memo ∷ ∀a msg. a → (a → VDom msg) → VDom msg
 
 -- | ```purescript
--- | when true = vdom unit
--- | when false = emptyNode
+-- | when true f = f unit
+-- | when false f = emptyNode
 -- | ```
 when ∷ ∀msg. Boolean → (Unit → VDom msg) → VDom msg
 when cond vdom = if cond then vdom unit else emptyNode
-
-infix 1 when as <&&>
-
 
 -- | ```purescript
 -- | maybeN (Just vdom) = vdom
@@ -73,7 +70,6 @@ maybe ∷ ∀a msg. Maybe a → (a → VDom msg) → VDom msg
 maybe (Just a) f = f a
 maybe Nothing _ = emptyNode
 
-infix 1 maybe as <??>
     
 foreign import mapView ∷ ∀a b. (EventHandler a → EventHandler b) → VDom a → VDom b
 instance functorVDom ∷ Functor VDom where

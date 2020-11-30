@@ -23,27 +23,26 @@ value = attr "value"
 target ∷ ∀msg. String → Prop msg
 target = attr "target"
 
-
 -- SVG
 
-x ∷ ∀msg. String → Prop msg
-x = attr "x"
-y ∷ ∀msg. String → Prop msg
-y = attr "y"
-x1 ∷ ∀msg. String → Prop msg
-x1 = attr "x1"
-y1 ∷ ∀msg. String → Prop msg
-y1 = attr "y1"
-x2 ∷ ∀msg. String → Prop msg
-x2 = attr "x2"
-y2 ∷ ∀msg. String → Prop msg
-y2 = attr "y2"
-cx ∷ ∀msg. String → Prop msg
-cx = attr "cx"
-cy ∷ ∀msg. String → Prop msg
-cy = attr "cy"
-r ∷ ∀msg. String → Prop msg
-r = attr "r"
+x ∷ ∀msg. Number → Prop msg
+x = attr "x" <<< show
+y ∷ ∀msg. Number → Prop msg
+y = attr "y" <<< show
+x1 ∷ ∀msg. Number → Prop msg
+x1 = attr "x1" <<< show
+y1 ∷ ∀msg. Number → Prop msg
+y1 = attr "y1" <<< show
+x2 ∷ ∀msg. Number → Prop msg
+x2 = attr "x2" <<< show
+y2 ∷ ∀msg. Number → Prop msg
+y2 = attr "y2" <<< show
+cx ∷ ∀msg. Number → Prop msg
+cx = attr "cx" <<< show
+cy ∷ ∀msg. Number → Prop msg
+cy = attr "cy" <<< show
+r ∷ ∀msg. Number → Prop msg
+r = attr "r" <<< show
 
 d ∷ ∀msg. String → Prop msg
 d = attr "d"
@@ -54,8 +53,8 @@ height ∷ ∀msg. String → Prop msg
 height = attr "height"
 stroke ∷ ∀msg. String → Prop msg
 stroke = attr "stroke"
-opacity ∷ ∀msg. String → Prop msg
-opacity = attr "opacity"
+opacity ∷ ∀msg. Number → Prop msg
+opacity = attr "opacity" <<< show
 fill ∷ ∀msg. String → Prop msg
 fill = attr "fill"
 viewBox ∷ ∀msg. Int → Int → Int → Int → Prop msg

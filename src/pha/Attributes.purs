@@ -61,8 +61,7 @@ viewBox ∷ ∀msg. Int → Int → Int → Int → Prop msg
 viewBox a b c d2 = attr "viewBox" $ show a <> " " <> show b <> " " <> show c <> " " <> show d2
 transform ∷ ∀msg. String → Prop msg
 transform = attr "transform"
-strokeWidth ∷ ∀msg. String → Prop msg
-strokeWidth = attr "stroke-width"
+strokeWidth ∷ ∀msg. Number → Prop msg
+strokeWidth = attr "stroke-width" <<< show
 strokeDasharray ∷ ∀msg. String → Prop msg
 strokeDasharray = attr "stroke-dasharray"
-

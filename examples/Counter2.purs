@@ -2,6 +2,8 @@ module Example.Counter2 where
 import Prelude hiding (div)
 import Data.Int (even)
 import Data.Maybe (Maybe(..))
+import Data.Array (replicate, (..))
+import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Pha (VDom)
 import Pha as H
@@ -9,6 +11,7 @@ import Pha.App (app)
 import Pha.Subs as Subs
 import Pha.Elements as HH
 import Pha.Events as E
+
 
 type State = {
     counter ∷ Int
@@ -44,13 +47,47 @@ view {counter} =
             ] []
         ]
 
-    ,   HH.div [] [
-            H.text "press space to increment the counter"
+    ,   HH.h3 [] 
+        [   H.text "press I to increment the counter"
         ]
+    
+    ,   HH.hr []
+    ,   HH.h3 [] 
+        [   H.text "keyed"
+        ]
+
+    ,   H.keyed "div" [] $
+            ((0 .. (counter `mod` 4)) <#> \i ->
+                show i /\ H.text (show i)
+            ) <> 
+                ["test" /\ H.text "test"]
+            <>
+            ((0 .. (counter `mod` 4)) <#> \i ->
+                show i /\ H.text (show i)
+            )
+    ,   HH.hr []
+    ,   HH.h3 [] 
+        [   H.text "non keyed"
+        ]
+    ,   HH.div [] $
+            ((0 .. (counter `mod` 4)) <#> \i ->
+                H.text (show i)
+            ) <> 
+                [H.text "test"]
+            <>
+            ((0 .. (counter `mod` 4)) <#> \i ->
+                H.text (show i)
+            )
+    ,   HH.hr []
+    --,   HH.h3 [] 
+    --    [   H.text "duplicate"
+    --    ]
+    --,   HH.div [] $
+    --        replicate  (counter `mod` 4) (H.text "t")
     ]
 
 keyDownHandler ∷ String → Maybe Msg
-keyDownHandler " " = Just Increment
+keyDownHandler "i" = Just Increment
 keyDownHandler _ = Nothing
 
 main ∷ Effect Unit

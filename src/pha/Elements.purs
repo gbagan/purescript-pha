@@ -16,6 +16,7 @@ button = h "button"
 div ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
 div = h "div"
 
+
 footer ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
 footer = h "footer"
 

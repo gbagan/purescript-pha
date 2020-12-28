@@ -1,16 +1,27 @@
 module Example.Random where
 import Prelude hiding (div)
 import Data.Int (toNumber)
-import Data.Array ((..), mapWithIndex)
+import Data.Array ((..), mapWithIndex, insertAt, foldl)
 import Data.Array.NonEmpty (NonEmptyArray, cons')
-import Data.Maybe(Maybe(..))
+import Data.Array.NonEmpty as N
+import Data.Traversable (sequence)
+import Data.Maybe(Maybe(..), fromMaybe)
 import Data.Tuple.Nested ((/\))
+import Effect.Random (randomInt)
 import Effect (Effect)
 import Pha as H
 import Pha.App (app)
 import Pha.Elements as HH
 import Pha.Events as E
 import Pha.Util (pc)
+
+
+shuffle ∷ ∀a. Array a → Effect (Array a)
+shuffle array = do
+    rnds ← sequence $ array # mapWithIndex \i value → {value, index: _} <$> randomInt 0 i
+    pure $ rnds # foldl (\t {value, index} → fromMaybe [] (insertAt index value t)) []
+
+
 
 data Card = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King
 cards ∷ NonEmptyArray Card
@@ -32,13 +43,16 @@ state = {
     card: Ace
 }
 
-update {modify} RollDice =
-    modify \s -> s{dice = 4}
--- randomly \st → st{dice = _} <$> R.int 1 6
-update _ DrawCard = pure unit
--- randomly \st →  st{card = _} <$> R.element cards
-update _ ShufflePuzzle = pure unit 
---randomly \st → st{puzzle = _} <$> R.shuffle st.puzzle
+update {modify} RollDice = do
+    n <- randomInt 1 6
+    modify _{dice = n}
+update {modify} DrawCard = do
+    n <- randomInt 0 (N.length cards - 1)
+    modify _{card = fromMaybe (N.head cards) (N.index cards n)}
+update {get, modify} ShufflePuzzle = do
+    p <- get <#> _.puzzle
+    p2 <- shuffle p
+    modify _{puzzle = p2}
 
 viewCard ∷ Card → String
 viewCard Ace   = "🂡"

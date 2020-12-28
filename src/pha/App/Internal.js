@@ -64,18 +64,19 @@ const createNode = (vnode, listener, isSvg, mapf) => {
 
 const getKey = keyednode => keyednode == null ? null : keyednode[0]
 
-const patch = function (parent, node, oldVNode, newVNode, listener, isSvg, mapf) {
+const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
     if (oldVNode === newVNode) {
     } else if (oldVNode != null && oldVNode.type === TEXT_NODE && newVNode.type === TEXT_NODE) {
         if (oldVNode.tag !== newVNode.tag)
             node.nodeValue = newVNode.tag
     } else if (oldVNode == null || oldVNode.tag !== newVNode.tag) {
+        const oldNode = node
         node = parent.insertBefore(
             createNode(newVNode, listener, isSvg, mapf), //////////////////////
             node
         )
-        if (oldVNode != null && oldVNode.node) {
-            parent.removeChild(oldVNode.node)
+        if (oldNode) {
+            parent.removeChild(oldNode)
         }
     } else {
         const oldVProps = oldVNode.props

@@ -4,7 +4,7 @@ import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Web.HTML.Window (document)
 import Pha.App.Internal as I
-import Pha (VDom, Event, EventHandler, Sub, emptyNode)
+import Pha (VDom, Event, EventHandler, Sub, text)
 import Effect.Ref as Ref
 import Web.Event.Event (EventType(..))
 import Web.Event.Event as Ev
@@ -31,7 +31,7 @@ app {init: {state: st, action}, update, view, subscriptions, selector} = do
             lock <- Ref.new false
             subs <- Ref.new []
             node <- Ref.new node_
-            vdom <- Ref.new emptyNode
+            vdom <- Ref.new (text "")
             go state lock subs node vdom
     where
     go state lock subs node vdom = do

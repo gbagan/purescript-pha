@@ -1,4 +1,4 @@
-module Pha (VDom, Prop, Sub, h, keyed, text, emptyNode, attr, style, on_, class_, class', lazy,
+module Pha (VDom, Prop, Sub, h, keyed, text, attr, style, on_, class_, class', lazy,
     when, maybeN, maybe, unsafeOnWithEffect, module E,
       EventHandler) where
 import Prelude hiding (when)
@@ -42,10 +42,6 @@ foreign import keyed ∷ ∀msg. String → Array (Prop msg) → Array (Tuple St
 -- | creates a text virtual node
 foreign import text ∷ ∀msg. String → VDom msg
 
--- | represents an empty virtual node
-emptyNode ∷ ∀msg. VDom msg
-emptyNode = text ""
-
 -- | lazily generates a virtual dom
 -- |
 -- | i.e. generates only if the first argument has changed.
@@ -54,21 +50,21 @@ foreign import lazy ∷ ∀a msg. a → (a → VDom msg) → VDom msg
 
 -- | ```purescript
 -- | when true f = f unit
--- | when false f = emptyNode
+-- | when false f = text ""
 -- | ```
 when ∷ ∀msg. Boolean → (Unit → VDom msg) → VDom msg
-when cond vdom = if cond then vdom unit else emptyNode
+when cond vdom = if cond then vdom unit else text ""
 
 -- | ```purescript
 -- | maybeN (Just vdom) = vdom
--- | maybeN Nothing = emptyNode
+-- | maybeN Nothing = text ""
 -- | ```
 maybeN ∷ ∀msg. Maybe (VDom msg) → VDom msg
-maybeN = fromMaybe emptyNode
+maybeN = fromMaybe (text "")
 
 maybe ∷ ∀a msg. Maybe a → (a → VDom msg) → VDom msg
 maybe (Just a) f = f a
-maybe Nothing _ = emptyNode
+maybe Nothing _ = text ""
 
     
 foreign import mapView ∷ ∀a b. (EventHandler a → EventHandler b) → VDom a → VDom b

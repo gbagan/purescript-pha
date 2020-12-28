@@ -2,7 +2,7 @@ module Example.Counter2 where
 import Prelude hiding (div)
 import Data.Int (even)
 import Data.Maybe (Maybe(..))
-import Data.Array (replicate, (..))
+import Data.Array ((..))
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Pha (VDom)

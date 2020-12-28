@@ -1,39 +1,40 @@
-const compose = (f, g) => f && g ? x => f(g(x)) : f || g; 
+const compose = (f, g) => f && g ? x => f(g(x)) : f || g
 
-const h = name => ps => children => {
-    const style = {};
-    const props = {style};
-    const vdom = { name, children: children.filter(x => x), props, node: null };
-    const n = ps.length;
+const _h = (tag, ps, children, keyed=false) => {
+    const style = {}
+    const props = {style}
+    const vdom = {tag, children, props, node: null, keyed}
+    const n = ps.length
     for (let i = 0; i < n; i++) {
-        const [t, k, v] = ps[i];
-        if (t === 0)
-            vdom.key = k;
-        else if (t == 1)
-            props[k] = v;
+        const [t, k, v] = ps[i]
+        if (t == 1)
+            props[k] = v
         else if (t === 2)
-            props.class = (props.class ? props.class + " " : "") + k;
+            props.class = (props.class ? props.class + " " : "") + k
         else if (t === 3)
-            style[k] = v;
+            style[k] = v
     }
-    return vdom;
+    return vdom
 }
 
+const h = tag => ps => children => _h(tag, ps, children.map(v => [null, v]))
+const keyed = tag => ps => children => _h(tag, ps, children.map(v => [v.value0, v.value1]), true);
+
+
 const createTextVNode = text => ({
-    name: text,
+    tag: text,
     props: {},
     children: [],
     type: 3
 })
 
 exports.mapView = mapf => vnode => Object.assign({}, vnode, {mapf: compose(vnode.mapf, mapf)})
-exports.emptyNode = null
-exports.key = key => [0, key]
 exports.attr = k => v => [1, k, v]
 exports.class_ = cls => [2, cls]
 exports.noProp = [-1]
 exports.unsafeOnWithEffect = k => v => [1, k, v]
 exports.style = k => v => [3, k, v]
 exports.h = h
+exports.keyed = keyed
 exports.text = createTextVNode
-exports.memo = st => view => ({ memo: st, type: view});
+exports.lazy = st => view => ({ memo: [st], type: view});

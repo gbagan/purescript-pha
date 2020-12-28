@@ -1,4 +1,4 @@
-module Pha (VDom, Prop, Sub, h, text, emptyNode, key, attr, style, on_, class_, class', memo,
+module Pha (VDom, Prop, Sub, h, keyed, text, attr, style, on_, class_, class', lazy,
     when, maybeN, maybe, unsafeOnWithEffect, module E,
       EventHandler) where
 import Prelude hiding (when)
@@ -6,15 +6,13 @@ import Effect (Effect)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Web.Event.Event (Event) as E
 import Web.Event.Event (Event)
+import Data.Tuple (Tuple)
 foreign import data VDom ∷ Type → Type
 
 type EventHandler msg = Event → Effect (Maybe msg)
 
 foreign import data Sub ∷ Type → Type
 foreign import data Prop ∷ Type → Type
-  
--- | adds a key to the vnode
-foreign import key ∷ ∀msg. String → Prop msg
   
 -- | adds or changes an attribute
 foreign import attr ∷ ∀msg. String → String → Prop msg
@@ -38,37 +36,35 @@ foreign import style ∷ ∀msg. String → String → Prop msg
 -- | h tag attributes children
 foreign import h ∷ ∀msg. String → Array (Prop msg) → Array (VDom msg) → VDom msg
 
+foreign import keyed ∷ ∀msg. String → Array (Prop msg) → Array (Tuple String (VDom msg)) → VDom msg
+
+
 -- | creates a text virtual node
 foreign import text ∷ ∀msg. String → VDom msg
-
--- | represents an empty virtual node
--- | 
--- | does not generate HTML content. Only used for commodity
-foreign import emptyNode ∷ ∀msg. VDom msg
 
 -- | lazily generates a virtual dom
 -- |
 -- | i.e. generates only if the first argument has changed.
 -- | otherwise, return the previous generated virtual dom
-foreign import memo ∷ ∀a msg. a → (a → VDom msg) → VDom msg
+foreign import lazy ∷ ∀a msg. a → (a → VDom msg) → VDom msg
 
 -- | ```purescript
 -- | when true f = f unit
--- | when false f = emptyNode
+-- | when false f = text ""
 -- | ```
 when ∷ ∀msg. Boolean → (Unit → VDom msg) → VDom msg
-when cond vdom = if cond then vdom unit else emptyNode
+when cond vdom = if cond then vdom unit else text ""
 
 -- | ```purescript
 -- | maybeN (Just vdom) = vdom
--- | maybeN Nothing = emptyNode
+-- | maybeN Nothing = text ""
 -- | ```
 maybeN ∷ ∀msg. Maybe (VDom msg) → VDom msg
-maybeN = fromMaybe emptyNode
+maybeN = fromMaybe (text "")
 
 maybe ∷ ∀a msg. Maybe a → (a → VDom msg) → VDom msg
 maybe (Just a) f = f a
-maybe Nothing _ = emptyNode
+maybe Nothing _ = text ""
 
     
 foreign import mapView ∷ ∀a b. (EventHandler a → EventHandler b) → VDom a → VDom b

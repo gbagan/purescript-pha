@@ -2,7 +2,7 @@ module Example.Counter2 where
 import Prelude hiding (div)
 import Data.Int (even)
 import Data.Maybe (Maybe(..))
-import Data.Array ((..))
+import Data.Array ((..), replicate)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Pha (VDom)
@@ -32,6 +32,9 @@ update {modify} Increment = modify \{counter} → {counter: counter + 1}
 update {modify} DelayedIncrement = do
     -- delay 1000 *>
     modify \{counter} → {counter: counter + 1}
+
+spanCounter :: Int -> VDom Msg
+spanCounter v = HH.span [] [H.text $ show v]
 
 view ∷ State → VDom Msg
 view {counter} =
@@ -66,9 +69,7 @@ view {counter} =
                 show i /\ H.text (show i)
             )
     ,   HH.hr []
-    ,   HH.h3 [] 
-        [   H.text "non keyed"
-        ]
+    ,   HH.h3 [] [H.text "non keyed"]
     ,   HH.div [] $
             ((0 .. (counter `mod` 4)) <#> \i ->
                 H.text (show i)
@@ -79,11 +80,15 @@ view {counter} =
                 H.text (show i)
             )
     ,   HH.hr []
-    --,   HH.h3 [] 
-    --    [   H.text "duplicate"
-    --    ]
-    --,   HH.div [] $
-    --        replicate  (counter `mod` 4) (H.text "t")
+    ,   HH.h3 [] [H.text "lazy"]
+    ,   H.lazy spanCounter (counter / 2)
+
+
+    ,   HH.h3 [] 
+        [   H.text "duplicate"
+        ]
+    ,   HH.div [] $
+            replicate  (counter `mod` 4) (H.text "t")
     ]
 
 keyDownHandler ∷ String → Maybe Msg

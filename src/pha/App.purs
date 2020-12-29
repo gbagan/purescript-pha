@@ -49,9 +49,10 @@ app {init: {state: st, action}, update, view, subscriptions, selector} = do
                 case pnode of
                     Nothing → pure unit
                     Just pnode' → do
-                        node2 <- I.patch pnode' node1 oldVDom newVDom listener
+                        let vdom2 = I.copyVNode newVDom
+                        node2 <- I.patch pnode' node1 oldVDom vdom2 listener
                         Ref.write node2 node
-                        Ref.write newVDom vdom
+                        Ref.write vdom2 vdom
  
  
         getState ∷ Effect state

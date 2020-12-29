@@ -37,4 +37,6 @@ exports.style = k => v => [3, k, v]
 exports.h = h
 exports.keyed = keyed
 exports.text = createTextVNode
-exports.lazy = st => view => ({ memo: [st], type: view});
+exports.lazy = view => val => ({ memo: [val], type: view})
+exports.lazy2 = view => val1 => val2 => ({ memo: [val1, val2], type: view})
+exports.lazy3 = view => val1 => val2 => val3 => ({ memo: [val1, val2, val3], type: view})

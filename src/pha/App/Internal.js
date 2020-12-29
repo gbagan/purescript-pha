@@ -4,8 +4,8 @@
 
 const TEXT_NODE = 3
 
-const merge = (a, b) => Object.assign({}, a, b);
-const compose = (f, g) => f && g ? x => f(g(x)) : f || g;
+const merge = (a, b) => Object.assign({}, a, b)
+const compose = (f, g) => f && g ? x => f(g(x)) : f || g
 
 const patchProperty = (node, key, oldValue, newValue, listener, isSvg, mapf) => {
     if (key === "style") {
@@ -205,22 +205,27 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
     return (newVNode.node = node)
 }
 
-const propsChanged = function (a, b) {
-    for (let k in a) if (a[k] !== b[k]) return true
-    for (let k in b) if (a[k] !== b[k]) return true
+const propsChanged = (a, b) => {
+    for (let i = 0; i < a.length; i++)
+        if (a[i] !== b[i])
+            return true
+    return false
 }
+
+const evalMemo = (f, memo) => memo.reduce((g, v) => g(v), f)
 
 const getVNode = (newVNode, oldVNode) => {
     if (typeof newVNode[1].type === "function") {
         if (!oldVNode || oldVNode.memo == null || propsChanged(oldVNode.memo, newVNode[1].memo)) {
-            oldVNode = newVNode.type(newVNode.memo)
-            oldVNode.memo = newVNode.memo
+            oldVNode = copyVNode(evalMemo(newVNode[1].type, newVNode[1].memo))
+            oldVNode.memo = newVNode[1].memo
         }
         newVNode[1] = oldVNode
     }
     return newVNode
 }
 
+const copyVNode = vnode => Object.assign({}, vnode, {children: vnode.children && vnode.children.map(([k, v]) => [k, copyVNode(v)]) })
 
 const patchSubs = (oldSubs, newSubs, dispatch) => {
     const subs = []
@@ -242,6 +247,7 @@ const patchSubs = (oldSubs, newSubs, dispatch) => {
     return subs
 }
 
+exports.copyVNode = copyVNode
 exports.getAction = target => type => () => target.actions[type]
 exports.patchSubs = oldSubs => newSubs => dispatch => () => patchSubs (oldSubs, newSubs, dispatch)
 exports.patch = parent => node => oldVDom => newVDom => listener => () => patch(parent, node, oldVDom, newVDom, e => listener(e)())

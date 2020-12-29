@@ -38,33 +38,34 @@ foreign import h ∷ ∀msg. String → Array (Prop msg) → Array (VDom msg) �
 
 foreign import keyed ∷ ∀msg. String → Array (Prop msg) → Array (Tuple String (VDom msg)) → VDom msg
 
-
 -- | creates a text virtual node
 foreign import text ∷ ∀msg. String → VDom msg
 
+empty ∷ ∀msg. VDom msg
+empty = text ""
+
 -- | lazily generates a virtual dom
--- |
--- | i.e. generates only if the first argument has changed.
--- | otherwise, return the previous generated virtual dom
-foreign import lazy ∷ ∀a msg. a → (a → VDom msg) → VDom msg
+foreign import lazy ∷ ∀a msg. (a → VDom msg) → a → VDom msg
+foreign import lazy2 ∷ ∀a b msg. (a → b → VDom msg) → a → b → VDom msg
+foreign import lazy3 ∷ ∀a b c msg. (a → b → c → VDom msg) → a → b → c → VDom msg
 
 -- | ```purescript
 -- | when true f = f unit
 -- | when false f = text ""
 -- | ```
 when ∷ ∀msg. Boolean → (Unit → VDom msg) → VDom msg
-when cond vdom = if cond then vdom unit else text ""
+when cond vdom = if cond then vdom unit else empty
 
 -- | ```purescript
 -- | maybeN (Just vdom) = vdom
 -- | maybeN Nothing = text ""
 -- | ```
 maybeN ∷ ∀msg. Maybe (VDom msg) → VDom msg
-maybeN = fromMaybe (text "")
+maybeN = fromMaybe empty
 
 maybe ∷ ∀a msg. Maybe a → (a → VDom msg) → VDom msg
 maybe (Just a) f = f a
-maybe Nothing _ = text ""
+maybe Nothing _ = empty
 
     
 foreign import mapView ∷ ∀a b. (EventHandler a → EventHandler b) → VDom a → VDom b

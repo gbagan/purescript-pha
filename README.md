@@ -10,30 +10,30 @@ module Example.Counter where
 import Prelude hiding (div)
 import Effect (Effect)
 import Pha (VDom, text)
-import Pha (sandbox, attachTo)
-import Pha.Elements (div, span, button)
-import Pha.Events (onclick)
+import Pha.App (sandbox)
+import Pha.Elements as H
+import Pha.Events as E
 
-type Model = Int
+type State = Int
 data Msg = Increment | Decrement
 
-init ∷ Model
+init ∷ State
 init = 0
 
-update ∷ Msg → Model → Model
+update ∷ Msg → State → State
 update Increment n = n + 1
 update Decrement n = n - 1
 
-view ∷ Model → VDom Msg
+view ∷ State → VDom Msg
 view counter = 
-    div []
-    [   button [onclick Decrement] [text "-"]
-    ,   span [] [text $ show counter]
-    ,   button [onclick Increment] [text "+"]
+    H.div []
+    [   H.button [E.onclick Decrement] [text "-"]
+    ,   H.span [] [text $ show counter]
+    ,   H.button [E.onclick Increment] [text "+"]
     ]
 
 main ∷ Effect Unit
-main = sandbox { init, update, view} # attachTo "root"
+main = sandbox {init, update, view, selector: "#root"}
 ```
 
 ### Other examples

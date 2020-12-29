@@ -5,17 +5,19 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/gbagan/purescript-pha.git"
+        "url": "https://github.com/gbagan/purescript-pha"
     },
     "ignore": [
         "**/.*",
-        "examples",
         "node_modules",
         "bower_components",
         "output"
     ],
     "dependencies": {
+        "purescript-arrays": "^v5.3.1",
         "purescript-effect": "^v2.0.1",
-        "purescript-web-html": "^v2.3.0"
+        "purescript-web-dom": "^v4.1.0",
+        "purescript-web-html": "^v2.3.0",
+        "purescript-web-uievents": "^v2.0.0"
     }
 }

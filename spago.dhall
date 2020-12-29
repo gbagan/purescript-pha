@@ -4,8 +4,8 @@ You can edit this file as you like.
 -}
 { name = "pha"
 , license = "MIT"
-, dependencies =
-  [ "effect", "web-dom", "web-html", "web-uievents" ]
+, dependencies = [ "arrays", "effect", "web-dom", "web-html", "web-uievents" ]
 , packages = ./packages.dhall
+, repository = "https://github.com/gbagan/purescript-pha"
 , sources = [ "src/**/*.purs", "examples/**/*.purs", "test/**/*.purs" ]
 }

@@ -30,21 +30,17 @@ foreign import unsafeOnWithEffect ∷ ∀msg. String → EventHandler msg → Pr
 on_ ∷ ∀msg. String → (Event → Maybe msg) → Prop msg 
 on_ n handler = unsafeOnWithEffect n \ev → pure (handler ev)
 
--- | adds or changes a style attribute
 foreign import style ∷ ∀msg. String → String → Prop msg
 
--- | h tag attributes children
 foreign import h ∷ ∀msg. String → Array (Prop msg) → Array (VDom msg) → VDom msg
 
 foreign import keyed ∷ ∀msg. String → Array (Prop msg) → Array (Tuple String (VDom msg)) → VDom msg
 
--- | creates a text virtual node
 foreign import text ∷ ∀msg. String → VDom msg
 
 empty ∷ ∀msg. VDom msg
 empty = text ""
 
--- | lazily generates a virtual dom
 foreign import lazy ∷ ∀a msg. (a → VDom msg) → a → VDom msg
 foreign import lazy2 ∷ ∀a b msg. (a → b → VDom msg) → a → b → VDom msg
 foreign import lazy3 ∷ ∀a b c msg. (a → b → c → VDom msg) → a → b → c → VDom msg

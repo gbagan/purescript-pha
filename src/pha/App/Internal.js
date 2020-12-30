@@ -250,4 +250,4 @@ const patchSubs = (oldSubs, newSubs, dispatch) => {
 exports.copyVNode = copyVNode
 exports.getAction = target => type => () => target.actions[type]
 exports.patchSubs = oldSubs => newSubs => dispatch => () => patchSubs (oldSubs, newSubs, dispatch)
-exports.patch = parent => node => oldVDom => newVDom => listener => () => patch(parent, node, oldVDom, newVDom, e => listener(e)())
+exports.unsafePatch = parent => node => oldVDom => newVDom => listener => () => patch(parent, node, oldVDom, newVDom, e => listener(e)())

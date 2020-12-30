@@ -54,7 +54,7 @@ app' {init: {state: st, action}, update, view, subscriptions, selector} = do
                     Nothing → pure unit
                     Just pnode' → do
                         let vdom2 = I.copyVNode newVDom
-                        node2 <- I.patch pnode' node1 oldVDom vdom2 listener
+                        node2 <- I.unsafePatch pnode' node1 oldVDom vdom2 listener
                         Ref.write node2 node
                         Ref.write vdom2 vdom
  

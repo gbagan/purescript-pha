@@ -2,9 +2,13 @@ module Pha.App (app, sandbox) where
 import Prelude
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
+import Effect.Class (liftEffect)
+import Effect.Aff (Aff, launchAff_)
 import Web.HTML.Window (document)
+import Control.Monad.Free (runFreeM)
 import Pha.App.Internal as I
 import Pha (VDom, Event, EventHandler, Sub, text)
+import Pha.Update (UpdateF(..), Update'(..), Update)
 import Effect.Ref as Ref
 import Web.Event.Event (EventType(..))
 import Web.Event.Event as Ev
@@ -14,14 +18,14 @@ import Web.HTML.HTMLDocument (toParentNode)
 import Web.DOM.Element as El
 import Web.DOM.ParentNode (QuerySelector(..), querySelector)
 
-app ∷ ∀msg state.
+app' ∷ ∀msg state.
     {   init ∷ {state ∷ state, action ∷ Maybe msg}
     ,   view ∷ state → VDom msg
     ,   update ∷ {get ∷ Effect state, modify ∷ (state → state) → Effect Unit} → msg → Effect Unit
     ,   subscriptions ∷ state → Array (Sub msg)
     ,   selector ∷ String
     } → Effect Unit
-app {init: {state: st, action}, update, view, subscriptions, selector} = do
+app' {init: {state: st, action}, update, view, subscriptions, selector} = do
     parentNode <- window >>= document <#> toParentNode
     selected <- map El.toNode <$> querySelector (QuerySelector selector) parentNode
     case selected of
@@ -92,13 +96,32 @@ app {init: {state: st, action}, update, view, subscriptions, selector} = do
                     fn <- I.getAction target t
                     dispatchEvent e fn
  
+interpret ∷ ∀st. {get ∷ Effect st, modify ∷ (st → st) → Effect Unit} → Update st → Aff Unit
+interpret {get, modify} (Update monad) = runFreeM go monad where
+    go (Get a) = liftEffect get <#> a
+    go (Modify f a) = liftEffect (modify f) *> pure a
+    go (Lift a) = a
+
+app ∷ ∀msg state.
+    {   init ∷ {state ∷ state, action ∷ Maybe msg}
+    ,   view ∷ state → VDom msg
+    ,   update ∷ msg → Update state
+    ,   subscriptions ∷ state → Array (Sub msg)
+    ,   selector ∷ String
+    } → Effect Unit
+
+app {init, view, update, subscriptions, selector} = app' {
+    init, view, subscriptions, selector,
+    update: \helpers msg → launchAff_ $ interpret helpers (update msg)
+}
 
 
 -- | ```purescript
 -- | sandbox ∷ ∀msg state effs. {
 -- |     init ∷ state,
 -- |     view ∷ state → VDom msg,
--- |     update ∷ msg → state → state
+-- |     update ∷ msg → state → state,
+-- |     selector ∷ String
 -- | } → Effect Unit
 -- | ```
 
@@ -109,7 +132,7 @@ sandbox ∷ ∀msg state. {
     selector ∷ String
 } → Effect Unit
 
-sandbox {init, view, update, selector} = app {
+sandbox {init, view, update, selector} = app' {
         init: {state: init, action: Nothing}
     ,   view
     ,   update: \{modify} msg → modify (update msg)

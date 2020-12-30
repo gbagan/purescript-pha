@@ -9,6 +9,8 @@ import Data.Maybe(Maybe(..), fromMaybe)
 import Data.Tuple.Nested ((/\))
 import Effect.Random (randomInt)
 import Effect (Effect)
+import Effect.Class (liftEffect)
+import Pha.Update (get, modify)
 import Pha as H
 import Pha.App (app)
 import Pha.Elements as HH
@@ -43,15 +45,16 @@ state = {
     card: Ace
 }
 
-update {modify} RollDice = do
-    n <- randomInt 1 6
+update ∷ Msg → Update State
+update RollDice = do
+    n <- liftEffect $ randomInt 1 6
     modify _{dice = n}
-update {modify} DrawCard = do
-    n <- randomInt 0 (N.length cards - 1)
+update DrawCard = do
+    n <- liftEffect $ randomInt 0 (N.length cards - 1)
     modify _{card = fromMaybe (N.head cards) (N.index cards n)}
 update {get, modify} ShufflePuzzle = do
     p <- get <#> _.puzzle
-    p2 <- shuffle p
+    p2 <- liftEffect $ shuffle p
     modify _{puzzle = p2}
 
 viewCard ∷ Card → String

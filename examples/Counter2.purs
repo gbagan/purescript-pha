@@ -4,40 +4,37 @@ import Data.Int (even)
 import Data.Maybe (Maybe(..))
 import Data.Array ((..), replicate)
 import Data.Tuple.Nested ((/\))
+import Data.Time.Duration (Milliseconds(..))
 import Effect (Effect)
 import Pha (VDom)
 import Pha as H
 import Pha.App (app)
+import Pha.Update (Update, modify, delay)
 import Pha.Subs as Subs
 import Pha.Elements as HH
 import Pha.Events as E
 
 
-type State = {
-    counter ∷ Int
-}
+type State = Int
 
--- effects used in this app
 
 -- initial state
 state ∷ State
-state = {
-    counter: 0
-}
+state = 0
 
 data Msg = Increment | DelayedIncrement
 
-update ∷ {get ∷ Effect State, modify ∷ (State → State) → Effect Unit} → Msg → Effect Unit
-update {modify} Increment = modify \{counter} → {counter: counter + 1}
-update {modify} DelayedIncrement = do
-    -- delay 1000 *>
-    modify \{counter} → {counter: counter + 1}
+update ∷ Msg → Update State
+update Increment = modify (_ + 1)
+update DelayedIncrement = do
+    delay (Milliseconds 1000.0)
+    modify (_ + 1)
 
 spanCounter :: Int -> VDom Msg
 spanCounter v = HH.span [] [H.text $ show v]
 
 view ∷ State → VDom Msg
-view {counter} =
+view counter =
     HH.div []
     [   HH.div [H.class_ "counter"] [H.text $ show counter]
     ,       HH.button [E.onclick Increment] [H.text "Increment"]
@@ -50,14 +47,10 @@ view {counter} =
             ] []
         ]
 
-    ,   HH.h3 [] 
-        [   H.text "press I to increment the counter"
-        ]
+    ,   HH.h3 [] [H.text "press I to increment the counter"]
     
     ,   HH.hr []
-    ,   HH.h3 [] 
-        [   H.text "keyed"
-        ]
+    ,   HH.h3 [] [H.text "keyed"]
 
     ,   H.keyed "div" [] $
             ((0 .. (counter `mod` 4)) <#> \i ->
@@ -83,7 +76,7 @@ view {counter} =
     ,   HH.h3 [] [H.text "lazy"]
     ,   H.lazy spanCounter (counter / 2)
 
-
+    ,   HH.hr []
     ,   HH.h3 [] 
         [   H.text "duplicate"
         ]

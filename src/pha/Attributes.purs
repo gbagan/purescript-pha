@@ -38,6 +38,9 @@ value = attr "value"
 target ∷ ∀msg. String → Prop msg
 target = attr "target"
 
+type_ ∷ ∀msg. String → Prop msg
+type_ = attr "type"
+
 -- SVG
 
 x ∷ ∀msg. Number → Prop msg

@@ -25,9 +25,6 @@ form = h "form"
 
 img ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
 img = h "img"
-
-input ∷ ∀msg. String → Array (Prop msg) → VDom msg
-input t props = h "input" ([attr "type" t] <> props) []
     
 h1 ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
 h1 = h "h1"
@@ -52,6 +49,12 @@ header = h "header"
 
 hr ∷ ∀msg. Array (Prop msg) → VDom msg
 hr attrs = h "hr" attrs []
+
+input ∷ ∀msg. Array (Prop msg) → VDom msg
+input attrs = h "input" attrs []
+
+label ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
+label = h "label"
 
 li ∷ ∀msg. Array (Prop msg) → Array (VDom msg) → VDom msg
 li = h "li"

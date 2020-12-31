@@ -11,8 +11,23 @@ disabled b = attr "disabled" (if b then "true" else "")
 checked ∷ ∀msg. Boolean → Prop msg
 checked b = attr "checked" (if b then "true" else "")
 
+download ∷ ∀msg. String → Prop msg
+download = attr "download"
+
+hidden ∷ ∀msg. Boolean → Prop msg
+hidden b = attr "hidden" (if b then "true" else "")
+
 href ∷ ∀msg. String → Prop msg
 href = attr "href"
+
+id ∷ ∀msg. String → Prop msg
+id = attr "id"
+
+placeholder ∷ ∀msg. String → Prop msg
+placeholder = attr "placeholder"
+
+selected ∷ ∀msg. Boolean → Prop msg
+selected b = attr "selected" (if b then "true" else "")
 
 src ∷ ∀msg. String → Prop msg
 src = attr "src"

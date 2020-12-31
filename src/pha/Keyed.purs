@@ -53,4 +53,3 @@ svg = keyed "svg"
 
 g ∷ ∀msg. Array (Prop msg) → Array (Tuple String (VDom msg))→ VDom msg
 g = keyed "g"
-

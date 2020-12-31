@@ -1,6 +1,6 @@
 module Pha.Update where
 import Prelude
-import Control.Monad.Free (Free, hoistFree, liftF)
+import Control.Monad.Free (Free, liftF)
 import Effect.Aff (Aff, Milliseconds)
 import Effect.Aff as Aff
 import Effect.Aff.Class (class MonadAff, liftAff)
@@ -34,13 +34,5 @@ modify f = Update $ liftF $ Modify f unit
 delay :: forall state. Milliseconds -> Update state
 delay ms = liftAff (Aff.delay ms)
 
-{-
-get ∷ ∀st. Command st st
-get = liftF $ Get identity
-
-put ∷ ∀st. st → Command st Unit
-put st = liftF $ Modify (const st) unit
-
-modify ∷ ∀st. (st → st) → Command st Unit
-modify fn = liftF $ Modify fn unit
--}
+put ∷ ∀st. st → Update st
+put st = Update $ liftF $ Modify (const st) unit

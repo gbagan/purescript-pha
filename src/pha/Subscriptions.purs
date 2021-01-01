@@ -1,8 +1,8 @@
-module Pha.Subs (Canceler, makeSub, on, onKeyDown, onHashChange) where
+module Pha.Subscriptions (Subscription, Canceler, makeSubscription, on, onKeyDown, onHashChange) where
 import Prelude
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
-import Pha (Sub, EventHandler)
+import Pha.Html.Core (EventHandler)
 import Web.HTML (window)
 import Web.HTML.Window as W
 import Web.Event.Event as E
@@ -13,10 +13,12 @@ import Web.HTML.Event.HashChangeEvent as HCE
 
 type Canceler = Effect Unit
 
-foreign import makeSub ∷ forall d msg. ((msg → Effect Unit) → d → Effect Canceler) → d → Sub msg 
+foreign import data Subscription ∷ Type → Type
 
-on ∷ ∀msg. String → EventHandler msg → Sub msg
-on n d = makeSub fn {name: n, decoder: d}
+foreign import makeSubscription ∷ forall d msg. ((msg → Effect Unit) → d → Effect Canceler) → d → Subscription msg 
+
+on ∷ ∀msg. String → EventHandler msg → Subscription msg
+on n d = makeSubscription fn {name: n, decoder: d}
     where
     fn dispatch {decoder, name} = do
         let t = E.EventType name
@@ -28,8 +30,8 @@ on n d = makeSub fn {name: n, decoder: d}
             Nothing → pure unit
             Just msg → dispatch msg
 
-onKeyDown ∷ ∀msg. (String → Maybe msg) → Sub msg
+onKeyDown ∷ ∀msg. (String → Maybe msg) → Subscription msg
 onKeyDown f = on "keydown" \ev → pure $ f =<< KE.key <$> KE.fromEvent ev
 
-onHashChange ∷ ∀msg. (HashChangeEvent → Maybe msg) → Sub msg
+onHashChange ∷ ∀msg. (HashChangeEvent → Maybe msg) → Subscription msg
 onHashChange f = on "hashchange" \ev → pure $ HCE.fromEvent ev >>= f

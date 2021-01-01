@@ -7,7 +7,8 @@ import Effect.Aff (Aff, launchAff_)
 import Web.HTML.Window (document)
 import Control.Monad.Free (runFreeM)
 import Pha.App.Internal as I
-import Pha (VDom, Event, EventHandler, Sub, text)
+import Pha.Html.Core (Html, Event, EventHandler, text)
+import Pha.Subscriptions (Subscription) 
 import Pha.Update (UpdateF(..), Update'(..), Update)
 import Effect.Ref as Ref
 import Web.Event.Event (EventType(..))
@@ -20,9 +21,9 @@ import Web.DOM.ParentNode (QuerySelector(..), querySelector)
 
 app' ∷ ∀msg state.
     {   init ∷ {state ∷ state, action ∷ Maybe msg}
-    ,   view ∷ state → VDom msg
+    ,   view ∷ state → Html msg
     ,   update ∷ {get ∷ Effect state, modify ∷ (state → state) → Effect Unit} → msg → Effect Unit
-    ,   subscriptions ∷ state → Array (Sub msg)
+    ,   subscriptions ∷ state → Array (Subscription msg)
     ,   selector ∷ String
     } → Effect Unit
 app' {init: {state: st, action}, update, view, subscriptions, selector} = do
@@ -44,7 +45,7 @@ app' {init: {state: st, action}, update, view, subscriptions, selector} = do
             Just a → dispatch a
             Nothing → pure unit
         where
-        render ∷ VDom msg → Effect Unit
+        render ∷ Html msg → Effect Unit
         render newVDom = do
                 Ref.write false lock
                 oldVDom <- Ref.read vdom
@@ -104,9 +105,9 @@ interpret {get, modify} (Update monad) = runFreeM go monad where
 
 app ∷ ∀msg state.
     {   init ∷ {state ∷ state, action ∷ Maybe msg}
-    ,   view ∷ state → VDom msg
+    ,   view ∷ state → Html msg
     ,   update ∷ msg → Update state
-    ,   subscriptions ∷ state → Array (Sub msg)
+    ,   subscriptions ∷ state → Array (Subscription msg)
     ,   selector ∷ String
     } → Effect Unit
 
@@ -119,7 +120,7 @@ app {init, view, update, subscriptions, selector} = app' {
 -- | ```purescript
 -- | sandbox ∷ ∀msg state effs. {
 -- |     init ∷ state,
--- |     view ∷ state → VDom msg,
+-- |     view ∷ state → Html msg,
 -- |     update ∷ msg → state → state,
 -- |     selector ∷ String
 -- | } → Effect Unit
@@ -127,7 +128,7 @@ app {init, view, update, subscriptions, selector} = app' {
 
 sandbox ∷ ∀msg state. {
     init ∷ state,
-    view ∷ state → VDom msg,
+    view ∷ state → Html msg,
     update ∷ msg → state → state,
     selector ∷ String
 } → Effect Unit

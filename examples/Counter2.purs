@@ -6,13 +6,12 @@ import Data.Array ((..), replicate)
 import Data.Tuple.Nested ((/\))
 import Data.Time.Duration (Milliseconds(..))
 import Effect (Effect)
-import Pha (VDom)
-import Pha as H
+import Pha.Html (Html)
+import Pha.Html as H
+import Pha.Html.Events as E
 import Pha.App (app)
 import Pha.Update (Update, modify, delay)
-import Pha.Subs as Subs
-import Pha.Elements as HH
-import Pha.Events as E
+import Pha.Subscriptions as Subs
 
 
 type State = Int
@@ -30,27 +29,27 @@ update DelayedIncrement = do
     delay (Milliseconds 1000.0)
     modify (_ + 1)
 
-spanCounter :: Int -> VDom Msg
-spanCounter v = HH.span [] [H.text $ show v]
+spanCounter :: Int -> Html Msg
+spanCounter v = H.span [] [H.text $ show v]
 
-view ∷ State → VDom Msg
+view ∷ State → Html Msg
 view counter =
-    HH.div []
-    [   HH.div [H.class_ "counter"] [H.text $ show counter]
-    ,       HH.button [E.onclick Increment] [H.text "Increment"]
-    ,       HH.button [E.onclick DelayedIncrement] [H.text "Delayed Increment"]
-    ,   HH.div []
-        [   HH.span [] [H.text "green when the counter is even"]
-        ,   HH.div
+    H.div []
+    [   H.div [H.class_ "counter"] [H.text $ show counter]
+    ,       H.button [E.onclick Increment] [H.text "Increment"]
+    ,       H.button [E.onclick DelayedIncrement] [H.text "Delayed Increment"]
+    ,   H.div []
+        [   H.span [] [H.text "green when the counter is even"]
+        ,   H.div
             [   H.class_ "box"
             ,   H.class' "even" (even counter)
             ] []
         ]
 
-    ,   HH.h3 [] [H.text "press I to increment the counter"]
+    ,   H.h3 [] [H.text "press I to increment the counter"]
     
-    ,   HH.hr []
-    ,   HH.h3 [] [H.text "keyed"]
+    ,   H.hr []
+    ,   H.h3 [] [H.text "keyed"]
 
     ,   H.keyed "div" [] $
             ((0 .. (counter `mod` 4)) <#> \i ->
@@ -61,9 +60,9 @@ view counter =
             ((0 .. (counter `mod` 4)) <#> \i ->
                 show i /\ H.text (show i)
             )
-    ,   HH.hr []
-    ,   HH.h3 [] [H.text "non keyed"]
-    ,   HH.div [] $
+    ,   H.hr []
+    ,   H.h3 [] [H.text "non keyed"]
+    ,   H.div [] $
             ((0 .. (counter `mod` 4)) <#> \i ->
                 H.text (show i)
             ) <> 
@@ -72,15 +71,15 @@ view counter =
             ((0 .. (counter `mod` 4)) <#> \i ->
                 H.text (show i)
             )
-    ,   HH.hr []
-    ,   HH.h3 [] [H.text "lazy"]
+    ,   H.hr []
+    ,   H.h3 [] [H.text "lazy"]
     ,   H.lazy spanCounter (counter / 2)
 
-    ,   HH.hr []
-    ,   HH.h3 [] 
+    ,   H.hr []
+    ,   H.h3 [] 
         [   H.text "duplicate"
         ]
-    ,   HH.div [] $
+    ,   H.div [] $
             replicate  (counter `mod` 4) (H.text "t")
     ]
 

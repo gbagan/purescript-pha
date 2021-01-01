@@ -1,4 +1,4 @@
-module Pha.Util where
+module Pha.Html.Util where
 
 import Prelude
 

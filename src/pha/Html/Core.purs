@@ -1,17 +1,18 @@
-module Pha (VDom, Prop, Sub, h, keyed, text, attr, style, on_, class_, class', lazy,
-    when, maybeN, maybe, unsafeOnWithEffect, module E,
+module Pha.Html.Core (Html, Prop, h, keyed, text, attr, style, on_, class_, class', lazy,
+    when, fromMaybe, maybe, unsafeOnWithEffect, module E,
       EventHandler) where
 import Prelude hiding (when)
 import Effect (Effect)
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Maybe (Maybe(..))
+import Data.Maybe as M
 import Web.Event.Event (Event) as E
 import Web.Event.Event (Event)
 import Data.Tuple (Tuple)
-foreign import data VDom ∷ Type → Type
+
+foreign import data Html ∷ Type → Type
 
 type EventHandler msg = Event → Effect (Maybe msg)
 
-foreign import data Sub ∷ Type → Type
 foreign import data Prop ∷ Type → Type
   
 -- | adds or changes an attribute
@@ -32,40 +33,40 @@ on_ n handler = unsafeOnWithEffect n \ev → pure (handler ev)
 
 foreign import style ∷ ∀msg. String → String → Prop msg
 
-foreign import h ∷ ∀msg. String → Array (Prop msg) → Array (VDom msg) → VDom msg
+foreign import h ∷ ∀msg. String → Array (Prop msg) → Array (Html msg) → Html msg
 
-foreign import keyed ∷ ∀msg. String → Array (Prop msg) → Array (Tuple String (VDom msg)) → VDom msg
+foreign import keyed ∷ ∀msg. String → Array (Prop msg) → Array (Tuple String (Html msg)) → Html msg
 
-foreign import text ∷ ∀msg. String → VDom msg
+foreign import text ∷ ∀msg. String → Html msg
 
-empty ∷ ∀msg. VDom msg
+empty ∷ ∀msg. Html msg
 empty = text ""
 
-foreign import lazy ∷ ∀a msg. (a → VDom msg) → a → VDom msg
-foreign import lazy2 ∷ ∀a b msg. (a → b → VDom msg) → a → b → VDom msg
-foreign import lazy3 ∷ ∀a b c msg. (a → b → c → VDom msg) → a → b → c → VDom msg
+foreign import lazy ∷ ∀a msg. (a → Html msg) → a → Html msg
+foreign import lazy2 ∷ ∀a b msg. (a → b → Html msg) → a → b → Html msg
+foreign import lazy3 ∷ ∀a b c msg. (a → b → c → Html msg) → a → b → c → Html msg
 
 -- | ```purescript
 -- | when true f = f unit
 -- | when false f = text ""
 -- | ```
-when ∷ ∀msg. Boolean → (Unit → VDom msg) → VDom msg
+when ∷ ∀msg. Boolean → (Unit → Html msg) → Html msg
 when cond vdom = if cond then vdom unit else empty
 
 -- | ```purescript
 -- | maybeN (Just vdom) = vdom
 -- | maybeN Nothing = text ""
 -- | ```
-maybeN ∷ ∀msg. Maybe (VDom msg) → VDom msg
-maybeN = fromMaybe empty
+fromMaybe ∷ ∀msg. Maybe (Html msg) → Html msg
+fromMaybe = M.fromMaybe empty
 
-maybe ∷ ∀a msg. Maybe a → (a → VDom msg) → VDom msg
+maybe ∷ ∀a msg. Maybe a → (a → Html msg) → Html msg
 maybe (Just a) f = f a
 maybe Nothing _ = empty
-
     
-foreign import mapView ∷ ∀a b. (EventHandler a → EventHandler b) → VDom a → VDom b
-instance functorVDom ∷ Functor VDom where
+foreign import mapView ∷ ∀a b. (EventHandler a → EventHandler b) → Html a → Html b
+
+instance functorHtml ∷ Functor Html where
     map fn = mapView mapH where
         mapH handler ev = do
             msg <- handler ev

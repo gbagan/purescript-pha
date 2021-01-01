@@ -1,4 +1,4 @@
-module Pha.Events where
+module Pha.Html.Events where
 {-
 (onclick, onclick',
     onmouseup, onmouseup', onmousedown, onmousedown', onmouseenter, onmouseenter', onmouseleave, onmouseleave',
@@ -9,13 +9,13 @@ module Pha.Events where
 -}
 import Prelude hiding (div)
 import Effect (Effect)
-import Pha (Prop, Event, EventHandler, unsafeOnWithEffect)
 import Data.Maybe (Maybe(..), maybe)
 import Data.Tuple (Tuple(..))
 import Web.Event.Event as Event
 import Web.UIEvent.MouseEvent (MouseEvent)
 import Web.UIEvent.MouseEvent as ME
 import Web.HTML.HTMLInputElement as HTMLInput
+import Pha.Html.Core (Prop, Event, EventHandler, unsafeOnWithEffect)
 
 always ∷ ∀ev msg. msg → ev → Effect (Maybe msg)
 always msg _ = pure (pure msg)

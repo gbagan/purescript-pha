@@ -1,6 +1,6 @@
-module Pha.Attributes where
+module Pha.Html.Attributes where
 import Prelude
-import Pha (Prop, attr)
+import Pha.Html.Core (Prop, attr)
 
 alt ∷ ∀msg. String → Prop msg
 alt = attr "alt"

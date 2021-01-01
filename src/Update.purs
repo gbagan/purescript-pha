@@ -5,6 +5,7 @@ import Effect.Aff (Aff, Milliseconds)
 import Effect.Aff as Aff
 import Effect.Aff.Class (class MonadAff, liftAff)
 import Effect.Class (class MonadEffect, liftEffect)
+import Control.Monad.Rec.Class (class MonadRec)
 
 data UpdateF state a = Get (state -> a) | Modify (state -> state) a | Lift (Aff a)
 
@@ -18,6 +19,7 @@ derive newtype instance applyUpdate :: Apply (Update' state)
 derive newtype instance applicativeUpdate :: Applicative (Update' state)
 derive newtype instance bindUpdate :: Bind (Update' state)
 derive newtype instance monadUpdate :: Monad (Update' state)
+derive newtype instance monadRecUpdate :: MonadRec (Update' state)
 
 instance monadEffectUpdate :: MonadEffect (Update' state) where
     liftEffect = Update <<< liftF <<< Lift <<< liftEffect

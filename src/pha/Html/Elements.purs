@@ -1,7 +1,6 @@
 module Pha.Html.Elements where
 
-import Prelude
-import Pha.Html.Core (Html, Prop, h, attr, text)
+import Pha.Html.Core (Html, Prop, h, text)
 
 a ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 a = h "a"

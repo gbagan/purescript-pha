@@ -9,7 +9,7 @@ import Control.Monad.Free (runFreeM)
 import Pha.App.Internal as I
 import Pha.Html.Core (Html, Event, EventHandler, text)
 import Pha.Subscriptions (Subscription) 
-import Pha.Update (UpdateF(..), Update'(..), Update)
+import Pha.Update (UpdateF(..), Update(..))
 import Effect.Ref as Ref
 import Web.Event.Event (EventType(..))
 import Web.Event.Event as Ev
@@ -97,7 +97,7 @@ app' {init: {state: st, action}, update, view, subscriptions, selector} = do
                     fn <- I.getAction target t
                     dispatchEvent e fn
  
-interpret ∷ ∀st. {get ∷ Effect st, modify ∷ (st → st) → Effect Unit} → Update st → Aff Unit
+interpret ∷ ∀st. {get ∷ Effect st, modify ∷ (st → st) → Effect Unit} → Update st Unit → Aff Unit
 interpret {get, modify} (Update monad) = runFreeM go monad where
     go (Get a) = liftEffect get <#> a
     go (Modify f a) = liftEffect (modify f) *> pure a
@@ -106,7 +106,7 @@ interpret {get, modify} (Update monad) = runFreeM go monad where
 app ∷ ∀msg state.
     {   init ∷ {state ∷ state, action ∷ Maybe msg}
     ,   view ∷ state → Html msg
-    ,   update ∷ msg → Update state
+    ,   update ∷ msg → Update state Unit
     ,   subscriptions ∷ state → Array (Subscription msg)
     ,   selector ∷ String
     } → Effect Unit

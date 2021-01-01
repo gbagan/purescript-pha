@@ -3403,7 +3403,7 @@ var PS = {};
               });
           });
       };
-      throw new Error("Failed pattern match at Example.Counter2 (line 26, column 1 - line 26, column 28): " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Example.Counter2 (line 26, column 1 - line 26, column 33): " + [ v.constructor.name ]);
   };
   var state = 0;
   var spanCounter = function (v) {

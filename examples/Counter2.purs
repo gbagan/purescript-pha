@@ -23,7 +23,7 @@ state = 0
 
 data Msg = Increment | DelayedIncrement
 
-update ∷ Msg → Update State
+update ∷ Msg → Update State Unit
 update Increment = modify (_ + 1)
 update DelayedIncrement = do
     delay (Milliseconds 1000.0)

@@ -1,4 +1,4 @@
-module Pha.Html.Core (Html, Prop, h, keyed, text, attr, style, on_, class_, class', lazy,
+module Pha.Html.Core (Html, Prop, h, keyed, text, empty, attr, style, on_, class_, class', lazy, lazy2, lazy3,
     when, fromMaybe, maybe, unsafeOnWithEffect, module E,
       EventHandler) where
 import Prelude hiding (when)

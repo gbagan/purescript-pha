@@ -3314,7 +3314,7 @@ var PS = {};
   var Web_Event_EventTarget = $PS["Web.Event.EventTarget"];
   var Web_HTML = $PS["Web.HTML"];
   var Web_HTML_Window = $PS["Web.HTML.Window"];
-  var Web_UIEvent_KeyboardEvent = $PS["Web.UIEvent.KeyboardEvent"];                
+  var Web_UIEvent_KeyboardEvent = $PS["Web.UIEvent.KeyboardEvent"];    
   var on = function (n) {
       return function (d) {
           var handleEvent = function (dispatch) {
@@ -3328,7 +3328,7 @@ var PS = {};
                           if (v instanceof Data_Maybe.Just) {
                               return dispatch(v.value0)();
                           };
-                          throw new Error("Failed pattern match at Pha.Subscriptions (line 29, column 24 - line 31, column 36): " + [ v.constructor.name ]);
+                          throw new Error("Failed pattern match at Pha.Subscriptions (line 30, column 24 - line 32, column 36): " + [ v.constructor.name ]);
                       };
                   };
               };

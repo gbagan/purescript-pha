@@ -5,11 +5,14 @@ import Pha.Html.Core (Prop, attr)
 alt ∷ ∀msg. String → Prop msg
 alt = attr "alt"
 
-disabled ∷ ∀msg. Boolean → Prop msg
-disabled b = attr "disabled" (if b then "true" else "")
-
 checked ∷ ∀msg. Boolean → Prop msg
 checked b = attr "checked" (if b then "true" else "")
+
+cols ∷ ∀msg. Int → Prop msg
+cols = attr "cols" <<< show
+
+disabled ∷ ∀msg. Boolean → Prop msg
+disabled b = attr "disabled" (if b then "true" else "")
 
 download ∷ ∀msg. String → Prop msg
 download = attr "download"
@@ -23,11 +26,29 @@ href = attr "href"
 id ∷ ∀msg. String → Prop msg
 id = attr "id"
 
+maxlength ∷ ∀msg. Int → Prop msg
+maxlength = attr "maxlength" <<< show
+
+minlength ∷ ∀msg. Int → Prop msg
+minlength = attr "minlength" <<< show
+
 placeholder ∷ ∀msg. String → Prop msg
 placeholder = attr "placeholder"
 
+readonly ∷ ∀msg. Boolean → Prop msg
+readonly b = attr "selected" (if b then "true" else "")
+
+required ∷ ∀msg. Boolean → Prop msg
+required b = attr "selected" (if b then "true" else "")
+
+rows ∷ ∀msg. Int → Prop msg
+rows = attr "rows" <<< show
+
 selected ∷ ∀msg. Boolean → Prop msg
 selected b = attr "selected" (if b then "true" else "")
+
+size ∷ ∀msg. Int → Prop msg
+size = attr "size" <<< show
 
 src ∷ ∀msg. String → Prop msg
 src = attr "src"
@@ -37,6 +58,9 @@ value = attr "value"
 
 target ∷ ∀msg. String → Prop msg
 target = attr "target"
+
+title ∷ ∀msg. String → Prop msg
+title = attr "title"
 
 type_ ∷ ∀msg. String → Prop msg
 type_ = attr "type"

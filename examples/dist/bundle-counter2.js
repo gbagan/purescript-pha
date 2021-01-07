@@ -3186,13 +3186,13 @@ var PS = {};
           return Control_Applicative.pure(Effect.applicativeEffect)(Control_Applicative.pure(Data_Maybe.applicativeMaybe)(msg));
       };
   };
-  var onclick = (function () {
+  var onClick = (function () {
       var $44 = on("click");
       return function ($45) {
           return $44(always($45));
       };
   })();
-  exports["onclick"] = onclick;
+  exports["onClick"] = onClick;
 })(PS);
 (function(exports) {
   exports.makeSubscription = fn => d => [fn, d]
@@ -3410,7 +3410,7 @@ var PS = {};
       return Pha_Html_Elements.span([  ])([ Pha_Html_Core.text(Data_Show.show(Data_Show.showInt)(v)) ]);
   };
   var view = function (counter) {
-      return Pha_Html_Elements.div([  ])([ Pha_Html_Elements.div([ Pha_Html_Core.class_("counter") ])([ Pha_Html_Core.text(Data_Show.show(Data_Show.showInt)(counter)) ]), Pha_Html_Elements.button([ Pha_Html_Events.onclick(Increment.value) ])([ Pha_Html_Core.text("Increment") ]), Pha_Html_Elements.button([ Pha_Html_Events.onclick(DelayedIncrement.value) ])([ Pha_Html_Core.text("Delayed Increment") ]), Pha_Html_Elements.div([  ])([ Pha_Html_Elements.span([  ])([ Pha_Html_Core.text("green when the counter is even") ]), Pha_Html_Elements.div([ Pha_Html_Core.class_("box"), Pha_Html_Core["class'"]("even")(Data_Int.even(counter)) ])([  ]) ]), Pha_Html_Elements.h3([  ])([ Pha_Html_Core.text("press I to increment the counter") ]), Pha_Html_Elements.hr([  ]), Pha_Html_Elements.h3([  ])([ Pha_Html_Core.text("keyed") ]), Pha_Html_Core.keyed("div")([  ])(Data_Semigroup.append(Data_Semigroup.semigroupArray)(Data_Functor.mapFlipped(Data_Functor.functorArray)(Data_Array.range(0)(Data_EuclideanRing.mod(Data_EuclideanRing.euclideanRingInt)(counter)(4)))(function (i) {
+      return Pha_Html_Elements.div([  ])([ Pha_Html_Elements.div([ Pha_Html_Core.class_("counter") ])([ Pha_Html_Core.text(Data_Show.show(Data_Show.showInt)(counter)) ]), Pha_Html_Elements.button([ Pha_Html_Events.onClick(Increment.value) ])([ Pha_Html_Core.text("Increment") ]), Pha_Html_Elements.button([ Pha_Html_Events.onClick(DelayedIncrement.value) ])([ Pha_Html_Core.text("Delayed Increment") ]), Pha_Html_Elements.div([  ])([ Pha_Html_Elements.span([  ])([ Pha_Html_Core.text("green when the counter is even") ]), Pha_Html_Elements.div([ Pha_Html_Core.class_("box"), Pha_Html_Core["class'"]("even")(Data_Int.even(counter)) ])([  ]) ]), Pha_Html_Elements.h3([  ])([ Pha_Html_Core.text("press I to increment the counter") ]), Pha_Html_Elements.hr([  ]), Pha_Html_Elements.h3([  ])([ Pha_Html_Core.text("keyed") ]), Pha_Html_Core.keyed("div")([  ])(Data_Semigroup.append(Data_Semigroup.semigroupArray)(Data_Functor.mapFlipped(Data_Functor.functorArray)(Data_Array.range(0)(Data_EuclideanRing.mod(Data_EuclideanRing.euclideanRingInt)(counter)(4)))(function (i) {
           return new Data_Tuple.Tuple(Data_Show.show(Data_Show.showInt)(i), Pha_Html_Core.text(Data_Show.show(Data_Show.showInt)(i)));
       }))(Data_Semigroup.append(Data_Semigroup.semigroupArray)([ new Data_Tuple.Tuple("test", Pha_Html_Core.text("test")) ])(Data_Functor.mapFlipped(Data_Functor.functorArray)(Data_Array.range(0)(Data_EuclideanRing.mod(Data_EuclideanRing.euclideanRingInt)(counter)(4)))(function (i) {
           return new Data_Tuple.Tuple(Data_Show.show(Data_Show.showInt)(i), Pha_Html_Core.text(Data_Show.show(Data_Show.showInt)(i)));

@@ -61,88 +61,88 @@ releasePointerCaptureOn eventname decoder = unsafeOnWithEffect eventname handler
         releasePointerCaptureE ev
         decoder ev
 
-onclick ∷ ∀msg. msg → Prop msg
-onclick = on "click" <<< always
-onclick' ∷ ∀msg. Maybe msg → Prop msg
-onclick' = on "click" <<< always'
-onclick_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
-onclick_ handler = on "click" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
+onClick ∷ ∀msg. msg → Prop msg
+onClick = on "click" <<< always
+onClick' ∷ ∀msg. Maybe msg → Prop msg
+onClick' = on "click" <<< always'
+onClick_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onClick_ handler = on "click" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
-onmouseup ∷ ∀msg. msg → Prop msg
-onmouseup = on "mouseup" <<< always
-onmouseup' ∷ ∀msg. Maybe msg → Prop msg
-onmouseup' = on "mouseup" <<< always'
-onmouseup_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
-onmouseup_ handler = on "mouseup" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
+onMouseUp ∷ ∀msg. msg → Prop msg
+onMouseUp = on "mouseup" <<< always
+onMouseUp' ∷ ∀msg. Maybe msg → Prop msg
+onMouseUp' = on "mouseup" <<< always'
+onMouseUp_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onMouseUp_ handler = on "mouseup" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
-onmousedown ∷ ∀msg. msg → Prop msg
-onmousedown = on "mousedown" <<< always
-onmousedown' ∷ ∀msg. Maybe msg → Prop msg
-onmousedown' = on "mousedown" <<< always'
-onmousedown_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
-onmousedown_ handler = on "mousedown" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
+onMouseDown ∷ ∀msg. msg → Prop msg
+onMouseDown = on "mousedown" <<< always
+onMouseDown' ∷ ∀msg. Maybe msg → Prop msg
+onMouseDown' = on "mousedown" <<< always'
+onMouseDown_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onMouseDown_ handler = on "mousedown" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
-onmouseenter ∷ ∀msg. msg → Prop msg
-onmouseenter = on "mouseenter" <<< always
-onmouseenter' ∷ ∀msg. Maybe msg → Prop msg
-onmouseenter' = on "mouseenter" <<< always'
-onmouseenter_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
-onmouseenter_ handler = on "mouseenter" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
+onMouseEnter ∷ ∀msg. msg → Prop msg
+onMouseEnter = on "mouseenter" <<< always
+onMouseEnter' ∷ ∀msg. Maybe msg → Prop msg
+onMouseEnter' = on "mouseenter" <<< always'
+onMouseEnter_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onMouseEnter_ handler = on "mouseenter" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
-onmouseleave ∷ ∀msg. msg → Prop msg
-onmouseleave = on "mouseleave" <<< always
-onmouseleave' ∷ ∀msg. Maybe msg → Prop msg
-onmouseleave' = on "mouseleave" <<< always'
-onmouseleave_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
-onmouseleave_ handler = on "mouseleave" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
+onMouseLeave ∷ ∀msg. msg → Prop msg
+onMouseLeave = on "mouseleave" <<< always
+onMouseLeave' ∷ ∀msg. Maybe msg → Prop msg
+onMouseLeave' = on "mouseleave" <<< always'
+onMouseLeave_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onMouseLeave_ handler = on "mouseleave" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
-onpointerup ∷ ∀msg. msg → Prop msg
-onpointerup = on "pointerup" <<< always
-onpointerup' ∷ ∀msg. Maybe msg → Prop msg
-onpointerup' = on "pointerup" <<< always'
-onpointerup_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
-onpointerup_ handler = on "pointerup" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
+onPointerUp ∷ ∀msg. msg → Prop msg
+onPointerUp = on "pointerup" <<< always
+onPointerUp' ∷ ∀msg. Maybe msg → Prop msg
+onPointerUp' = on "pointerup" <<< always'
+onPointerUp_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onPointerUp_ handler = on "pointerup" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
-onpointerdown ∷ ∀msg. msg → Prop msg
-onpointerdown = on "pointerdown" <<< always
-onpointerdown' ∷ ∀msg. Maybe msg → Prop msg
-onpointerdown' = on "pointerdown" <<< always'
-onpointerdown_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
-onpointerdown_ handler = on "pointerdown" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
+onPointerDown ∷ ∀msg. msg → Prop msg
+onPointerDown = on "pointerdown" <<< always
+onPointerDown' ∷ ∀msg. Maybe msg → Prop msg
+onPointerDown' = on "pointerdown" <<< always'
+onPointerDown_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onPointerDown_ handler = on "pointerdown" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
-onpointerenter ∷ ∀msg. msg → Prop msg
-onpointerenter = on "pointerenter" <<< always
-onpointerenter' ∷ ∀msg. Maybe msg → Prop msg
-onpointerenter' = on "pointerenter" <<< always'
-onpointerenter_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
-onpointerenter_ handler = on "pointerenter" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
+onPointerEnter ∷ ∀msg. msg → Prop msg
+onPointerEnter = on "pointerenter" <<< always
+onPointerEnter' ∷ ∀msg. Maybe msg → Prop msg
+onPointerEnter' = on "pointerenter" <<< always'
+onPointerEnter_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onPointerEnter_ handler = on "pointerenter" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
-onpointerleave ∷ ∀msg. msg → Prop msg
-onpointerleave = on "pointerleave" <<< always
-onpointerleave' ∷ ∀msg. Maybe msg → Prop msg
-onpointerleave' = on "pointerleave" <<< always'
-onpointerleave_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
-onpointerleave_ handler = on "pointerleave" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
-
--- | note: trigger preventDefault 
-oncontextmenu ∷ ∀msg. msg → Prop msg
-oncontextmenu msg = preventDefaultOn "contextmenu" $ always (Tuple (Just msg) true)
+onPointerLeave ∷ ∀msg. msg → Prop msg
+onPointerLeave = on "pointerleave" <<< always
+onPointerLeave' ∷ ∀msg. Maybe msg → Prop msg
+onPointerLeave' = on "pointerleave" <<< always'
+onPointerLeave_ ∷ ∀msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onPointerLeave_ handler = on "pointerleave" \ev → ME.fromEvent ev # maybe (pure Nothing) handler
 
 -- | note: trigger preventDefault 
-oncontextmenu' ∷ ∀msg. (Maybe msg) → Prop msg
-oncontextmenu' msg = preventDefaultOn "contextmenu" $ always (Tuple msg true)
+onContextMenu ∷ ∀msg. msg → Prop msg
+onContextMenu msg = preventDefaultOn "contextmenu" $ always (Tuple (Just msg) true)
+
+-- | note: trigger preventDefault 
+onContextMenu' ∷ ∀msg. (Maybe msg) → Prop msg
+onContextMenu' msg = preventDefaultOn "contextmenu" $ always (Tuple msg true)
 
 
-onvaluechange ∷ ∀msg. (String → msg) → Prop msg
-onvaluechange f = on "change" fn
+onValueChange ∷ ∀msg. (String → msg) → Prop msg
+onValueChange f = on "change" fn
     where
     fn ev =
         case Event.currentTarget ev >>= HTMLInput.fromEventTarget of
             Nothing → pure Nothing
             Just target → Just <$> f <$> HTMLInput.value target
 
-onchecked ∷ ∀msg. (Boolean → msg) → Prop msg
-onchecked f = on "change" fn
+onChecked ∷ ∀msg. (Boolean → msg) → Prop msg
+onChecked f = on "change" fn
     where
     fn ev =
         case Event.currentTarget ev >>= HTMLInput.fromEventTarget of

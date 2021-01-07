@@ -27,9 +27,9 @@ update Decrement n = n - 1
 view ∷ State → VDom Msg
 view counter = 
     H.div []
-    [   H.button [E.onclick Decrement] [text "-"]
+    [   H.button [E.onClick Decrement] [text "-"]
     ,   H.span [] [text $ show counter]
-    ,   H.button [E.onclick Increment] [text "+"]
+    ,   H.button [E.onClick Increment] [text "+"]
     ]
 
 main ∷ Effect Unit

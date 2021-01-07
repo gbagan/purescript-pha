@@ -36,8 +36,8 @@ view ∷ State → Html Msg
 view counter =
     H.div []
     [   H.div [H.class_ "counter"] [H.text $ show counter]
-    ,       H.button [E.onclick Increment] [H.text "Increment"]
-    ,       H.button [E.onclick DelayedIncrement] [H.text "Delayed Increment"]
+    ,       H.button [E.onClick Increment] [H.text "Increment"]
+    ,       H.button [E.onClick DelayedIncrement] [H.text "Delayed Increment"]
     ,   H.div []
         [   H.span [] [H.text "green when the counter is even"]
         ,   H.div

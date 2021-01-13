@@ -1,6 +1,8 @@
 module Pha.App (app, sandbox) where
 import Prelude
 import Data.Maybe (Maybe(..))
+import Data.Tuple (Tuple(..))
+import Unsafe.Reference (unsafeRefEq)
 import Effect (Effect)
 import Effect.Class (liftEffect)
 import Effect.Aff (Aff, launchAff_)
@@ -22,7 +24,7 @@ import Web.DOM.ParentNode (QuerySelector(..), querySelector)
 app' ∷ ∀msg state.
     {   init ∷ {state ∷ state, action ∷ Maybe msg}
     ,   view ∷ state → Html msg
-    ,   update ∷ {get ∷ Effect state, modify ∷ (state → state) → Effect Unit} → msg → Effect Unit
+    ,   update ∷ {get ∷ Effect state, put ∷ state → Effect Unit} → msg → Effect Unit
     ,   subscriptions ∷ state → Array (Subscription msg)
     ,   selector ∷ String
     } → Effect Unit
@@ -65,22 +67,21 @@ app' {init: {state: st, action}, update, view, subscriptions, selector} = do
 
         setState ∷ state → Effect Unit
         setState newState = do
-                    Ref.write newState state
-                    subs1 <- Ref.read subs
-                    subs2 <- I.patchSubs subs1 (subscriptions newState) dispatch
-                    Ref.write subs2 subs
-                    lock1 <- Ref.read lock
-                    unless lock1 do
-                        Ref.write true lock
-                        -- void $ window >>= requestAnimationFrame (
-                        render $ view newState
-
-        modify ∷ (state → state) → Effect Unit 
-        modify fn = getState >>= (setState <<< fn)
+            oldState <- Ref.read state
+            unless (unsafeRefEq oldState newState) do
+                Ref.write newState state
+                subs1 <- Ref.read subs
+                subs2 <- I.patchSubs subs1 (subscriptions newState) dispatch
+                Ref.write subs2 subs
+                lock1 <- Ref.read lock
+                unless lock1 do
+                    Ref.write true lock
+                    -- void $ window >>= requestAnimationFrame (
+                    render $ view newState
         
         dispatch ∷ msg → Effect Unit
         -- eta expansion pour casser la dépendance cyclique
-        dispatch = update {get: getState, modify: \f → modify f}
+        dispatch = update {get: getState, put: \s → setState s}
 
         dispatchEvent ∷ Event → EventHandler msg → Effect Unit
         dispatchEvent ev handler = do
@@ -97,10 +98,13 @@ app' {init: {state: st, action}, update, view, subscriptions, selector} = do
                     fn <- I.getAction target t
                     dispatchEvent e fn
  
-interpret ∷ ∀st. {get ∷ Effect st, modify ∷ (st → st) → Effect Unit} → Update st Unit → Aff Unit
-interpret {get, modify} (Update monad) = runFreeM go monad where
-    go (Get a) = liftEffect get <#> a
-    go (Modify f a) = liftEffect (modify f) *> pure a
+interpret ∷ ∀st. {get ∷ Effect st, put ∷ st → Effect Unit} → Update st Unit → Aff Unit
+interpret {get, put} (Update monad) = runFreeM go monad where
+    go (State k) = do
+        st <- liftEffect get
+        let Tuple a st2 = k st
+        liftEffect (put st2)
+        pure a
     go (Lift a) = a
 
 app ∷ ∀msg state.
@@ -136,7 +140,9 @@ sandbox ∷ ∀msg state. {
 sandbox {init, view, update, selector} = app' {
         init: {state: init, action: Nothing}
     ,   view
-    ,   update: \{modify} msg → modify (update msg)
+    ,   update: \{get, put} msg → do
+        st <- get
+        put (update msg st)
     ,   subscriptions: const []
     ,   selector
     }

@@ -10,7 +10,7 @@ import Pha.Html (Html)
 import Pha.Html as H
 import Pha.Html.Events as E
 import Pha.App (app)
-import Pha.Update (Update, modify, delay)
+import Pha.Update (Update, modify_, delay)
 import Pha.Subscriptions as Subs
 
 
@@ -24,10 +24,10 @@ state = 0
 data Msg = Increment | DelayedIncrement
 
 update ∷ Msg → Update State Unit
-update Increment = modify (_ + 1)
+update Increment = modify_ (_ + 1)
 update DelayedIncrement = do
     delay (Milliseconds 1000.0)
-    modify (_ + 1)
+    modify_ (_ + 1)
 
 spanCounter :: Int -> Html Msg
 spanCounter v = H.span [] [H.text $ show v]

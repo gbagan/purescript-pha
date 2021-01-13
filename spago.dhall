@@ -10,6 +10,7 @@ You can edit this file as you like.
   , "effect"
   , "free"
   , "profunctor-lenses"
+  , "unsafe-reference"
   , "web-dom"
   , "web-html"
   , "web-uievents"

@@ -1,15 +1,22 @@
-module Pha.Update where
+module Pha.Update (UpdateF(..), Update(..), Update', delay, module Exports) where
 import Prelude
+import Data.Tuple (Tuple)
+import Data.Bifunctor (lmap)
 import Control.Monad.Free (Free, liftF)
 import Effect.Aff (Aff, Milliseconds)
 import Effect.Aff as Aff
 import Effect.Aff.Class (class MonadAff, liftAff)
 import Effect.Class (class MonadEffect, liftEffect)
 import Control.Monad.Rec.Class (class MonadRec)
+import Control.Monad.State.Class (get, gets, put, modify, modify_) as Exports
+import Control.Monad.State.Class (class MonadState)
 
-data UpdateF state a = Get (state -> a) | Modify (state -> state) a | Lift (Aff a)
+data UpdateF state a = State (state -> Tuple a state) | Lift (Aff a)
 
-derive instance functorUpdateF :: Functor (UpdateF state)
+instance functorUpdateF :: Functor (UpdateF state) where
+    map f (State k) = State (lmap f <<< k)
+    map f (Lift q) = Lift (map f q)
+
 
 newtype Update state a = Update (Free (UpdateF state) a)
 type Update' state = Update state Unit
@@ -21,20 +28,14 @@ derive newtype instance bindUpdate :: Bind (Update state)
 derive newtype instance monadUpdate :: Monad (Update state)
 derive newtype instance monadRecUpdate :: MonadRec (Update state)
 
+instance monadStateUpdate :: MonadState state (Update state) where
+    state = Update <<< liftF <<< State
+
 instance monadEffectUpdate :: MonadEffect (Update state) where
     liftEffect = Update <<< liftF <<< Lift <<< liftEffect
 
 instance monadAffUpdate :: MonadAff (Update state) where
     liftAff = Update <<< liftF <<< Lift
 
-get :: forall state. Update state state
-get = Update $ liftF $ Get identity
-
-modify :: forall state. (state -> state) -> Update state Unit
-modify f = Update $ liftF $ Modify f unit
-
 delay :: forall state. Milliseconds -> Update state Unit
 delay ms = liftAff (Aff.delay ms)
-
-put ∷ ∀st. st → Update st Unit
-put st = Update $ liftF $ Modify (const st) unit

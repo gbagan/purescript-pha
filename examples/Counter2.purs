@@ -92,6 +92,6 @@ main = app {
     init: {state, action: Nothing},
     view,
     update,
-    subscriptions: const [Subs.onKeyDown keyDownHandler],
+    subscriptions: [Subs.onKeyDown keyDownHandler],
     selector: "#root"
 }

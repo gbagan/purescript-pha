@@ -1,4 +1,4 @@
-module Pha.Subscriptions (Subscription, Canceler, makeSubscription, on, onKeyDown, onHashChange) where
+module Pha.Subscriptions (Subscription(..), makeSubscription, on, onKeyDown, onHashChange) where
 import Prelude
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
@@ -12,20 +12,17 @@ import Web.UIEvent.KeyboardEvent as KE
 import Web.HTML.Event.HashChangeEvent (HashChangeEvent)
 import Web.HTML.Event.HashChangeEvent as HCE
 
-type Canceler = Effect Unit
+newtype Subscription msg = Subscription ((msg → Effect Unit) → Effect Unit)
 
-foreign import data Subscription ∷ Type → Type
-
-foreign import makeSubscription ∷ forall d msg. ((msg → Effect Unit) → d → Effect Canceler) → d → Subscription msg 
+makeSubscription ∷ forall d msg. ((msg → Effect Unit) → d → Effect Unit) → d → Subscription msg 
+makeSubscription sub d = Subscription \dispatch → sub dispatch d
 
 on ∷ ∀msg. String → EventHandler msg → Subscription msg
 on n d = makeSubscription fn {name: n, decoder: d}
     where
     fn dispatch {decoder, name} = do
-        let t = E.EventType name
         listener <- ET.eventListener (handleEvent dispatch decoder)
-        window <#> W.toEventTarget >>= ET.addEventListener t listener false
-        pure (window <#> W.toEventTarget >>= ET.removeEventListener t listener false)
+        window <#> W.toEventTarget >>= ET.addEventListener (E.EventType name) listener false
     handleEvent dispatch decoder ev =
         decoder ev >>= case _ of
             Nothing → pure unit

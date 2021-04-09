@@ -227,27 +227,6 @@ const getVNode = (newVNode, oldVNode) => {
 
 const copyVNode = vnode => Object.assign({}, vnode, {children: vnode.children && vnode.children.map(([k, v]) => [k, copyVNode(v)]) })
 
-const patchSubs = (oldSubs, newSubs, dispatch) => {
-    const subs = []
-    for (
-        let i = 0;
-        i < oldSubs.length || i < newSubs.length;
-        i++
-    ) {
-        const oldSub = oldSubs[i]
-        const newSub = newSubs[i]
-        subs.push(
-            newSub
-                ? !oldSub || newSub[0] !== oldSub[0] || newSub[1] !== oldSub[1]
-                    ? [newSub[0], newSub[1], newSub[0](dispatch)(newSub[1])(), oldSub && oldSub[2]()]
-                    : oldSub
-                : oldSub && oldSub[2]()
-        )
-    }
-    return subs
-}
-
 exports.copyVNode = copyVNode
 exports.getAction = target => type => () => target.actions[type]
-exports.patchSubs = oldSubs => newSubs => dispatch => () => patchSubs (oldSubs, newSubs, dispatch)
 exports.unsafePatch = parent => node => oldVDom => newVDom => listener => () => patch(parent, node, oldVDom, newVDom, e => listener(e)())

@@ -1,5 +1,6 @@
 module Pha.App (app, sandbox) where
 import Prelude
+import Data.Foldable (for_)
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
 import Unsafe.Reference (unsafeRefEq)
@@ -10,7 +11,7 @@ import Web.HTML.Window (document)
 import Control.Monad.Free (runFreeM)
 import Pha.App.Internal as I
 import Pha.Html.Core (Html, Event, EventHandler, text)
-import Pha.Subscriptions (Subscription) 
+import Pha.Subscriptions (Subscription(..)) 
 import Pha.Update (UpdateF(..), Update(..))
 import Effect.Ref as Ref
 import Web.Event.Event (EventType(..))
@@ -25,7 +26,7 @@ app' ∷ ∀msg state.
     {   init ∷ {state ∷ state, action ∷ Maybe msg}
     ,   view ∷ state → Html msg
     ,   update ∷ {get ∷ Effect state, put ∷ state → Effect Unit} → msg → Effect Unit
-    ,   subscriptions ∷ state → Array (Subscription msg)
+    ,   subscriptions ∷ Array (Subscription msg)
     ,   selector ∷ String
     } → Effect Unit
 app' {init: {state: st, action}, update, view, subscriptions, selector} = do
@@ -36,13 +37,14 @@ app' {init: {state: st, action}, update, view, subscriptions, selector} = do
         Just node_ → do
             state <- Ref.new st
             lock <- Ref.new false
-            subs <- Ref.new []
+            -- subs <- Ref.new []
             node <- Ref.new node_
             vdom <- Ref.new (text "")
-            go state lock subs node vdom
+            go state lock node vdom
     where
-    go state lock subs node vdom = do
+    go state lock node vdom = do
         setState st
+        for_ subscriptions \(Subscription sub) → sub dispatch
         case action of
             Just a → dispatch a
             Nothing → pure unit
@@ -70,9 +72,9 @@ app' {init: {state: st, action}, update, view, subscriptions, selector} = do
             oldState <- Ref.read state
             unless (unsafeRefEq oldState newState) do
                 Ref.write newState state
-                subs1 <- Ref.read subs
-                subs2 <- I.patchSubs subs1 (subscriptions newState) dispatch
-                Ref.write subs2 subs
+                -- subs1 <- Ref.read subs
+                -- subs2 <- I.patchSubs subs1 (subscriptions newState) dispatch
+                -- Ref.write subs2 subs
                 lock1 <- Ref.read lock
                 unless lock1 do
                     Ref.write true lock
@@ -99,7 +101,7 @@ app' {init: {state: st, action}, update, view, subscriptions, selector} = do
                     dispatchEvent e fn
  
 interpret ∷ ∀st. {get ∷ Effect st, put ∷ st → Effect Unit} → Update st Unit → Aff Unit
-interpret {get, put} (Update monad) = runFreeM go monad where
+interpret {get, put} (Update m) = runFreeM go m where
     go (State k) = do
         st <- liftEffect get
         let Tuple a st2 = k st
@@ -111,7 +113,7 @@ app ∷ ∀msg state.
     {   init ∷ {state ∷ state, action ∷ Maybe msg}
     ,   view ∷ state → Html msg
     ,   update ∷ msg → Update state Unit
-    ,   subscriptions ∷ state → Array (Subscription msg)
+    ,   subscriptions ∷ Array (Subscription msg)
     ,   selector ∷ String
     } → Effect Unit
 
@@ -143,6 +145,6 @@ sandbox {init, view, update, selector} = app' {
     ,   update: \{get, put} msg → do
         st <- get
         put (update msg st)
-    ,   subscriptions: const []
+    ,   subscriptions: []
     ,   selector
     }

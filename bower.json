@@ -14,12 +14,12 @@
         "output"
     ],
     "dependencies": {
-        "purescript-aff": "^v5.1.2",
-        "purescript-arrays": "^v5.3.1",
-        "purescript-effect": "^v2.0.1",
-        "purescript-free": "^v5.2.0",
-        "purescript-web-dom": "^v4.1.0",
-        "purescript-web-html": "^v2.3.0",
-        "purescript-web-uievents": "^v2.0.0"
+        "purescript-aff": "^v6.0.0",
+        "purescript-arrays": "^v6.0.0",
+        "purescript-effect": "^v3.0.0",
+        "purescript-free": "^v6.0.0",
+        "purescript-web-dom": "^v5.0.0",
+        "purescript-web-html": "^v3.0.0",
+        "purescript-web-uievents": "^v3.0.0"
     }
 }

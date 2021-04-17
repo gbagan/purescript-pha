@@ -43,7 +43,7 @@ app' {init: {state: st, action}, update, view, subscriptions, selector} = do
             go state lock node vdom
     where
     go state lock node vdom = do
-        setState st
+        render (view st)
         for_ subscriptions \(Subscription sub) → sub dispatch
         case action of
             Just a → dispatch a

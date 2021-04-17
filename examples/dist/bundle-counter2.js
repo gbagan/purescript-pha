@@ -3230,7 +3230,7 @@ var PS = {};
                           }
                       });
                       return function __do() {
-                          setState(v.init.state)();
+                          render(v.view(v.init.state))();
                           Data_Foldable.for_(Effect.applicativeEffect)(Data_Foldable.foldableArray)(v.subscriptions)(function (v1) {
                               return v1(dispatch);
                           })();

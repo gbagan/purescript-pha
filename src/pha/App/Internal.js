@@ -69,13 +69,12 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
         if (oldVNode.tag !== newVNode.tag)
             node.nodeValue = newVNode.tag
     } else if (oldVNode == null || oldVNode.tag !== newVNode.tag) {
-        const oldNode = node
         node = parent.insertBefore(
             createNode(newVNode, listener, isSvg, mapf),
             node
-        )
-        if (oldNode) {
-            parent.removeChild(oldNode)
+        )//todo
+        if (oldVNode && oldVNode.node) {
+            parent.removeChild(oldVNode.node)
         }
     } else {
         const oldVProps = oldVNode.props
@@ -162,7 +161,7 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
 
                 while (newHead <= newTail) {
                     const [oldKey, oldVKid] = oldVKids[oldHead]
-                    const [newKey, newVKid] = getVNode(newVKids[newHead], oldVKid)  /////////////////////////
+                    const [newKey, newVKid] = getVNode(newVKids[newHead], oldVKid)
 
                     if (newKeyed[oldKey] || newKey === getKey(oldVKids[oldHead + 1])) {
                         oldHead++
@@ -187,7 +186,7 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
                             newKeyed[newKey] = true
                         } else {
                             // todo
-                            patch(node, null, /*oldVKid.node*/ null, newVKids[newHead][1], listener, isSvg, mapf)
+                            patch(node, oldVKid.node, null, newVKids[newHead][1], listener, isSvg, mapf)
                         }
                     }
                     newHead++

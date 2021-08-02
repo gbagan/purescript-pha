@@ -143,7 +143,7 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
                     const newVNode = getVNode(newVKids[newHead])[1]
                     node.insertBefore(
                         createNode(newVNode, listener, isSvg, mapf),
-                        oldVKids[oldHead][1].node
+                        oldVKids[oldHead] && oldVKids[oldHead][1].node
                     )
                     newHead++
                 }

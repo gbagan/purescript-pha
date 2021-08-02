@@ -19,9 +19,9 @@ update Decrement n = n - 1
 view ∷ State → Html Msg
 view counter = 
     H.div []
-    [   H.button [E.onClick Decrement] [H.text "-"]
+    [   H.button [E.onClick \_ → Decrement] [H.text "-"]
     ,   H.span [] [H.text $ show counter]
-    ,   H.button [E.onClick Increment] [H.text "+"]
+    ,   H.button [E.onClick \_ → Increment] [H.text "+"]
     ]
 
 main ∷ Effect Unit

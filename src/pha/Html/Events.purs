@@ -9,13 +9,12 @@ module Pha.Html.Events where
 -}
 import Prelude hiding (div)
 import Effect (Effect)
-import Data.Maybe (Maybe(..), maybe)
-import Data.Tuple (Tuple(..))
+import Data.Maybe (Maybe(..))
 import Web.Event.Event as Event
 import Web.UIEvent.MouseEvent (MouseEvent)
 import Web.UIEvent.MouseEvent as ME
 import Web.HTML.HTMLInputElement as HTMLInput
-import Pha.Html.Core (Prop, Event, EventHandler, unsafeOnWithEffect)
+import Pha.Html.Core (Prop, EventHandler, unsafeOnWithEffect)
 
 always ∷ ∀ev msg. msg → ev → Effect (Maybe msg)
 always msg _ = pure (pure msg)
@@ -25,9 +24,6 @@ always' msg _ = pure msg
 
 on ∷ ∀msg. String → EventHandler msg → Prop msg
 on = unsafeOnWithEffect
-
-foreign import setPointerCaptureE ∷ Event → Effect Unit
-foreign import releasePointerCaptureE ∷ Event → Effect Unit
 
 onClick ∷ ∀msg. (MouseEvent → msg) → Prop msg
 onClick handler = on "click" \ev → pure $ handler <$> ME.fromEvent ev
@@ -64,7 +60,9 @@ onPointerMove ∷ ∀msg. (MouseEvent → msg) → Prop msg
 onPointerMove handler = on "pointermove" \ev → pure $ handler <$> ME.fromEvent ev
 
 onContextMenu ∷ ∀msg. (MouseEvent → msg) → Prop msg
-onContextMenu handler = on "contextmenu" \ev → pure $ handler <$> ME.fromEvent ev
+onContextMenu handler = on "contextmenu" \ev → do
+    Event.preventDefault ev
+    pure $ handler <$> ME.fromEvent ev
 
 onValueChange ∷ ∀msg. (String → msg) → Prop msg
 onValueChange f = on "change" fn

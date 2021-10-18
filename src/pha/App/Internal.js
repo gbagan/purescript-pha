@@ -18,10 +18,9 @@ const patchProperty = (node, key, oldValue, newValue, listener, isSvg, mapf) => 
             }
         }
     } else if (key[0] === "o" && key[1] === "n") {
-        const key2 = key.slice(2)
-        const newValue2 = mapf ? mapf(newValue) : newValue
-        (node.actions || (node.actions = {}))[key2] = newValue2
-        if (!newValue2) {
+        const key2 = key.slice(2);
+        (node.actions || (node.actions = {}))[key2] = mapf ? mapf(newValue) : newValue
+        if (!newValue) {
             node.removeEventListener(key2, listener)
         } else if (!oldValue) {
             node.addEventListener(key2, listener)

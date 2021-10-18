@@ -32,7 +32,7 @@ exports.mapView = mapf => vnode => Object.assign({}, vnode, {mapf: compose(vnode
 exports.attr = k => v => [1, k, v]
 exports.class_ = cls => [2, cls]
 exports.noProp = [-1]
-exports.unsafeOnWithEffect = k => v => [1, k, v]
+exports.unsafeOnWithEffect = k => v => [1, "on"+k, v]
 exports.style = k => v => [3, k, v]
 exports.h = h
 exports.keyed = keyed

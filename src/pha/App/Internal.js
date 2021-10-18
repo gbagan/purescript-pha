@@ -17,13 +17,14 @@ const patchProperty = (node, key, oldValue, newValue, listener, isSvg, mapf) => 
                 node[key][k] = oldValue
             }
         }
-    } else if (typeof newValue === "function") {
-        if (
-            !((node.actions || (node.actions = {}))[key] = mapf ? mapf(newValue) : newValue)
-        ) {
-            node.removeEventListener(key, listener)
+    } else if (key[0] === "o" && key[1] === "n") {
+        const key2 = key.slice(2)
+        const newValue2 = mapf ? mapf(newValue) : newValue
+        (node.actions || (node.actions = {}))[key2] = newValue2
+        if (!newValue2) {
+            node.removeEventListener(key2, listener)
         } else if (!oldValue) {
-            node.addEventListener(key, listener)
+            node.addEventListener(key2, listener)
         }
     } else if (!isSvg && key !== "list" && key in node) {
         node[key] = newValue

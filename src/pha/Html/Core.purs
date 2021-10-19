@@ -1,4 +1,4 @@
-module Pha.Html.Core (Html, Prop, h, keyed, text, empty, attr, style, on_, class_, class', lazy, lazy2, lazy3,
+module Pha.Html.Core (Html, Prop, elem, keyed, text, empty, attr, style, on_, class_, class', lazy, lazy2, lazy3,
     when, fromMaybe, maybe, unsafeOnWithEffect, module E,
       EventHandler) where
 import Prelude hiding (when)
@@ -31,7 +31,7 @@ on_ n handler = unsafeOnWithEffect n \ev → pure (handler ev)
 
 foreign import style ∷ ∀msg. String → String → Prop msg
 
-foreign import h ∷ ∀msg. String → Array (Prop msg) → Array (Html msg) → Html msg
+foreign import elem ∷ ∀msg. String → Array (Prop msg) → Array (Html msg) → Html msg
 
 foreign import keyed ∷ ∀msg. String → Array (Prop msg) → Array (Tuple String (Html msg)) → Html msg
 

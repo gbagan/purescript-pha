@@ -1,106 +1,106 @@
 module Pha.Html.Elements where
 
-import Pha.Html.Core (Html, Prop, h, text)
+import Pha.Html.Core (Html, Prop, elem, text)
 
 a ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-a = h "a"
+a = elem "a"
 
 br ∷ ∀msg. Html msg
-br = h "br" [] []
+br = elem "br" [] []
 
 button ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-button = h "button"
+button = elem "button"
 
 div ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-div = h "div"
+div = elem "div"
 
 
 footer ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-footer = h "footer"
+footer = elem "footer"
 
 form ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-form = h "form"
+form = elem "form"
 
 img ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-img = h "img"
+img = elem "img"
     
 h1 ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-h1 = h "h1"
+h1 = elem "h1"
 
 h2 ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-h2 = h "h2"
+h2 = elem "h2"
 
 h3 ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-h3 = h "h3"
+h3 = elem "h3"
 
 h4 ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-h4 = h "h4"
+h4 = elem "h4"
 
 h5 ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-h5 = h "h5"
+h5 = elem "h5"
 
 h6 ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-h6 = h "h6"
+h6 = elem "h6"
 
 header ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-header = h "header"
+header = elem "header"
 
 hr ∷ ∀msg. Array (Prop msg) → Html msg
-hr attrs = h "hr" attrs []
+hr attrs = elem "hr" attrs []
 
 input ∷ ∀msg. Array (Prop msg) → Html msg
-input attrs = h "input" attrs []
+input attrs = elem "input" attrs []
 
 label ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-label = h "label"
+label = elem "label"
 
 li ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-li = h "li"
+li = elem "li"
 
 p ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-p = h "p"
+p = elem "p"
 
 main ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-main = h "main"
+main = elem "main"
 
 nav ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-nav = h "nav"
+nav = elem "nav"
 
 ol ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-ol = h "ol"
+ol = elem "ol"
 
 section ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-section = h "section"
+section = elem "section"
 
 span ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-span = h "span"
+span = elem "span"
 
 ul ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-ul = h "ul"
+ul = elem "ul"
 
 
 --- SVG
 
 svg ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-svg = h "svg"
+svg = elem "svg"
 
 g ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-g = h "g"
+g = elem "g"
         
 rect ∷ ∀msg. Array (Prop msg) → Html msg
-rect props = h "rect" props []
+rect props = elem "rect" props []
     
 path ∷ ∀msg. Array (Prop msg) → Html msg
-path props = h "path" props []
+path props = elem "path" props []
     
 line ∷  ∀msg. Array (Prop msg) → Html msg
-line props = h "line" props []
+line props = elem "line" props []
     
 circle ∷ ∀msg. Array (Prop msg) → Html msg
-circle props = h "circle" props []
+circle props = elem "circle" props []
 
 use ∷ ∀msg. Array (Prop msg) → Html msg
-use props = h "use" props []
+use props = elem "use" props []
     
 text_ ∷ ∀msg. String → Array (Prop msg) → Html msg
-text_ t props = h "text" props [text t]
+text_ t props = elem "text" props [text t]

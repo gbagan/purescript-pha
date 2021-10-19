@@ -34,7 +34,7 @@ exports.class_ = cls => [2, cls]
 exports.noProp = [-1]
 exports.unsafeOnWithEffect = k => v => [1, "on"+k, v]
 exports.style = k => v => [3, k, v]
-exports.h = h
+exports.elem = h
 exports.keyed = keyed
 exports.text = createTextVNode
 exports.lazy = view => val => ({ memo: [val], type: view})

@@ -1,24 +1,25 @@
 module Pha.Html.Attributes where
 import Prelude
 import Pha.Html.Core (Prop, attr)
+import Unsafe.Coerce (unsafeCoerce)
 
 alt ∷ ∀msg. String → Prop msg
 alt = attr "alt"
 
 checked ∷ ∀msg. Boolean → Prop msg
-checked b = attr "checked" (if b then "true" else "")
+checked b = attr "checked" (unsafeCoerce b)
 
 cols ∷ ∀msg. Int → Prop msg
 cols = attr "cols" <<< show
 
 disabled ∷ ∀msg. Boolean → Prop msg
-disabled b = attr "disabled" (if b then "true" else "")
+disabled b = attr "disabled" (unsafeCoerce b)
 
 download ∷ ∀msg. String → Prop msg
 download = attr "download"
 
 hidden ∷ ∀msg. Boolean → Prop msg
-hidden b = attr "hidden" (if b then "true" else "")
+hidden b = attr "hidden" (unsafeCoerce b)
 
 href ∷ ∀msg. String → Prop msg
 href = attr "href"
@@ -26,8 +27,14 @@ href = attr "href"
 id ∷ ∀msg. String → Prop msg
 id = attr "id"
 
+max ∷ ∀msg. Int → Prop msg
+max = attr "max" <<< show
+
 maxlength ∷ ∀msg. Int → Prop msg
 maxlength = attr "maxlength" <<< show
+
+min ∷ ∀msg. Int → Prop msg
+min = attr "max" <<< show
 
 minlength ∷ ∀msg. Int → Prop msg
 minlength = attr "minlength" <<< show
@@ -36,16 +43,16 @@ placeholder ∷ ∀msg. String → Prop msg
 placeholder = attr "placeholder"
 
 readonly ∷ ∀msg. Boolean → Prop msg
-readonly b = attr "selected" (if b then "true" else "")
+readonly b = attr "selected" (unsafeCoerce b)
 
 required ∷ ∀msg. Boolean → Prop msg
-required b = attr "selected" (if b then "true" else "")
+required b = attr "selected" (unsafeCoerce b)
 
 rows ∷ ∀msg. Int → Prop msg
 rows = attr "rows" <<< show
 
 selected ∷ ∀msg. Boolean → Prop msg
-selected b = attr "selected" (if b then "true" else "")
+selected b = attr "selected" (unsafeCoerce b)
 
 size ∷ ∀msg. Int → Prop msg
 size = attr "size" <<< show
@@ -85,6 +92,10 @@ cy ∷ ∀msg. Number → Prop msg
 cy = attr "cy" <<< show
 r ∷ ∀msg. Number → Prop msg
 r = attr "r" <<< show
+rx ∷ ∀msg. Number → Prop msg
+rx = attr "rx" <<< show
+ry ∷ ∀msg. Number → Prop msg
+ry = attr "ry" <<< show
 
 d ∷ ∀msg. String → Prop msg
 d = attr "d"

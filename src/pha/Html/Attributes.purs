@@ -34,7 +34,7 @@ maxlength ∷ ∀msg. Int → Prop msg
 maxlength = attr "maxlength" <<< show
 
 min ∷ ∀msg. Int → Prop msg
-min = attr "max" <<< show
+min = attr "min" <<< show
 
 minlength ∷ ∀msg. Int → Prop msg
 minlength = attr "minlength" <<< show

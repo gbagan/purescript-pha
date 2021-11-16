@@ -1,4 +1,4 @@
-module Pha.Update (UpdateF(..), Update(..), Update', delay, module Exports) where
+module Pha.Update (UpdateF(..), Update(..), delay, module Exports) where
 import Prelude
 import Data.Tuple (Tuple)
 import Data.Bifunctor (lmap)
@@ -13,28 +13,26 @@ import Control.Monad.State.Class (class MonadState)
 
 data UpdateF state a = State (state -> Tuple a state) | Lift (Aff a)
 
-instance functorUpdateF :: Functor (UpdateF state) where
+instance Functor (UpdateF state) where
     map f (State k) = State (lmap f <<< k)
     map f (Lift q) = Lift (map f q)
 
-
 newtype Update state a = Update (Free (UpdateF state) a)
-type Update' state = Update state Unit
 
-derive newtype instance functorUpdate :: Functor (Update state)
-derive newtype instance applyUpdate :: Apply (Update state)
-derive newtype instance applicativeUpdate :: Applicative (Update state)
-derive newtype instance bindUpdate :: Bind (Update state)
-derive newtype instance monadUpdate :: Monad (Update state)
-derive newtype instance monadRecUpdate :: MonadRec (Update state)
+derive newtype instance Functor (Update state)
+derive newtype instance Apply (Update state)
+derive newtype instance Applicative (Update state)
+derive newtype instance Bind (Update state)
+derive newtype instance Monad (Update state)
+derive newtype instance MonadRec (Update state)
 
-instance monadStateUpdate :: MonadState state (Update state) where
+instance MonadState state (Update state) where
     state = Update <<< liftF <<< State
 
-instance monadEffectUpdate :: MonadEffect (Update state) where
+instance MonadEffect (Update state) where
     liftEffect = Update <<< liftF <<< Lift <<< liftEffect
 
-instance monadAffUpdate :: MonadAff (Update state) where
+instance MonadAff (Update state) where
     liftAff = Update <<< liftF <<< Lift
 
 delay :: forall state. Milliseconds -> Update state Unit

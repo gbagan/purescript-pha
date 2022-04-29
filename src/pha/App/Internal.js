@@ -224,8 +224,6 @@ const getVNode = (newVNode, oldVNode) => {
     return newVNode
 }
 
-const copyVNode = vnode => Object.assign({}, vnode, {children: vnode.children && vnode.children.map(([k, v]) => [k, copyVNode(v)]) })
-
-exports.copyVNode = copyVNode
-exports.getAction = target => type => () => target.actions[type]
-exports.unsafePatch = parent => node => oldVDom => newVDom => listener => () => patch(parent, node, oldVDom, newVDom, e => listener(e)())
+export const copyVNode = vnode => Object.assign({}, vnode, {children: vnode.children && vnode.children.map(([k, v]) => [k, copyVNode(v)]) })
+export const getAction = target => type => () => target.actions[type]
+export const unsafePatch = parent => node => oldVDom => newVDom => listener => () => patch(parent, node, oldVDom, newVDom, e => listener(e)())

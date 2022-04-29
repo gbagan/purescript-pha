@@ -20,6 +20,7 @@ You can edit this file as you like.
   , "tailrec"
   , "transformers"
   , "tuples"
+  , "unsafe-coerce"
   , "unsafe-reference"
   , "web-dom"
   , "web-events"

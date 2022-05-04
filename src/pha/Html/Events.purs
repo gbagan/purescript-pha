@@ -1,15 +1,5 @@
-module Pha.Html.Events
-  ( always'
-  )
-  where
-{-
-(onclick, onclick',
-    onmouseup, onmouseup', onmousedown, onmousedown', onmouseenter, onmouseenter', onmouseleave, onmouseleave',
-    onpointerup, onpointerup', onpointerdown, onpointerdown', onpointerenter, onpointerenter', onpointerleave, onpointerleave',
-    oncontextmenu, oncontextmenu',
-    onvaluechange, onchecked,
-    on', custom, preventDefaultOn, stopPropagationOn, releasePointerCaptureOn) where
--}
+module Pha.Html.Events where
+
 import Prelude hiding (div)
 import Effect (Effect)
 import Data.Maybe (Maybe(..))
@@ -30,8 +20,8 @@ always' msg _ = pure msg
 on ∷ ∀msg. String → EventHandler msg → Prop msg
 on = unsafeOnWithEffect
 
-onClick ∷ ∀msg. (MouseEvent → msg) → Prop msg
-onClick handler = on "click" \ev → pure $ handler <$> ME.fromEvent ev
+onClick ∷ ∀msg. (PointerEvent → msg) → Prop msg
+onClick handler = on "click" \ev → pure $ handler <$> PE.fromEvent ev
 
 onMouseUp ∷ ∀msg. (MouseEvent → msg) → Prop msg
 onMouseUp handler = on "mouseup" \ev → pure $ handler <$> ME.fromEvent ev
@@ -64,10 +54,10 @@ onPointerLeave handler = on "pointerleave" \ev → pure $ handler <$> PE.fromEve
 onPointerMove ∷ ∀msg. (PointerEvent → msg) → Prop msg
 onPointerMove handler = on "pointermove" \ev → pure $ handler <$> PE.fromEvent ev
 
-onContextMenu ∷ ∀msg. (MouseEvent → msg) → Prop msg
+onContextMenu ∷ ∀msg. (PointerEvent → msg) → Prop msg
 onContextMenu handler = on "contextmenu" \ev → do
     Event.preventDefault ev
-    pure $ handler <$> ME.fromEvent ev
+    pure $ handler <$> PE.fromEvent ev
 
 onValueChange ∷ ∀msg. (String → msg) → Prop msg
 onValueChange f = on "change" fn

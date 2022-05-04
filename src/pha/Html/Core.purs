@@ -1,5 +1,6 @@
 module Pha.Html.Core
   ( EventHandler
+  , Prop
   , Html
   , attr
   , class'

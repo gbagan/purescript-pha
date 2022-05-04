@@ -1,4 +1,7 @@
-module Pha.Html.Events where
+module Pha.Html.Events
+  ( always'
+  )
+  where
 {-
 (onclick, onclick',
     onmouseup, onmouseup', onmousedown, onmousedown', onmouseenter, onmouseenter', onmouseleave, onmouseleave',
@@ -13,6 +16,8 @@ import Data.Maybe (Maybe(..))
 import Web.Event.Event as Event
 import Web.UIEvent.MouseEvent (MouseEvent)
 import Web.UIEvent.MouseEvent as ME
+import Web.PointerEvent (PointerEvent)
+import Web.PointerEvent.PointerEvent as PE
 import Web.HTML.HTMLInputElement as HTMLInput
 import Pha.Html.Core (Prop, EventHandler, unsafeOnWithEffect)
 
@@ -44,20 +49,20 @@ onMouseMove ∷ ∀msg. (MouseEvent → msg) → Prop msg
 onMouseMove handler = on "mousemove" \ev → pure $ handler <$> ME.fromEvent ev
 
 
-onPointerUp ∷ ∀msg. (MouseEvent → msg) → Prop msg
-onPointerUp handler = on "pointerup" \ev → pure $ handler <$> ME.fromEvent ev
+onPointerUp ∷ ∀msg. (PointerEvent → msg) → Prop msg
+onPointerUp handler = on "pointerup" \ev → pure $ handler <$> PE.fromEvent ev
 
-onPointerDown ∷ ∀msg. (MouseEvent → msg) → Prop msg
-onPointerDown handler = on "pointerdown" \ev → pure $ handler <$> ME.fromEvent ev
+onPointerDown ∷ ∀msg. (PointerEvent → msg) → Prop msg
+onPointerDown handler = on "pointerdown" \ev → pure $ handler <$> PE.fromEvent ev
 
-onPointerEnter ∷ ∀msg. (MouseEvent → msg) → Prop msg
-onPointerEnter handler = on "pointerenter" \ev → pure $ handler <$> ME.fromEvent ev
+onPointerEnter ∷ ∀msg. (PointerEvent → msg) → Prop msg
+onPointerEnter handler = on "pointerenter" \ev → pure $ handler <$> PE.fromEvent ev
 
-onPointerLeave ∷ ∀msg. (MouseEvent → msg) → Prop msg
-onPointerLeave handler = on "pointerleave" \ev → pure $ handler <$> ME.fromEvent ev
+onPointerLeave ∷ ∀msg. (PointerEvent → msg) → Prop msg
+onPointerLeave handler = on "pointerleave" \ev → pure $ handler <$> PE.fromEvent ev
 
-onPointerMove ∷ ∀msg. (MouseEvent → msg) → Prop msg
-onPointerMove handler = on "pointermove" \ev → pure $ handler <$> ME.fromEvent ev
+onPointerMove ∷ ∀msg. (PointerEvent → msg) → Prop msg
+onPointerMove handler = on "pointermove" \ev → pure $ handler <$> PE.fromEvent ev
 
 onContextMenu ∷ ∀msg. (MouseEvent → msg) → Prop msg
 onContextMenu handler = on "contextmenu" \ev → do

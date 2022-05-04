@@ -1,6 +1,25 @@
-module Pha.Html.Core (Html, Prop, elem, keyed, text, empty, attr, style, on_, class_, class', lazy, lazy2, lazy3,
-    when, fromMaybe, maybe, unsafeOnWithEffect, module E,
-      EventHandler) where
+module Pha.Html.Core
+  ( EventHandler
+  , Html
+  , attr
+  , class'
+  , class_
+  , elem
+  , empty
+  , fromMaybe
+  , keyed
+  , lazy
+  , lazy2
+  , lazy3
+  , maybe
+  , module E
+  , on_
+  , style
+  , text
+  , unsafeOnWithEffect
+  , when
+  )
+  where
 import Prelude hiding (when)
 import Effect (Effect)
 import Data.Maybe (Maybe(..))

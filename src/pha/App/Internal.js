@@ -18,7 +18,7 @@ const patchProperty = (node, key, oldValue, newValue, listener, isSvg, mapf) => 
             }
         }
     } else if (key[0] === "o" && key[1] === "n") {
-        const key2 = key.slice(2);
+        const key2 = key.slice(2)
         (node.actions || (node.actions = {}))[key2] = mapf && newValue ? mapf(newValue) : newValue
         if (!newValue) {
             node.removeEventListener(key2, listener)
@@ -42,10 +42,10 @@ const createNode = (vnode, listener, isSvg, mapf) => {
                 ? document.createElementNS("http://www.w3.org/2000/svg", vnode.tag)
                 : document.createElement(vnode.tag)
     const props = vnode.props
-    mapf = compose(mapf, vnode.mapf);
+    const mapf2 = compose(mapf, vnode.mapf)
 
     for (let k in props) {
-        patchProperty(node, k, null, props[k], listener, isSvg, mapf)
+        patchProperty(node, k, null, props[k], listener, isSvg, mapf2)
     }
     for (let i = 0, len = vnode.children.length; i < len; i++) {
         node.appendChild(
@@ -53,15 +53,16 @@ const createNode = (vnode, listener, isSvg, mapf) => {
                 getVNode(vnode.children[i])[1],
                 listener,
                 isSvg,
-                mapf
+                mapf2
             )
         )
     }
 
-    return (vnode.node = node)
+    vnode.node = node
+    return node
 }
 
-const getKey = keyednode => keyednode == null ? null : keyednode[0]
+const getKey = keyednode => keyednode && keyednode[0]
 
 const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
     if (oldVNode === newVNode) {
@@ -201,7 +202,8 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
         }
     }
 
-    return (newVNode.node = node)
+    newVNode.node = node
+    return node
 }
 
 const propsChanged = (a, b) => {

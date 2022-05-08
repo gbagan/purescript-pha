@@ -25,6 +25,7 @@ You can edit this file as you like.
   , "web-dom"
   , "web-events"
   , "web-html"
+  , "web-pointerevents"
   , "web-uievents"
   ]
 , packages = ./packages.dhall

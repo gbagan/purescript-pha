@@ -7,7 +7,6 @@ import Web.HTML (window)
 import Web.HTML.Window as W
 import Web.Event.Event as E
 import Web.Event.EventTarget as ET
-import Web.UIEvent.UIEvent as UI
 import Web.UIEvent.KeyboardEvent as KE
 import Web.HTML.Event.HashChangeEvent (HashChangeEvent)
 import Web.HTML.Event.HashChangeEvent as HCE
@@ -34,5 +33,5 @@ onKeyDown f = on "keydown" \ev → pure $ f =<< KE.key <$> KE.fromEvent ev
 onHashChange ∷ ∀msg. (HashChangeEvent → Maybe msg) → Subscription msg
 onHashChange f = on "hashchange" \ev → pure $ HCE.fromEvent ev >>= f
 
-onResize ∷ ∀msg. (UI.UIEvent → Maybe msg) → Subscription msg
-onResize f = on "resize" \ev → pure $ UI.fromEvent ev >>= f
+-- onResize ∷ ∀msg. (UI.UIEvent → Maybe msg) → Subscription msg
+-- onResize f = on "resize" \ev → pure $ UI.fromEvent ev >>= f

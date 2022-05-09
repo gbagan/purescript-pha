@@ -15,6 +15,7 @@ import Effect.Class (class MonadEffect, liftEffect)
 import Control.Monad.Rec.Class (class MonadRec)
 import Control.Monad.State.Class (get, gets, put, modify, modify_) as Exports
 import Control.Monad.State.Class (class MonadState)
+import Control.Monad.Trans.Class (class MonadTrans)
 
 data UpdateF state m a = State (state -> Tuple a state) | Lift (m a)
 
@@ -33,6 +34,9 @@ derive newtype instance MonadRec (Update state m)
 
 instance MonadState state (Update state m) where
     state = Update <<< liftF <<< State
+
+instance MonadTrans (Update state) where
+    lift = Update <<< liftF <<< Lift
 
 instance MonadEffect m => MonadEffect (Update state m) where
     liftEffect = Update <<< liftF <<< Lift <<< liftEffect

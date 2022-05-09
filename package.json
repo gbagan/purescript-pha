@@ -7,6 +7,6 @@
   "scripts": {
     "clean": "rimraf output && rimraf .spago",
     "build": "spago build --purs-args '--censor-lib --strict'",
-    "build-example-counter2": "spago bundle-app -m Example.Counter2 --to examples/dist/bundle-counter2.js"
+    "example-counter2": "spago bundle-app -m Example.Counter2 --to examples/dist/bundle-counter2.js"
   }
 }

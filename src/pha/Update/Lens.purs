@@ -6,7 +6,7 @@ import Unsafe.Reference (unsafeRefEq)
 import Control.Monad.Free (hoistFree)
 import Pha.Update (Update(..), UpdateF(..))
 
-updateOver ∷ ∀st st'. Lens' st st' → Update st' ~> Update st
+updateOver ∷ ∀st st' m. Lens' st st' → Update st' m ~> Update st m
 updateOver lens (Update m) = Update $ m # hoistFree case _ of
     State k → State \s ->
         let s2 = view lens s

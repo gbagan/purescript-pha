@@ -21,6 +21,7 @@ import Web.HTML (window)
 import Web.HTML.HTMLDocument (toParentNode)
 import Web.DOM.Element as El
 import Web.DOM.ParentNode (QuerySelector(..), querySelector)
+import Unsafe.Coerce (unsafeCoerce)
 
 app' ∷ ∀msg state.
     {   init ∷ {state ∷ state, action ∷ Maybe msg}
@@ -100,27 +101,31 @@ app' {init: {state: st, action}, update, view, subscriptions, selector} = do
                     fn <- I.getAction target t
                     dispatchEvent e fn
  
-interpret ∷ ∀st. {get ∷ Effect st, put ∷ st → Effect Unit} → Update st Unit → Aff Unit
-interpret {get, put} (Update m) = runFreeM go m where
+interpret ∷ ∀st m. Monad m =>
+    {get ∷ Effect st, put ∷ st → Effect Unit} 
+    → (m ~> Aff)
+    → Update st m Unit
+    → Aff Unit
+interpret {get, put} eval (Update m) = runFreeM go m where
     go (State k) = do
         st <- liftEffect get
         let Tuple a st2 = k st
         liftEffect (put st2)
         pure a
-    go (Lift a) = a
+    go (Lift a) = eval a
 
-app ∷ ∀msg state.
+app ∷ ∀msg state m. Monad m =>
     {   init ∷ {state ∷ state, action ∷ Maybe msg}
     ,   view ∷ state → Html msg
-    ,   update ∷ msg → Update state Unit
+    ,   update ∷ msg → Update state m Unit
+    ,   eval ∷ m ~> Aff
     ,   subscriptions ∷ Array (Subscription msg)
     ,   selector ∷ String
     } → Effect Unit
 
-app {init, view, update, subscriptions, selector} = app' {
-    init, view, subscriptions, selector,
-    update: \helpers msg → launchAff_ $ interpret helpers (update msg)
-}
+app {init, view, update, eval, subscriptions, selector} = app' {init, view, subscriptions, selector, update: update'}
+    where
+    update' helpers msg = launchAff_ $ interpret helpers (unsafeCoerce eval) (update msg)
 
 
 -- | ```purescript

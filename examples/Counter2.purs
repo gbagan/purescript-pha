@@ -6,6 +6,7 @@ import Data.Array ((..), replicate)
 import Data.Tuple.Nested ((/\))
 import Data.Time.Duration (Milliseconds(..))
 import Effect (Effect)
+import Effect.Aff (Aff)
 import Pha.Html (Html)
 import Pha.Html as H
 import Pha.Html.Events as E
@@ -23,7 +24,7 @@ state = 0
 
 data Msg = Increment | DelayedIncrement
 
-update ∷ Msg → Update State Unit
+update ∷ Msg → Update State Aff Unit
 update Increment = modify_ (_ + 1)
 update DelayedIncrement = do
     delay (Milliseconds 1000.0)
@@ -88,10 +89,11 @@ keyDownHandler "i" = Just Increment
 keyDownHandler _ = Nothing
 
 main ∷ Effect Unit
-main = app {
-    init: {state, action: Nothing},
-    view,
-    update,
-    subscriptions: [Subs.onKeyDown keyDownHandler],
-    selector: "#root"
-}
+main = app
+    {   init: {state, action: Nothing}
+    ,   view
+    ,   update
+    ,   eval: identity
+    ,   subscriptions: [Subs.onKeyDown keyDownHandler]
+    ,   selector: "#root"
+    }

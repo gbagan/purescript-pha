@@ -77,9 +77,9 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
             node
         )
         //todo
-        //if (oldVNode && oldVNode.node) {
-        //    parent.removeChild(oldVNode.node)
-        //}
+        if (oldVNode && oldVNode.node) {
+            parent.removeChild(oldVNode.node)
+        }
     } else {
         const oldVProps = oldVNode.props
         const newVProps = newVNode.props

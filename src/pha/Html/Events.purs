@@ -3,6 +3,7 @@ module Pha.Html.Events where
 import Prelude hiding (div)
 import Effect (Effect)
 import Data.Maybe (Maybe(..))
+import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event as Event
 import Web.UIEvent.MouseEvent (MouseEvent)
 import Web.UIEvent.MouseEvent as ME
@@ -21,7 +22,7 @@ on ∷ ∀msg. String → EventHandler msg → Prop msg
 on = unsafeOnWithEffect
 
 onClick ∷ ∀msg. (PointerEvent → msg) → Prop msg
-onClick handler = on "click" \ev → pure $ handler <$> PE.fromEvent ev
+onClick handler = on "click" \ev → pure $ Just $ handler $ unsafeCoerce ev
 
 onMouseUp ∷ ∀msg. (MouseEvent → msg) → Prop msg
 onMouseUp handler = on "mouseup" \ev → pure $ handler <$> ME.fromEvent ev

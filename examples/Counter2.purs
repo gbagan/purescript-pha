@@ -14,9 +14,7 @@ import Pha.App (app)
 import Pha.Update (Update, modify_, delay)
 import Pha.Subscriptions as Subs
 
-
 type State = Int
-
 
 -- initial state
 state ∷ State

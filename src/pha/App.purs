@@ -33,37 +33,27 @@ app' ∷ ∀msg state.
 app' {init: {state: st, action}, update, view, subscriptions, selector} = do
     parentNode <- window >>= document <#> toParentNode
     selected <- map El.toNode <$> querySelector (QuerySelector selector) parentNode
-    case selected of
-        Nothing → pure unit
-        Just node_ → do
-            state <- Ref.new st
-            lock <- Ref.new false
-            -- subs <- Ref.new []
-            node <- Ref.new node_
-            vdom <- Ref.new (text "")
-            go state lock node vdom
+    for_ selected \node_ → do
+        state <- Ref.new st
+        node <- Ref.new node_
+        vdom <- Ref.new (text "")
+        go state node vdom
     where
-    go state lock node vdom = do
+    go state node vdom = do
         render (view st)
         for_ subscriptions \(Subscription sub) → sub dispatch
-        case action of
-            Just a → dispatch a
-            Nothing → pure unit
+        for_ action dispatch
         where
         render ∷ Html msg → Effect Unit
         render newVDom = do
-                Ref.write false lock
-                oldVDom <- Ref.read vdom
-                node1 <- Ref.read node
-                pnode <- Node.parentNode node1
-                case pnode of
-                    Nothing → pure unit
-                    Just pnode' → do
-                        let vdom2 = I.copyVNode newVDom
-                        node2 <- I.unsafePatch pnode' node1 oldVDom vdom2 listener
-                        Ref.write node2 node
-                        Ref.write vdom2 vdom
- 
+            oldVDom <- Ref.read vdom
+            node1 <- Ref.read node
+            pnode <- Node.parentNode node1
+            for_ pnode \pnode' → do
+                let vdom2 = I.copyVNode newVDom
+                node2 <- I.unsafePatch pnode' node1 oldVDom vdom2 listener
+                Ref.write node2 node
+                Ref.write vdom2 vdom
  
         getState ∷ Effect state
         getState = Ref.read state
@@ -73,14 +63,7 @@ app' {init: {state: st, action}, update, view, subscriptions, selector} = do
             oldState <- Ref.read state
             unless (unsafeRefEq oldState newState) do
                 Ref.write newState state
-                -- subs1 <- Ref.read subs
-                -- subs2 <- I.patchSubs subs1 (subscriptions newState) dispatch
-                -- Ref.write subs2 subs
-                lock1 <- Ref.read lock
-                unless lock1 do
-                    Ref.write true lock
-                    -- void $ window >>= requestAnimationFrame (
-                    render $ view newState
+                render $ view newState
         
         dispatch ∷ msg → Effect Unit
         -- eta expansion pour casser la dépendance cyclique
@@ -88,18 +71,14 @@ app' {init: {state: st, action}, update, view, subscriptions, selector} = do
 
         dispatchEvent ∷ Event → EventHandler msg → Effect Unit
         dispatchEvent ev handler = do
-                        msg <- handler ev
-                        case msg of
-                            Nothing → pure unit
-                            Just m → dispatch m
+            msg <- handler ev
+            for_ msg dispatch
 
         listener e = do
             let EventType t = Ev.type_ e
-            case Ev.currentTarget e of
-                Nothing → pure unit
-                Just target → do
-                    fn <- I.getAction target t
-                    dispatchEvent e fn
+            for_ (Ev.currentTarget e) \target → do
+                fn <- I.getAction target t
+                dispatchEvent e fn
  
 interpret ∷ ∀st m. Monad m =>
     {get ∷ Effect st, put ∷ st → Effect Unit} 
@@ -126,7 +105,6 @@ app ∷ ∀msg state m. Monad m =>
 app {init, view, update, eval, subscriptions, selector} = app' {init, view, subscriptions, selector, update: update'}
     where
     update' helpers msg = launchAff_ $ interpret helpers (unsafeCoerce eval) (update msg)
-
 
 -- | ```purescript
 -- | sandbox ∷ ∀msg state effs. {

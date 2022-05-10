@@ -27,7 +27,7 @@ const patchProperty = (node, key, oldValue, newValue, listener, isSvg, mapf) => 
         } else if (!oldValue) {
             node.addEventListener(key2, listener)
         }
-    } else if (!isSvg && key !== "list" && key in node) {
+    } else if (!isSvg && key in node) {
         node[key] = newValue
     } else if (newValue == null || newValue === false || (key === "class" && !newValue)) {
         node.removeAttribute(key)
@@ -75,10 +75,11 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
         node = parent.insertBefore(
             createNode(newVNode, listener, isSvg, mapf),
             node
-        )//todo
-        if (oldVNode && oldVNode.node) {
-            parent.removeChild(oldVNode.node)
-        }
+        )
+        //todo
+        //if (oldVNode && oldVNode.node) {
+        //    parent.removeChild(oldVNode.node)
+        //}
     } else {
         const oldVProps = oldVNode.props
         const newVProps = newVNode.props

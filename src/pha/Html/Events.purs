@@ -22,43 +22,33 @@ on ∷ ∀msg. String → EventHandler msg → Prop msg
 on = unsafeOnWithEffect
 
 onClick ∷ ∀msg. (PointerEvent → msg) → Prop msg
-onClick handler = on "click" \ev → pure $ Just $ handler $ unsafeCoerce ev
-
-onMouseUp ∷ ∀msg. (MouseEvent → msg) → Prop msg
-onMouseUp handler = on "mouseup" \ev → pure $ handler <$> ME.fromEvent ev
-
-onMouseDown ∷ ∀msg. (MouseEvent → msg) → Prop msg
-onMouseDown handler = on "mousedown" \ev → pure $ handler <$> ME.fromEvent ev
-
-onMouseEnter ∷ ∀msg. (MouseEvent → msg) → Prop msg
-onMouseEnter handler = on "mouseenter" \ev → pure $ handler <$> ME.fromEvent ev
-
-onMouseLeave ∷ ∀msg. (MouseEvent → msg) → Prop msg
-onMouseLeave handler = on "mouseleave" \ev → pure $ handler <$> ME.fromEvent ev
-
-onMouseMove ∷ ∀msg. (MouseEvent → msg) → Prop msg
-onMouseMove handler = on "mousemove" \ev → pure $ handler <$> ME.fromEvent ev
-
+onClick handler = on "click" (pure <<< Just <<< handler <<< unsafeCoerce)
 
 onPointerUp ∷ ∀msg. (PointerEvent → msg) → Prop msg
-onPointerUp handler = on "pointerup" \ev → pure $ handler <$> PE.fromEvent ev
+onPointerUp handler = on "pointerup" (pure <<< Just <<< handler <<< unsafeCoerce)
 
 onPointerDown ∷ ∀msg. (PointerEvent → msg) → Prop msg
-onPointerDown handler = on "pointerdown" \ev → pure $ handler <$> PE.fromEvent ev
+onPointerDown handler = on "pointerdown" (pure <<< Just <<< handler <<< unsafeCoerce)
 
 onPointerEnter ∷ ∀msg. (PointerEvent → msg) → Prop msg
-onPointerEnter handler = on "pointerenter" \ev → pure $ handler <$> PE.fromEvent ev
+onPointerEnter handler = on "pointerenter" (pure <<< Just <<< handler <<< unsafeCoerce)
 
 onPointerLeave ∷ ∀msg. (PointerEvent → msg) → Prop msg
-onPointerLeave handler = on "pointerleave" \ev → pure $ handler <$> PE.fromEvent ev
+onPointerLeave handler = on "pointerleave" (pure <<< Just <<< handler <<< unsafeCoerce)
+
+onPointerOver ∷ ∀msg. (PointerEvent → msg) → Prop msg
+onPointerOver handler = on "pointerover" (pure <<< Just <<< handler <<< unsafeCoerce)
+
+onPointerOut ∷ ∀msg. (PointerEvent → msg) → Prop msg
+onPointerOut handler = on "pointerout" (pure <<< Just <<< handler <<< unsafeCoerce)
 
 onPointerMove ∷ ∀msg. (PointerEvent → msg) → Prop msg
-onPointerMove handler = on "pointermove" \ev → pure $ handler <$> PE.fromEvent ev
+onPointerMove handler = on "pointermove" (pure <<< Just <<< handler <<< unsafeCoerce)
 
 onContextMenu ∷ ∀msg. (PointerEvent → msg) → Prop msg
 onContextMenu handler = on "contextmenu" \ev → do
     Event.preventDefault ev
-    pure $ handler <$> PE.fromEvent ev
+    pure $ Just $ handler $ unsafeCoerce ev
 
 onValueChange ∷ ∀msg. (String → msg) → Prop msg
 onValueChange f = on "change" fn

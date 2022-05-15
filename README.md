@@ -1,5 +1,5 @@
 # purescript-pha
-Elm-like library
+a simple and fast Elm-like library based on superfine
 
 ### Documentation
 Documentation is [published on Pursuit](https://pursuit.purescript.org/packages/purescript-pha)

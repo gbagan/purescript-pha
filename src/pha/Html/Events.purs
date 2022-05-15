@@ -20,11 +20,14 @@ always' msg _ = pure msg
 on ∷ ∀msg. String → EventHandler msg → Prop msg
 on = unsafeOnWithEffect
 
+pointerCoerce :: Event → PointerEvent
+pointerCoerce = unsafeCoerce
+
 onClick ∷ ∀msg. (PointerEvent → msg) → Prop msg
 onClick handler = on "click" (pure <<< Just <<< handler <<< unsafeCoerce)
 
-pointerCoerce :: Event → PointerEvent
-pointerCoerce = unsafeCoerce
+onAuxClick ∷ ∀msg. (PointerEvent → msg) → Prop msg
+onAuxClick handler = on "auxclick" (pure <<< Just <<< handler <<< unsafeCoerce)
 
 onPointerUp ∷ ∀msg. (PointerEvent → msg) → Prop msg
 onPointerUp handler = on "pointerup" (pure <<< Just <<< handler <<< pointerCoerce)

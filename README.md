@@ -36,10 +36,8 @@ main ∷ Effect Unit
 main = sandbox {init, update, view, selector: "#root"}
 ```
 
-### Other examples
+### Some projects using purescript-pha
 
-Randomness (+ animation) [Code](https://github.com/gbagan/purescript-pha-examples/blob/master/src/Random.purs) |  [Demo](https://gbagan.github.io/purescript-pha//ex-random.html)
-
-Inputs (event effects, text and checkbox inputs) [Code](https://github.com/gbagan/purescript-pha-examples/blob/master/src/Inputs.purs) | [Demo](https://gbagan.github.io/purescript-pha//ex-inputs.html)
-
-Cats (HTTP, json) [Code](https://github.com/gbagan/purescript-pha-examples/blob/master/src/Cats.purs) | [Demo](https://gbagan.github.io/purescript-pha//ex-cats.html)
+- https://github.com/gbagan/valise-mam
+- https://github.com/gbagan/subtract-machine
+- https://github.com/gbagan/sudoku-solver

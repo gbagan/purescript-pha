@@ -4,7 +4,7 @@
 
 const TEXT_NODE = 3
 
-const merge = (a, b) => Object.assign({}, a, b)
+const merge = (a, b) => ({...a, ...b})
 const compose = (f, g) => f && g ? x => f(g(x)) : f || g
 
 const patchProperty = (node, key, oldValue, newValue, listener, isSvg, mapf) => {
@@ -52,19 +52,16 @@ const createNode = (vnode, listener, isSvg, mapf) => {
     for (let i = 0, len = vnode.children.length; i < len; i++) {
         node.appendChild(
             createNode(
-                getVNode(vnode.children[i])[1],
+                getVNode(vnode.children[i]).html,
                 listener,
                 isSvg,
                 mapf2
             )
         )
     }
-
     vnode.node = node
     return node
 }
-
-const getKey = keyednode => keyednode && keyednode[0]
 
 const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
     if (oldVNode === newVNode) {
@@ -86,9 +83,6 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
 
         const oldVKids = oldVNode.children
         const newVKids = newVNode.children
-
-        let oldHead = 0
-        let newHead = 0
         let oldTail = oldVKids.length - 1
         let newTail = newVKids.length - 1
 
@@ -105,69 +99,71 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
             }
         }
 
-        if(!newVNode.keyed) {
+        if(!newVNode.keyed) { 
             for (let i = 0; i <= oldTail && i <= newTail; i++) {
-                const oldVNode = oldVKids[i][1]
-                const newVNode = getVNode(newVKids[i], oldVNode)[1]
+                const oldVNode = oldVKids[i].html
+                const newVNode = getVNode(newVKids[i], oldVNode).html
                 patch(node, oldVNode.node, oldVNode, newVNode, listener, isSvg, mapf)
             }
             for (let i = oldTail + 1; i <= newTail; i++) {
-                const newVNode = getVNode(newVKids[i], oldVNode)[1]
+                const newVNode = getVNode(newVKids[i], oldVNode).html
                 node.appendChild(
                     createNode(newVNode, listener, isSvg, mapf)
                 )
             }
             for (let i = newTail + 1; i <= oldTail; i++) {
-                node.removeChild(oldVKids[i][1].node)
+                node.removeChild(oldVKids[i].html.node)
             }
 
         } else { //  node.keyed == true
+            let oldHead = 0
+            let newHead = 0
             while (newHead <= newTail && oldHead <= oldTail) {
-                const [oldKey, oldVNode] = oldVKids[oldHead]
-                if (oldKey !==  newVKids[newHead][0])
+                const {key: oldKey, html: oldVNode} = oldVKids[oldHead]
+                if (oldKey !== newVKids[newHead].key)
                     break
                 const newKNode = getVNode(newVKids[newHead], oldVNode)  ////////////////////
-                patch(node, oldVNode.node, oldVNode, newKNode[1], listener, isSvg, mapf)
+                patch(node, oldVNode.node, oldVNode, newKNode.html, listener, isSvg, mapf)
                 newHead++
                 oldHead++
             }
 
             while (newHead <= newTail && oldHead <= oldTail) {
-                const [oldKey, oldVNode] = oldVKids[oldTail]
-                if (oldKey !== newVKids[newTail][0])
+                const {key: oldKey, html: oldVNode} = oldVKids[oldTail]
+                if (oldKey !== newVKids[newTail].key)
                     break
                 const newKNode = getVNode(newVKids[newTail], oldVNode)  ////////////////////
-                patch(node, oldVNode.node, oldVNode, newKNode[1], listener, isSvg, mapf)
+                patch(node, oldVNode.node, oldVNode, newKNode.html, listener, isSvg, mapf)
                 newTail--
                 oldTail--
             }
 
             if (oldHead > oldTail) {
                 while (newHead <= newTail) {
-                    const newVNode = getVNode(newVKids[newHead])[1]
+                    const newVNode = getVNode(newVKids[newHead]).html
                     node.insertBefore(
                         createNode(newVNode, listener, isSvg, mapf),
-                        oldVKids[oldHead] && oldVKids[oldHead][1].node
+                        oldVKids[oldHead] && oldVKids[oldHead].html.node
                     )
                     newHead++
                 }
             } else if (newHead > newTail) {
                 while (oldHead <= oldTail) {
-                    node.removeChild(oldVKids[oldHead][1].node)
+                    node.removeChild(oldVKids[oldHead].html.node)
                     oldHead++
                 }
             } else {
                 const keyed = {}
                 const newKeyed = {}
                 for (let i = oldHead; i <= oldTail; i++) {
-                    keyed[oldVKids[i][0]] = oldVKids[i][1]
+                    keyed[oldVKids[i].key] = oldVKids[i].html
                 }
 
-                while (newHead <= newTail) {
-                    const [oldKey, oldVKid] = oldVKids[oldHead]
-                    const [newKey, newVKid] = getVNode(newVKids[newHead], oldVKid)
+                while (newHead <= newTail) {                    
+                    const {key: oldKey, html: oldVKid} = oldVKids[oldHead] || {key: null, html: null}
+                    const {key: newKey, html: newVKid} = getVNode(newVKids[newHead], oldVKid)
 
-                    if (newKeyed[oldKey] || newKey === getKey(oldVKids[oldHead + 1])) {
+                    if (newKeyed[oldKey] || oldVKids[oldHead+1] && newKey === oldVKids[oldHead+1].key) {
                         oldHead++
                         continue
                     }
@@ -182,7 +178,7 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
                                 node,
                                 node.insertBefore(vkid.node, oldVKid.node),
                                 vkid,
-                                newVKids[newHead][1],
+                                newVKids[newHead].html,
                                 listener,
                                 isSvg,
                                 mapf
@@ -190,10 +186,15 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
                             newKeyed[newKey] = true
                         } else {
                             // todo
-                            patch(node, oldVKid.node, null, newVKids[newHead][1], listener, isSvg, mapf)
+                            patch(node, oldVKid && oldVKid.node, null, newVKids[newHead].html, listener, isSvg, mapf)
                         }
                     }
                     newHead++
+                }
+
+                while (oldHead <= oldTail) {
+                    node.removeChild(oldVKids[oldHead].html.node)
+                    oldHead++
                 }
 
                 for (let i in keyed) {
@@ -204,7 +205,6 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
             }
         }
     }
-
     newVNode.node = node
     return node
 }
@@ -219,16 +219,20 @@ const propsChanged = (a, b) => {
 const evalMemo = (f, memo) => memo.reduce((g, v) => g(v), f)
 
 const getVNode = (newVNode, oldVNode) => {
-    if (typeof newVNode[1].type === "function") {
-        if (!oldVNode || oldVNode.memo == null || propsChanged(oldVNode.memo, newVNode[1].memo)) {
-            oldVNode = copyVNode(evalMemo(newVNode[1].type, newVNode[1].memo))
-            oldVNode.memo = newVNode[1].memo
+    if (typeof newVNode.html.type === "function") {
+        if (!oldVNode || oldVNode.memo == null || propsChanged(oldVNode.memo, newVNode.html.memo)) {
+            oldVNode = copyVNode(evalMemo(newVNode.html.type, newVNode.html.memo))
+            oldVNode.memo = newVNode.html.memo
         }
-        newVNode[1] = oldVNode
+        newVNode.html = oldVNode
     }
     return newVNode
 }
 
-export const copyVNode = vnode => Object.assign({}, vnode, {children: vnode.children && vnode.children.map(([k, v]) => [k, copyVNode(v)]) })
+export const copyVNode = vnode => ({
+                            ...vnode,
+                            children: vnode.children && vnode.children.map(({key, html}) => ({key, html: copyVNode(html)}))
+                        })
 export const getAction = target => type => () => target.actions[type]
-export const unsafePatch = parent => node => oldVDom => newVDom => listener => () => patch(parent, node, oldVDom, newVDom, e => listener(e)())
+export const unsafePatch = parent => node => oldVDom => newVDom => listener => () =>
+                            patch(parent, node, oldVDom, newVDom, e => listener(e)())

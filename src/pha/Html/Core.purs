@@ -2,6 +2,7 @@ module Pha.Html.Core
   ( EventHandler
   , Prop
   , Html
+  , KeyedHtml
   , attr
   , class'
   , class_
@@ -27,9 +28,9 @@ import Data.Maybe (Maybe(..))
 import Data.Maybe as M
 import Web.Event.Event (Event) as E
 import Web.Event.Event (Event)
-import Data.Tuple (Tuple)
 
 foreign import data Html ∷ Type → Type
+type KeyedHtml a = {key ∷ String, html ∷ Html a}
 
 type EventHandler msg = Event → Effect (Maybe msg)
 
@@ -53,7 +54,7 @@ foreign import style ∷ ∀msg. String → String → Prop msg
 
 foreign import elem ∷ ∀msg. String → Array (Prop msg) → Array (Html msg) → Html msg
 
-foreign import keyed ∷ ∀msg. String → Array (Prop msg) → Array (Tuple String (Html msg)) → Html msg
+foreign import keyed ∷ ∀msg. String → Array (Prop msg) → Array (KeyedHtml msg) → Html msg
 
 foreign import text ∷ ∀msg. String → Html msg
 

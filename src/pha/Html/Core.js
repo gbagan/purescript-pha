@@ -17,9 +17,9 @@ const _h = (tag, ps, children, keyed=false) => {
     return vdom
 }
 
-export const elem = tag => ps => children => _h(tag, ps, children.map(v => [null, v]))
+export const elem = tag => ps => children => _h(tag, ps, children.map(html => ({key: null, html})))
 
-export const keyed = tag => ps => children => _h(tag, ps, children.map(v => [v.value0, v.value1]), true);
+export const keyed = tag => ps => children => _h(tag, ps, children, true)
 
 const createTextVNode = text => ({
     tag: text,

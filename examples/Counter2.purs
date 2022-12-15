@@ -3,7 +3,6 @@ import Prelude hiding (div)
 import Data.Int (even)
 import Data.Maybe (Maybe(..))
 import Data.Array ((..), replicate)
-import Data.Tuple.Nested ((/\))
 import Data.Time.Duration (Milliseconds(..))
 import Effect (Effect)
 import Effect.Aff (Aff)
@@ -52,12 +51,12 @@ view counter =
 
     ,   H.keyed "div" [] $
             ((0 .. (counter `mod` 4)) <#> \i ->
-                show i /\ H.text (show i)
+                {key: show i, html: H.text (show i)}
             ) <> 
-                ["test" /\ H.text "test"]
+                [{key: "test", html: H.text "test"}]
             <>
             ((0 .. (counter `mod` 4)) <#> \i ->
-                show i /\ H.text (show i)
+                {key: show i, html: H.text (show i)}
             )
     ,   H.hr []
     ,   H.h3 [] [H.text "non keyed"]

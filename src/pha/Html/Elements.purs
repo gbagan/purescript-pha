@@ -69,8 +69,14 @@ nav = elem "nav"
 ol ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 ol = elem "ol"
 
+option ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+option = elem "option"
+
 section ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 section = elem "section"
+
+select ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+select = elem "select"
 
 span ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 span = elem "span"

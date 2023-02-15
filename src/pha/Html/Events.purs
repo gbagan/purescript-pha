@@ -1,14 +1,16 @@
 module Pha.Html.Events where
 
 import Prelude hiding (div)
-import Effect (Effect)
+
 import Data.Maybe (Maybe(..))
+import Effect (Effect)
+import Pha.Html.Core (Prop, EventHandler, unsafeOnWithEffect)
 import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event (Event)
 import Web.Event.Event as Event
-import Web.PointerEvent (PointerEvent)
 import Web.HTML.HTMLInputElement as HTMLInput
-import Pha.Html.Core (Prop, EventHandler, unsafeOnWithEffect)
+import Web.HTML.HTMLSelectElement as HTMLSelect
+import Web.PointerEvent (PointerEvent)
 
 
 always ∷ ∀ev msg. msg → ev → Effect (Maybe msg)
@@ -60,8 +62,11 @@ onValueChange f = on "change" fn
     where
     fn ev =
         case Event.currentTarget ev >>= HTMLInput.fromEventTarget of
-            Nothing → pure Nothing
             Just target → Just <$> f <$> HTMLInput.value target
+            Nothing →
+                case Event.currentTarget ev >>= HTMLSelect.fromEventTarget of
+                    Nothing → pure Nothing
+                    Just target → Just <$> f <$> HTMLSelect.value target
 
 onChecked ∷ ∀msg. (Boolean → msg) → Prop msg
 onChecked f = on "change" fn

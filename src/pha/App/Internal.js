@@ -73,8 +73,7 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
             createNode(newVNode, listener, isSvg, mapf),
             node
         )
-        //todo
-        if (oldVNode && oldVNode.node) {
+        if (oldVNode) {
             parent.removeChild(oldVNode.node)
         }
     } else {
@@ -185,18 +184,21 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
                             )
                             newKeyed[newKey] = true
                         } else {
-                            // todo
                             patch(node, oldVKid && oldVKid.node, null, newVKids[newHead].html, listener, isSvg, mapf)
                         }
                     }
                     newHead++
                 }
-
+                /*
                 while (oldHead <= oldTail) {
+                    // dans certaines situations, removeChild est appelé ici et
+                    // dans le cas juste après
+                    console.log("3", oldVKids[oldHead].html.node)
+                    newKeyed[oldVKids[oldHead].key] = true
                     node.removeChild(oldVKids[oldHead].html.node)
                     oldHead++
                 }
-
+                */
                 for (let i in keyed) {
                     if (!newKeyed[i]) {
                         node.removeChild(keyed[i].node)
@@ -236,3 +238,5 @@ export const copyVNode = vnode => ({
 export const getAction = target => type => () => target.actions[type]
 export const unsafePatch = parent => node => oldVDom => newVDom => listener => () =>
                             patch(parent, node, oldVDom, newVDom, e => listener(e)())
+
+export const unsafeLinkNode = node => vdom => { vdom.node = node; return vdom; }

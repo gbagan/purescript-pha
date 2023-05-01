@@ -512,16 +512,16 @@
 
   // output/Effect/index.js
   var $runtime_lazy = function(name15, moduleName, init) {
-    var state4 = 0;
+    var state3 = 0;
     var val;
     return function(lineNumber) {
-      if (state4 === 2)
+      if (state3 === 2)
         return val;
-      if (state4 === 1)
+      if (state3 === 1)
         throw new ReferenceError(name15 + " was needed before it finished initializing (module " + moduleName + ", line " + lineNumber + ")", moduleName, lineNumber);
-      state4 = 1;
+      state3 = 1;
       val = init();
-      state4 = 2;
+      state3 = 2;
       return val;
     };
   };
@@ -1765,16 +1765,16 @@
 
   // output/Effect.Aff/index.js
   var $runtime_lazy2 = function(name15, moduleName, init) {
-    var state4 = 0;
+    var state3 = 0;
     var val;
     return function(lineNumber) {
-      if (state4 === 2)
+      if (state3 === 2)
         return val;
-      if (state4 === 1)
+      if (state3 === 1)
         throw new ReferenceError(name15 + " was needed before it finished initializing (module " + moduleName + ", line " + lineNumber + ")", moduleName, lineNumber);
-      state4 = 1;
+      state3 = 1;
       val = init();
-      state4 = 2;
+      state3 = 2;
       return val;
     };
   };
@@ -1792,7 +1792,7 @@
         return unsafeCrashWith("unsafeFromRight: Left");
       }
       ;
-      throw new Error("Failed pattern match at Effect.Aff (line 407, column 21 - line 409, column 54): " + [v.constructor.name]);
+      throw new Error("Failed pattern match at Effect.Aff (line 412, column 21 - line 414, column 54): " + [v.constructor.name]);
     };
     var unsafeFromLeft = function(v) {
       if (v instanceof Left) {
@@ -1803,7 +1803,7 @@
         return unsafeCrashWith("unsafeFromLeft: Right");
       }
       ;
-      throw new Error("Failed pattern match at Effect.Aff (line 402, column 20 - line 404, column 55): " + [v.constructor.name]);
+      throw new Error("Failed pattern match at Effect.Aff (line 407, column 20 - line 409, column 55): " + [v.constructor.name]);
     };
     var isLeft = function(v) {
       if (v instanceof Left) {
@@ -1814,7 +1814,7 @@
         return false;
       }
       ;
-      throw new Error("Failed pattern match at Effect.Aff (line 397, column 12 - line 399, column 21): " + [v.constructor.name]);
+      throw new Error("Failed pattern match at Effect.Aff (line 402, column 12 - line 404, column 21): " + [v.constructor.name]);
     };
     return {
       isLeft,
@@ -1834,8 +1834,8 @@
       return fiber;
     };
   };
-  var launchAff_ = function($73) {
-    return $$void2(launchAff($73));
+  var launchAff_ = function($74) {
+    return $$void2(launchAff($74));
   };
   var delay = function(v) {
     return _delay(Right.create, v);
@@ -1888,7 +1888,7 @@
             return go2(res.value0);
           }
           ;
-          throw new Error("Failed pattern match at Effect.Aff (line 102, column 7 - line 104, column 23): " + [res.constructor.name]);
+          throw new Error("Failed pattern match at Effect.Aff (line 104, column 7 - line 106, column 23): " + [res.constructor.name]);
         });
       };
       return go2;
@@ -2162,16 +2162,16 @@
 
   // output/Control.Monad.Free/index.js
   var $runtime_lazy3 = function(name15, moduleName, init) {
-    var state4 = 0;
+    var state3 = 0;
     var val;
     return function(lineNumber) {
-      if (state4 === 2)
+      if (state3 === 2)
         return val;
-      if (state4 === 1)
+      if (state3 === 1)
         throw new ReferenceError(name15 + " was needed before it finished initializing (module " + moduleName + ", line " + lineNumber + ")", moduleName, lineNumber);
-      state4 = 1;
+      state3 = 1;
       val = init();
-      state4 = 2;
+      state3 = 2;
       return val;
     };
   };
@@ -2397,7 +2397,7 @@
         createNode(newVNode, listener, isSvg, mapf),
         node
       );
-      if (oldVNode && oldVNode.node) {
+      if (oldVNode) {
         parent2.removeChild(oldVNode.node);
       }
     } else {
@@ -2500,17 +2500,9 @@
             }
             newHead++;
           }
-          while (oldHead <= oldTail) {
-            node.removeChild(oldVKids[oldHead].html.node);
-            oldHead++;
-          }
           for (let i in keyed2) {
             if (!newKeyed[i]) {
-              try {
-                node.removeChild(keyed2[i].node);
-              } catch (e) {
-                console.log(keyed2[i].node);
-              }
+              node.removeChild(keyed2[i].node);
             }
           }
         }
@@ -2542,6 +2534,10 @@
   });
   var getAction = (target5) => (type) => () => target5.actions[type];
   var unsafePatch = (parent2) => (node) => (oldVDom) => (newVDom) => (listener) => () => patch(parent2, node, oldVDom, newVDom, (e) => listener(e)());
+  var unsafeLinkNode = (node) => (vdom) => {
+    vdom.node = node;
+    return vdom;
+  };
 
   // output/Pha.Html.Core/foreign.js
   var _h = (tag, ps, children2, keyed2 = false) => {
@@ -2694,9 +2690,9 @@
   };
   var bindUpdate = freeBind;
   var delay2 = function(dictMonadAff) {
-    var liftAff2 = liftAff(monadAffUpdate(dictMonadAff));
-    return function(ms) {
-      return liftAff2(delay(ms));
+    var $39 = liftAff(monadAffUpdate(dictMonadAff));
+    return function($40) {
+      return $39(delay($40));
     };
   };
 
@@ -2710,46 +2706,28 @@
   // output/Unsafe.Reference/index.js
   var unsafeRefEq = reallyUnsafeRefEq;
 
-  // output/Web.DOM.Element/foreign.js
-  var getProp = function(name15) {
-    return function(doctype) {
-      return doctype[name15];
-    };
-  };
-  var _namespaceURI = getProp("namespaceURI");
-  var _prefix = getProp("prefix");
-  var localName = getProp("localName");
-  var tagName = getProp("tagName");
-
-  // output/Web.DOM.ParentNode/foreign.js
+  // output/Web.DOM.Document/foreign.js
   var getEffProp = function(name15) {
-    return function(node) {
+    return function(doc) {
       return function() {
-        return node[name15];
+        return doc[name15];
       };
     };
   };
-  var children = getEffProp("children");
-  var _firstElementChild = getEffProp("firstElementChild");
-  var _lastElementChild = getEffProp("lastElementChild");
-  var childElementCount = getEffProp("childElementCount");
-  function _querySelector(selector) {
-    return function(node) {
+  var url = getEffProp("URL");
+  var documentURI = getEffProp("documentURI");
+  var origin = getEffProp("origin");
+  var compatMode = getEffProp("compatMode");
+  var characterSet = getEffProp("characterSet");
+  var contentType = getEffProp("contentType");
+  var _documentElement = getEffProp("documentElement");
+  function createTextNode(data) {
+    return function(doc) {
       return function() {
-        return node.querySelector(selector);
+        return doc.createTextNode(data);
       };
     };
   }
-
-  // output/Web.DOM.ParentNode/index.js
-  var map3 = /* @__PURE__ */ map(functorEffect);
-  var querySelector = function(qs) {
-    var $2 = map3(toMaybe);
-    var $3 = _querySelector(qs);
-    return function($4) {
-      return $2($3($4));
-    };
-  };
 
   // output/Web.Internal.FFI/foreign.js
   function _unsafeReadProtoTagged(nothing, just, name15, value12) {
@@ -2780,10 +2758,18 @@
     };
   };
 
-  // output/Web.DOM.Element/index.js
-  var toNode = unsafeCoerce2;
+  // output/Web.DOM.Element/foreign.js
+  var getProp = function(name15) {
+    return function(doctype) {
+      return doctype[name15];
+    };
+  };
+  var _namespaceURI = getProp("namespaceURI");
+  var _prefix = getProp("prefix");
+  var localName = getProp("localName");
+  var tagName = getProp("tagName");
 
-  // output/Web.DOM.Node/foreign.js
+  // output/Web.DOM.ParentNode/foreign.js
   var getEffProp2 = function(name15) {
     return function(node) {
       return function() {
@@ -2791,17 +2777,57 @@
       };
     };
   };
-  var baseURI = getEffProp2("baseURI");
-  var _ownerDocument = getEffProp2("ownerDocument");
-  var _parentNode = getEffProp2("parentNode");
-  var _parentElement = getEffProp2("parentElement");
-  var childNodes = getEffProp2("childNodes");
-  var _firstChild = getEffProp2("firstChild");
-  var _lastChild = getEffProp2("lastChild");
-  var _previousSibling = getEffProp2("previousSibling");
-  var _nextSibling = getEffProp2("nextSibling");
-  var _nodeValue = getEffProp2("nodeValue");
-  var textContent = getEffProp2("textContent");
+  var children = getEffProp2("children");
+  var _firstElementChild = getEffProp2("firstElementChild");
+  var _lastElementChild = getEffProp2("lastElementChild");
+  var childElementCount = getEffProp2("childElementCount");
+  function _querySelector(selector) {
+    return function(node) {
+      return function() {
+        return node.querySelector(selector);
+      };
+    };
+  }
+
+  // output/Web.DOM.ParentNode/index.js
+  var map3 = /* @__PURE__ */ map(functorEffect);
+  var querySelector = function(qs) {
+    var $2 = map3(toMaybe);
+    var $3 = _querySelector(qs);
+    return function($4) {
+      return $2($3($4));
+    };
+  };
+
+  // output/Web.DOM.Element/index.js
+  var toNode = unsafeCoerce2;
+
+  // output/Web.DOM.Node/foreign.js
+  var getEffProp3 = function(name15) {
+    return function(node) {
+      return function() {
+        return node[name15];
+      };
+    };
+  };
+  var baseURI = getEffProp3("baseURI");
+  var _ownerDocument = getEffProp3("ownerDocument");
+  var _parentNode = getEffProp3("parentNode");
+  var _parentElement = getEffProp3("parentElement");
+  var childNodes = getEffProp3("childNodes");
+  var _firstChild = getEffProp3("firstChild");
+  var _lastChild = getEffProp3("lastChild");
+  var _previousSibling = getEffProp3("previousSibling");
+  var _nextSibling = getEffProp3("nextSibling");
+  var _nodeValue = getEffProp3("nodeValue");
+  var textContent = getEffProp3("textContent");
+  function appendChild(node) {
+    return function(parent2) {
+      return function() {
+        parent2.appendChild(node);
+      };
+    };
+  }
 
   // output/Web.DOM.Node/index.js
   var map4 = /* @__PURE__ */ map(functorEffect);
@@ -2812,6 +2838,9 @@
     };
   }();
 
+  // output/Web.DOM.Text/index.js
+  var toNode2 = unsafeCoerce2;
+
   // output/Web.HTML/foreign.js
   var windowImpl = function() {
     return window;
@@ -2819,6 +2848,7 @@
 
   // output/Web.HTML.HTMLDocument/index.js
   var toParentNode = unsafeCoerce2;
+  var toDocument = unsafeCoerce2;
 
   // output/Web.HTML.Window/foreign.js
   function document2(window2) {
@@ -2832,16 +2862,16 @@
 
   // output/Pha.App/index.js
   var $runtime_lazy4 = function(name15, moduleName, init) {
-    var state4 = 0;
+    var state3 = 0;
     var val;
     return function(lineNumber) {
-      if (state4 === 2)
+      if (state3 === 2)
         return val;
-      if (state4 === 1)
+      if (state3 === 1)
         throw new ReferenceError(name15 + " was needed before it finished initializing (module " + moduleName + ", line " + lineNumber + ")", moduleName, lineNumber);
-      state4 = 1;
+      state3 = 1;
       val = init();
-      state4 = 2;
+      state3 = 2;
       return val;
     };
   };
@@ -2877,7 +2907,7 @@
               return $$eval(v2.value0);
             }
             ;
-            throw new Error("Failed pattern match at Pha.App (line 89, column 5 - line 93, column 15): " + [v2.constructor.name]);
+            throw new Error("Failed pattern match at Pha.App (line 93, column 5 - line 97, column 15): " + [v2.constructor.name]);
           };
           return runFreeM2(go2)(v1);
         };
@@ -2885,15 +2915,15 @@
     };
   };
   var app$prime = function(v) {
-    var go2 = function(state4) {
+    var go2 = function(state3) {
       return function(node) {
         return function(vdom) {
-          var getState = read(state4);
+          var getState = read(state3);
           var setState = function(newState) {
             return function __do() {
-              var oldState = read(state4)();
+              var oldState = read(state3)();
               return unless2(unsafeRefEq(oldState)(newState))(function __do2() {
-                write(newState)(state4)();
+                write(newState)(state3)();
                 return render(v.view(newState))();
               })();
             };
@@ -2925,8 +2955,8 @@
           var dispatchEvent2 = function(ev) {
             return function(handler) {
               return function __do() {
-                var msg = handler(ev)();
-                return for_1(msg)($lazy_dispatch(75))();
+                var msg1 = handler(ev)();
+                return for_1(msg1)($lazy_dispatch(79))();
               };
             };
           };
@@ -2938,13 +2968,13 @@
               }
             });
           });
-          var dispatch = $lazy_dispatch(68);
+          var dispatch = $lazy_dispatch(72);
           return function __do() {
-            render(v.view(v.init.state))();
+            render(v.view(v.init.model))();
             for_22(v.subscriptions)(function(v1) {
               return v1(dispatch);
             })();
-            return for_1(v.init.action)(dispatch)();
+            return for_1(v.init.msg)(dispatch)();
           };
         };
       };
@@ -2954,10 +2984,12 @@
       var selected2 = map5(map1(toNode))(querySelector(v.selector)(parentNode2))();
       return for_1(selected2)(function(node_) {
         return function __do2() {
-          var state4 = $$new(v.init.state)();
-          var node = $$new(node_)();
-          var vdom = $$new(text(""))();
-          return go2(state4)(node)(vdom)();
+          var state3 = $$new(v.init.model)();
+          var emptyNode = mapFlipped2(bind12(mapFlipped2(bind12(windowImpl)(document2))(toDocument))(createTextNode("")))(toNode2)();
+          appendChild(emptyNode)(node_)();
+          var node = $$new(emptyNode)();
+          var vdom = $$new(unsafeLinkNode(emptyNode)(text("")))();
+          return go2(state3)(node)(vdom)();
         };
       })();
     };
@@ -2993,8 +3025,8 @@
   var pure5 = /* @__PURE__ */ pure(applicativeEffect);
   var on2 = unsafeOnWithEffect;
   var onClick = function(handler) {
-    return on2("click")(function($17) {
-      return pure5(Just.create(handler($17)));
+    return on2("click")(function($20) {
+      return pure5(Just.create(handler($20)));
     });
   };
 
@@ -3119,7 +3151,6 @@
     ;
     throw new Error("Failed pattern match at Example.Counter2 (line 24, column 1 - line 24, column 37): " + [v.constructor.name]);
   };
-  var state3 = 0;
   var spanCounter = function(v) {
     return span2([])([text(show2(v))]);
   };
@@ -3130,16 +3161,16 @@
       return DelayedIncrement.value;
     })])([text("Delayed Increment")]), div2([])([span2([])([text("green when the counter is even")]), div2([class_("box"), class$prime("even")(even(counter))])([])]), h3([])([text("press I to increment the counter")]), hr([]), h3([])([text("keyed")]), keyed("div")([])(append4(mapFlipped4(range(0)(mod2(counter)(4)))(function(i) {
       return {
-        key: show2(i),
-        html: text(show2(i))
+        key: "r" + show2(i),
+        html: text("r" + show2(i))
       };
     }))(append4([{
       key: "test",
       html: text("test")
     }])(mapFlipped4(range(0)(mod2(counter)(4)))(function(i) {
       return {
-        key: show2(i),
-        html: text(show2(i))
+        key: "q" + show2(i),
+        html: text("q" + show2(i))
       };
     })))), hr([]), h3([])([text("non keyed")]), div2([])(append4(mapFlipped4(range(0)(mod2(counter)(4)))(function(i) {
       return text(show2(i));
@@ -3147,6 +3178,7 @@
       return text(show2(i));
     })))), hr([]), h3([])([text("lazy")]), lazy(spanCounter)(div3(counter)(2)), hr([]), h3([])([text("duplicate")]), div2([])(replicate(mod2(counter)(4))(text("t")))]);
   };
+  var model = 0;
   var keyDownHandler = function(v) {
     if (v === "i") {
       return new Just(Increment.value);
@@ -3157,8 +3189,8 @@
   var main = /* @__PURE__ */ function() {
     return app(monadAff)({
       init: {
-        state: state3,
-        action: Nothing.value
+        model,
+        msg: Nothing.value
       },
       view,
       update,

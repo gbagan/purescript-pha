@@ -27,10 +27,10 @@ update Decrement n = n - 1
 
 view ∷ State → Html Msg
 view counter = 
-    H.div []
-    [   H.button [E.onClick \_ → Decrement] [H.text "-"]
-    ,   H.span [] [H.text $ show counter]
-    ,   H.button [E.onClick \_ → Increment] [H.text "+"]
+  H.div []
+    [ H.button [E.onClick \_ → Decrement] [H.text "-"]
+    , H.span [] [H.text $ show counter]
+    , H.button [E.onClick \_ → Increment] [H.text "+"]
     ]
 
 main ∷ Effect Unit
@@ -52,33 +52,38 @@ import Pha.Html.Attributes as P
 import Pha.Html.Events as E
 import Pha.Update (Update, put)
 
-type State = Int
+type Model = Int
 data Msg = RollDice
 
-update ∷ Msg → Update State Aff Unit
+update ∷ Msg → Update Model Msg Aff Unit
 update RollDice = put =<< liftEffect (randomInt 1 6)
 
 view ∷ State → Html Msg
 view dice = 
-    H.div []
-    [   H.button [E.onClick \_ → RollDice] [H.text "Roll dice"]
-    ,   H.span [] [H.text $ show dice]
+  H.div []
+    [ H.button [E.onClick \_ → RollDice] [H.text "Roll dice"]
+    , H.span [] [H.text $ show dice]
     ]
 
 main ∷ Effect Unit
 main =
   app
-    { init: { state: 0, action: Just RollDice }
+    { init: { model: 0, msg: Just RollDice }
     , view
     , update
     , eval: identity
-    , subscriptions: []
     , selector: "#root"
     }
 ```
+
+### More examples
+
+https://github.com/gbagan/purescript-pha-examples/tree/master/src
 
 ### Some projects using purescript-pha
 
 - https://github.com/gbagan/valise-mam
 - https://github.com/gbagan/subtract-machine
+- https://github.com/gbagan/neuron
+- https://github.com/gbagan/graphparams
 - https://github.com/gbagan/sudoku-solver

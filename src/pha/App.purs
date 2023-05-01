@@ -22,7 +22,6 @@ import Web.HTML (window)
 import Web.HTML.HTMLDocument (toParentNode, toDocument)
 import Web.DOM.Element as El
 import Web.DOM.ParentNode (QuerySelector(..), querySelector)
-import Unsafe.Coerce (unsafeCoerce)
 
 app' ∷ ∀msg model.
   { init ∷ {model ∷ model, msg ∷ Maybe msg}
@@ -81,48 +80,55 @@ app' {init: {model, msg}, update, view, selector} = do
         fn <- I.getAction target t
         dispatchEvent e fn
  
-interpret ∷ ∀model msg m. Monad m =>
-    (msg → Update model msg m Unit)
-    → {get ∷ Effect model, put ∷ model → Effect Unit} 
-    → (m ~> Aff)
-    → Update model msg m Unit
+interpret ∷ ∀model msg.
+    (msg → Update model msg Aff Unit)
+    → {get ∷ Effect model, put ∷ model → Effect Unit}
+    → Update model msg Aff Unit
     → Aff Unit
-interpret update {get, put} eval (Update m) = runFreeM go m where
+interpret update {get, put} (Update m) = runFreeM go m where
   go (State k) = do
     st <- liftEffect get
     let Tuple a st2 = k st
     liftEffect (put st2)
     pure a
-  go (Lift a) = eval a
+  go (Lift a) = a
   go (Subscribe f next) = do 
-    liftEffect $ f \msg → launchAff_ $ interpret update {get, put} eval (update msg)
+    liftEffect $ f \msg → launchAff_ $ interpret update {get, put} (update msg)
     pure next
 
-app ∷ ∀msg model m. Monad m =>
+-- | ```purescript
+-- | app ∷ ∀msg model.
+-- |  { init ∷ {model ∷ model, msg ∷ Maybe msg}
+-- |  , view ∷ model → Html msg
+-- |  , update ∷ msg → Update model msg Aff Unit
+-- |  , selector ∷ String
+-- |  } → Effect Unit
+-- | ```
+
+app ∷ ∀msg model.
   { init ∷ {model ∷ model, msg ∷ Maybe msg}
   , view ∷ model → Html msg
-  , update ∷ msg → Update model msg m Unit
-  , eval ∷ m ~> Aff
+  , update ∷ msg → Update model msg Aff Unit
   , selector ∷ String
   } → Effect Unit
 
-app {init, view, update, eval, selector} = app' {init, view, selector, update: update'}
+app {init, view, update, selector} = app' {init, view, selector, update: update'}
     where
-    update' helpers msg = launchAff_ $ interpret update helpers (unsafeCoerce eval) (update msg)
+    update' helpers msg = launchAff_ $ interpret update helpers (update msg)
 
 -- | ```purescript
--- | sandbox ∷ ∀msg state effs. {
--- |     init ∷ state,
--- |     view ∷ state → Html msg,
--- |     update ∷ msg → state → state,
--- |     selector ∷ String
--- | } → Effect Unit
+-- | sandbox ∷ ∀msg model. 
+-- |   { init ∷ model
+-- |   , view ∷ model → Html msg
+-- |   , update ∷ msg → model → model
+-- |   , selector ∷ String
+-- |   } → Effect Unit
 -- | ```
 
-sandbox ∷ ∀msg state. 
-  { init ∷ state
-  , view ∷ state → Html msg
-  , update ∷ msg → state → state
+sandbox ∷ ∀msg model. 
+  { init ∷ model
+  , view ∷ model → Html msg
+  , update ∷ msg → model → model
   , selector ∷ String
   } → Effect Unit
 

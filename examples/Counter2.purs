@@ -84,6 +84,5 @@ main = app
   { init: {model, msg: Just Init}
   , view
   , update
-  , eval: identity
   , selector: "#root"
   }

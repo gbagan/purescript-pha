@@ -32,7 +32,7 @@ onKeyDown f = do
 onHashChange ∷ ∀msg model m. MonadEffect m => (HashChangeEvent → Maybe msg) → Update model msg m Unit
 onHashChange f = do
   target <- liftEffect $ W.toEventTarget <$> window
-  eventListener "keydown" target \ev → pure $ f =<< HCE.fromEvent ev
+  eventListener "hashchange" target \ev → pure $ f =<< HCE.fromEvent ev
 
 onResize ∷ ∀msg model m. MonadEffect m => (UI.UIEvent → Maybe msg) → Update model msg m Unit
 onResize f = do

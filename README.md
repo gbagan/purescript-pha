@@ -71,7 +71,6 @@ main =
     { init: { model: 0, msg: Just RollDice }
     , view
     , update
-    , eval: identity
     , selector: "#root"
     }
 ```

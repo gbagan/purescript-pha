@@ -3,12 +3,14 @@ module Pha.Update
   , UpdateF(..)
   , delay
   , subscribe
+  , mapMessage
+  , hoist
   , module Exports
   ) where
 import Prelude
 import Data.Tuple (Tuple)
 import Data.Bifunctor (lmap)
-import Control.Monad.Free (Free, liftF)
+import Control.Monad.Free (Free, liftF, hoistFree)
 import Effect (Effect)
 import Effect.Aff (Milliseconds)
 import Effect.Aff as Aff
@@ -50,8 +52,20 @@ instance MonadEffect m => MonadEffect (Update state msg m) where
 instance MonadAff m => MonadAff (Update state msg m) where
   liftAff = Update <<< liftF <<< Lift <<< liftAff
 
-subscribe ∷ forall model msg m. ((msg → Effect Unit) → Effect Unit) → Update model msg m Unit
+subscribe ∷ ∀model msg m. ((msg → Effect Unit) → Effect Unit) → Update model msg m Unit
 subscribe f = Update $ liftF $ Subscribe f unit
 
-delay ∷ forall model msg m. MonadAff m => Milliseconds → Update model msg m Unit
+delay ∷ ∀model msg m. MonadAff m => Milliseconds → Update model msg m Unit
 delay = liftAff <<< Aff.delay
+
+mapMessage ∷ ∀model msg msg' m. (msg → msg') → Update model msg m ~> Update model msg' m
+mapMessage f (Update m) = Update $ m # hoistFree case _ of
+  State k → State k
+  Lift x → Lift x
+  Subscribe g a → Subscribe (\dispatch → g \msg → dispatch (f msg)) a
+
+hoist ∷ ∀model msg m m'. (m ~> m') → Update model msg m ~> Update model msg m'
+hoist f (Update m) = Update $ m # hoistFree case _ of
+  State k → State k
+  Lift x → Lift (f x)
+  Subscribe g a → Subscribe g a

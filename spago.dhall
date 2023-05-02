@@ -14,6 +14,7 @@ You can edit this file as you like.
   , "free"
   , "integers"
   , "maybe"
+  , "ordered-collections"
   , "prelude"
   , "profunctor-lenses"
   , "refs"

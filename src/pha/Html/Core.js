@@ -10,7 +10,7 @@ const _h = (tag, ps, children, keyed=false) => {
         if (t == 1)
             props[k] = v
         else if (t === 2)
-            props.class = (props.class ? props.class + " " : "") + k
+            props.class = props.class ? props.class + " " + k : k
         else if (t === 3)
             style[k] = v
     }

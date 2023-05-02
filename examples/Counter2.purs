@@ -22,7 +22,7 @@ model = 0
 data Msg = Init | Increment | DelayedIncrement
 
 update ∷ Msg → Update Model Msg Aff Unit
-update Init = onKeyDown keyDownHandler
+update Init = void $ onKeyDown keyDownHandler
 update Increment = modify_ (_ + 1)
 update DelayedIncrement = do
     delay (Milliseconds 1000.0)

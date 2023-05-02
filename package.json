@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "esbuild": "^0.17.8",
-    "purescript": "^0.15.7",
+    "purescript": "^0.15.9",
     "purescript-psa": "^0.8.2",
     "spago": "^0.20.8"
   },

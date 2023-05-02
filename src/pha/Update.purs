@@ -22,6 +22,7 @@ import Effect.Aff as Aff
 import Effect.Aff.Class (class MonadAff, liftAff)
 import Effect.Class (class MonadEffect, liftEffect)
 import Control.Monad.Rec.Class (class MonadRec)
+import Control.Monad.Reader.Class (class MonadAsk, ask)
 import Control.Monad.State.Class (get, gets, put, modify, modify_) as Exports
 import Control.Monad.State.Class (class MonadState)
 import Control.Monad.Trans.Class (class MonadTrans)
@@ -47,24 +48,27 @@ instance Functor m ⇒ Functor (UpdateF model msg m) where
 
 newtype Update model msg m a = Update (Free (UpdateF model msg m) a)
 
-derive newtype instance Functor (Update state msg m)
-derive newtype instance Apply (Update state msg m)
-derive newtype instance Applicative (Update msg state m)
-derive newtype instance Bind (Update state msg m)
-derive newtype instance Monad (Update state msg m)
-derive newtype instance MonadRec (Update state msg m)
+derive newtype instance Functor (Update model msg m)
+derive newtype instance Apply (Update model msg m)
+derive newtype instance Applicative (Update model state m)
+derive newtype instance Bind (Update model msg m)
+derive newtype instance Monad (Update model msg m)
+derive newtype instance MonadRec (Update model msg m)
 
-instance MonadState state (Update state msg m) where
+instance MonadState model (Update model msg m) where
   state = Update <<< liftF <<< State
 
-instance MonadTrans (Update state msg) where
+instance MonadTrans (Update model msg) where
   lift = Update <<< liftF <<< Lift
 
-instance MonadEffect m ⇒ MonadEffect (Update state msg m) where
+instance MonadEffect m ⇒ MonadEffect (Update model msg m) where
   liftEffect = Update <<< liftF <<< Lift <<< liftEffect
 
-instance MonadAff m ⇒ MonadAff (Update state msg m) where
+instance MonadAff m ⇒ MonadAff (Update model msg m) where
   liftAff = Update <<< liftF <<< Lift <<< liftAff
+
+instance MonadAsk r m => MonadAsk r (Update model msg m) where
+  ask = Update $ liftF $ Lift ask
 
 subscribe ∷ ∀model msg m. Subscription msg → Update model msg m SubscriptionId
 subscribe f = Update $ liftF $ Subscribe f identity

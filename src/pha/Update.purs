@@ -4,6 +4,7 @@ module Pha.Update
   , SubscriptionId(..)
   , delay
   , subscribe
+  , unsubscribe
   , mapMessage
   , mapModel
   , hoist
@@ -38,7 +39,7 @@ data UpdateF model msg m a =
   | Subscribe ((msg → Effect Unit) → Effect (Effect Unit)) (SubscriptionId → a)
   | Unsubscribe SubscriptionId a
 
-instance Functor m => Functor (UpdateF model msg m) where
+instance Functor m ⇒ Functor (UpdateF model msg m) where
   map f (State k) = State (lmap f <<< k)
   map f (Lift q) = Lift (map f q)
   map f (Subscribe g a) = Subscribe g (f <<< a)
@@ -59,16 +60,19 @@ instance MonadState state (Update state msg m) where
 instance MonadTrans (Update state msg) where
   lift = Update <<< liftF <<< Lift
 
-instance MonadEffect m => MonadEffect (Update state msg m) where
+instance MonadEffect m ⇒ MonadEffect (Update state msg m) where
   liftEffect = Update <<< liftF <<< Lift <<< liftEffect
 
-instance MonadAff m => MonadAff (Update state msg m) where
+instance MonadAff m ⇒ MonadAff (Update state msg m) where
   liftAff = Update <<< liftF <<< Lift <<< liftAff
 
 subscribe ∷ ∀model msg m. Subscription msg → Update model msg m SubscriptionId
 subscribe f = Update $ liftF $ Subscribe f identity
 
-delay ∷ ∀model msg m. MonadAff m => Milliseconds → Update model msg m Unit
+unsubscribe ∷ ∀model msg m. SubscriptionId → Update model msg m Unit
+unsubscribe id = Update $ liftF $ Unsubscribe id unit
+
+delay ∷ ∀model msg m. MonadAff m ⇒ Milliseconds → Update model msg m Unit
 delay = liftAff <<< Aff.delay
 
 mapMessage ∷ ∀model msg msg' m. (msg → msg') → Update model msg m ~> Update model msg' m
@@ -80,7 +84,7 @@ mapMessage f (Update m) = Update $ m # hoistFree case _ of
 
 mapModel ∷ ∀model model' msg m. Lens' model model' → Update model' msg m ~> Update model msg m
 mapModel lens (Update m) = Update $ m # hoistFree case _ of
-    State k → State \s ->
+    State k → State \s →
         let s2 = view lens s
             Tuple a s3 = k s2
         in
@@ -90,8 +94,8 @@ mapModel lens (Update m) = Update $ m # hoistFree case _ of
             Tuple a (set lens s3 s)
 
     Lift x → Lift x
-    Subscribe x a -> Subscribe x a
-    Unsubscribe id a -> Unsubscribe id a
+    Subscribe x a → Subscribe x a
+    Unsubscribe id a → Unsubscribe id a
 
 hoist ∷ ∀model msg m m'. (m ~> m') → Update model msg m ~> Update model msg m'
 hoist f (Update m) = Update $ m # hoistFree case _ of

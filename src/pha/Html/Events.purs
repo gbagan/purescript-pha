@@ -22,7 +22,7 @@ always' msg _ = pure msg
 on ∷ ∀msg. String → EventHandler msg → Prop msg
 on = unsafeOnWithEffect
 
-pointerCoerce :: Event → PointerEvent
+pointerCoerce ∷ Event → PointerEvent
 pointerCoerce = unsafeCoerce
 
 onClick ∷ ∀msg. (PointerEvent → msg) → Prop msg

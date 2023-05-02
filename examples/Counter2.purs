@@ -28,7 +28,7 @@ update DelayedIncrement = do
     delay (Milliseconds 1000.0)
     modify_ (_ + 1)
 
-spanCounter :: Int -> Html Msg
+spanCounter ∷ Int → Html Msg
 spanCounter v = H.span [] [H.text $ show v]
 
 view ∷ Model → Html Msg
@@ -51,12 +51,12 @@ view counter =
     , H.h3 [] [H.text "keyed"]
 
     , H.keyed "div" [] $
-        ((0 .. (counter `mod` 4)) <#> \i ->
+        ((0 .. (counter `mod` 4)) <#> \i →
             {key: "r" <> show i, html: H.text ("r" <> show i)}
         ) <> 
             [{key: "test", html: H.text "test"}]
           <>
-            ((0 .. (counter `mod` 4)) <#> \i ->
+            ((0 .. (counter `mod` 4)) <#> \i →
                 {key: "q" <> show i, html: H.text ("q" <> show i)}
             )
     , H.hr []

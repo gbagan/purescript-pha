@@ -17,7 +17,7 @@ import Web.UIEvent.UIEvent as UI
 
 eventListener ∷ ∀msg model m. String → ET.EventTarget → EventHandler msg → Update model msg m SubscriptionId
 eventListener name target decoder = subscribe \dispatch → do
-    listener <- ET.eventListener (handleEvent dispatch)
+    listener ← ET.eventListener (handleEvent dispatch)
     ET.addEventListener (E.EventType name) listener false target
     pure $ ET.removeEventListener (E.EventType name) listener false target
   where
@@ -26,17 +26,17 @@ eventListener name target decoder = subscribe \dispatch → do
       Nothing → pure unit
       Just msg → dispatch msg
 
-onKeyDown ∷ ∀msg model m. MonadEffect m => (String → Maybe msg) → Update model msg m SubscriptionId
+onKeyDown ∷ ∀msg model m. MonadEffect m ⇒ (String → Maybe msg) → Update model msg m SubscriptionId
 onKeyDown f = do
-  target <- liftEffect $ W.toEventTarget <$> window 
+  target ← liftEffect $ W.toEventTarget <$> window 
   eventListener "keydown" target \ev → pure $ f =<< KE.key <$> KE.fromEvent ev
 
-onHashChange ∷ ∀msg model m. MonadEffect m => (HashChangeEvent → Maybe msg) → Update model msg m SubscriptionId
+onHashChange ∷ ∀msg model m. MonadEffect m ⇒ (HashChangeEvent → Maybe msg) → Update model msg m SubscriptionId
 onHashChange f = do
-  target <- liftEffect $ W.toEventTarget <$> window
+  target ← liftEffect $ W.toEventTarget <$> window
   eventListener "hashchange" target \ev → pure $ f =<< HCE.fromEvent ev
 
-onResize ∷ ∀msg model m. MonadEffect m => (UI.UIEvent → Maybe msg) → Update model msg m SubscriptionId
+onResize ∷ ∀msg model m. MonadEffect m ⇒ (UI.UIEvent → Maybe msg) → Update model msg m SubscriptionId
 onResize f = do
-  target <- liftEffect $ W.toEventTarget <$> window
+  target ← liftEffect $ W.toEventTarget <$> window
   eventListener "resize" target \ev → pure $ f =<< UI.fromEvent ev

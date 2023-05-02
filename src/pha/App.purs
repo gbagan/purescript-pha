@@ -45,35 +45,35 @@ app' ∷ ∀msg model.
   , selector ∷ String
   } → Effect Unit
 app' {init: {model, msg}, update, view, selector} = do
-  parentNode <- window >>= document <#> toParentNode
-  selected <- map El.toNode <$> querySelector (QuerySelector selector) parentNode
+  parentNode ← window >>= document <#> toParentNode
+  selected ← map El.toNode <$> querySelector (QuerySelector selector) parentNode
   for_ selected \node_ → do
-    state <- Ref.new model
-    emptyNode <- window >>= document <#> toDocument >>= createTextNode "" <#> Text.toNode
+    state ← Ref.new model
+    emptyNode ← window >>= document <#> toDocument >>= createTextNode "" <#> Text.toNode
     Node.appendChild emptyNode node_
-    node <- Ref.new emptyNode
-    vdom <- Ref.new $ I.unsafeLinkNode emptyNode (text "")
-    subscriptions <- Ref.new $ Map.empty
-    freshId <- Ref.new 0
+    node ← Ref.new emptyNode
+    vdom ← Ref.new $ I.unsafeLinkNode emptyNode (text "")
+    subscriptions ← Ref.new $ Map.empty
+    freshId ← Ref.new 0
     let iapp = IApp {view, update, state, node, vdom, subscriptions, freshId}
     render iapp (view model)
     for_ msg (dispatch iapp) 
 
 render ∷ ∀model msg. IApp model msg → Html msg → Effect Unit
 render iapp@(IApp {vdom, node}) newVDom = do
-  oldVDom <- Ref.read vdom
-  node1 <- Ref.read node
-  pnode <- Node.parentNode node1
+  oldVDom ← Ref.read vdom
+  node1 ← Ref.read node
+  pnode ← Node.parentNode node1
   for_ pnode \pnode' → do
     let vdom2 = I.copyVNode newVDom
-    node2 <- I.unsafePatch pnode' node1 oldVDom vdom2 listener
+    node2 ← I.unsafePatch pnode' node1 oldVDom vdom2 listener
     Ref.write node2 node
     Ref.write vdom2 vdom
   where
   listener e = do
       let EventType t = Ev.type_ e
       for_ (Ev.currentTarget e) \target → do
-        fn <- I.getAction target t
+        fn ← I.getAction target t
         dispatchEvent iapp e fn
 
 getState ∷ ∀model msg. IApp model msg → Effect model
@@ -81,7 +81,7 @@ getState (IApp {state}) = Ref.read state
 
 setState ∷ ∀model msg. IApp model msg → model → Effect Unit
 setState iapp@(IApp {state, view}) newState = do
-  oldState <- Ref.read state
+  oldState ← Ref.read state
   unless (unsafeRefEq oldState newState) do
     Ref.write newState state
     render iapp $ view newState
@@ -92,7 +92,7 @@ dispatch iapp@(IApp {update}) = update iapp
 
 dispatchEvent ∷ ∀model msg. IApp model msg → Event → EventHandler msg → Effect Unit
 dispatchEvent iapp ev handler = do
-  msg' <- handler ev
+  msg' ← handler ev
   for_ msg' (dispatch iapp)
 
     -- getFreshId ∷ Effect Int
@@ -101,7 +101,7 @@ dispatchEvent iapp ev handler = do
 
 getFreshId ∷ ∀model msg. IApp model msg → Effect SubscriptionId
 getFreshId (IApp {freshId}) = do
-  id <- Ref.read freshId
+  id ← Ref.read freshId
   Ref.write (id+1) freshId
   pure $ SubscriptionId id
 
@@ -112,18 +112,18 @@ interpret ∷ ∀model msg.
     → Aff Unit
 interpret update iapp@(IApp {subscriptions}) (Update m) = runFreeM go m where
   go (State k) = do
-    st <- liftEffect $ getState iapp
+    st ← liftEffect $ getState iapp
     let Tuple a st2 = k st
     liftEffect $ setState iapp st2
     pure a
   go (Lift a) = a
   go (Subscribe f next) = do 
-    canceler <- liftEffect $ f \msg → launchAff_ $ interpret update iapp (update msg)
-    id <- liftEffect $ getFreshId iapp
+    canceler ← liftEffect $ f \msg → launchAff_ $ interpret update iapp (update msg)
+    id ← liftEffect $ getFreshId iapp
     liftEffect $ Ref.modify_ (Map.insert id canceler) subscriptions
     pure (next id)
   go (Unsubscribe id a) = do
-    subs <- liftEffect $ Ref.read subscriptions
+    subs ← liftEffect $ Ref.read subscriptions
     for_ (Map.lookup id subs) liftEffect
     pure a
 
@@ -168,7 +168,7 @@ sandbox {init, view, update, selector} =
     { init: {model: init, msg: Nothing}
     , view
     , update: \iapp msg → do
-        st <- getState iapp
+        st ← getState iapp
         setState iapp (update msg st)
     , selector
     }

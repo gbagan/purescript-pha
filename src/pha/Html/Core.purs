@@ -88,5 +88,5 @@ foreign import mapView ∷ ∀a b. (EventHandler a → EventHandler b) → Html 
 instance functorHtml ∷ Functor Html where
     map fn = mapView mapH where
         mapH handler ev = do
-            msg <- handler ev
+            msg ← handler ev
             pure (map fn msg)

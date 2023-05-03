@@ -15,17 +15,17 @@ import Pha.Html as H
 import Pha.Html.Attributes as P
 import Pha.Html.Events as E
 
-type State = Int
+type Model = Int
 data Msg = Increment | Decrement
 
-init ∷ State
+init ∷ Model
 init = 0
 
-update ∷ Msg → State → State
+update ∷ Msg → Model → Model
 update Increment n = n + 1
 update Decrement n = n - 1
 
-view ∷ State → Html Msg
+view ∷ Model → Html Msg
 view counter = 
   H.div []
     [ H.button [E.onClick \_ → Decrement] [H.text "-"]

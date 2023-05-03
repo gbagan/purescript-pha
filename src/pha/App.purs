@@ -15,7 +15,7 @@ import Effect.Ref (Ref)
 import Effect.Ref as Ref
 import Pha.App.Internal as I
 import Pha.Html.Core (Html, Event, EventHandler, text)
-import Pha.Update (UpdateF(..), Update(..), SubscriptionId(..))
+import Pha.Update.Internal (UpdateF(..), Update(..), SubscriptionId(..))
 import Unsafe.Reference (unsafeRefEq)
 import Web.DOM.Document (createTextNode)
 import Web.DOM.Element as El

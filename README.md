@@ -43,14 +43,13 @@ module Example.Counter where
 import Prelude
 import Effect (Effect)
 import Effect.Aff (Aff)
-import Effect.Class (liftEffect)
 import Effect.Random (randomInt)
 import Pha.App (app)
 import Pha.Html (Html)
 import Pha.Html as H
 import Pha.Html.Attributes as P
 import Pha.Html.Events as E
-import Pha.Update (Update, put)
+import Pha.Update (Update, liftEffect, put)
 
 type Model = Int
 data Msg = RollDice

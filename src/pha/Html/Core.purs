@@ -73,8 +73,8 @@ when ∷ ∀msg. Boolean → (Unit → Html msg) → Html msg
 when cond vdom = if cond then vdom unit else empty
 
 -- | ```purescript
--- | maybeN (Just html) = html
--- | maybeN Nothing = empty
+-- | fromMaybe (Just html) = html
+-- | fromMaybe Nothing = empty
 -- | ```
 fromMaybe ∷ ∀msg. Maybe (Html msg) → Html msg
 fromMaybe = M.fromMaybe empty

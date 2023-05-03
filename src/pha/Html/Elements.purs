@@ -81,6 +81,9 @@ select = elem "select"
 span ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 span = elem "span"
 
+textarea ∷ ∀msg. Array (Prop msg) → Html msg
+textarea attrs = elem "textarea" attrs []
+
 ul ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 ul = elem "ul"
 
@@ -90,9 +93,18 @@ ul = elem "ul"
 svg ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 svg = elem "svg"
 
+circle ∷ ∀msg. Array (Prop msg) → Html msg
+circle props = elem "circle" props []
+
+ellipse ∷ ∀msg. Array (Prop msg) → Html msg
+ellipse props = elem "ellipse" props []
+
 g ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 g = elem "g"
-        
+
+image ∷ ∀msg. Array (Prop msg) → Html msg
+image attrs = elem "image" attrs []
+
 rect ∷ ∀msg. Array (Prop msg) → Html msg
 rect props = elem "rect" props []
     
@@ -101,9 +113,6 @@ path props = elem "path" props []
     
 line ∷  ∀msg. Array (Prop msg) → Html msg
 line props = elem "line" props []
-    
-circle ∷ ∀msg. Array (Prop msg) → Html msg
-circle props = elem "circle" props []
 
 use ∷ ∀msg. Array (Prop msg) → Html msg
 use props = elem "use" props []

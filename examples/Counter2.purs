@@ -41,7 +41,7 @@ view counter =
         [ H.span [] [H.text "green when the counter is even"]
         , H.div
             [ H.class_ "box"
-            , H.class' "even" (even counter)
+            , H.style "background-color" $ if even counter then "blue" else "red"
             ] []
         ]
 

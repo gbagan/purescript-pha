@@ -1,8 +1,8 @@
 const compose = (f, g) => f && g ? x => f(g(x)) : f || g
 
 const _h = (tag, ps, children, keyed=false) => {
-    const style = {}
-    const props = {style}
+    const style = []
+    const props = {}
     const vdom = {tag, children, props, node: null, keyed}
     const n = ps.length
     for (let i = 0; i < n; i++) {
@@ -12,8 +12,9 @@ const _h = (tag, ps, children, keyed=false) => {
         else if (t === 2)
             props.class = props.class ? props.class + " " + k : k
         else if (t === 3)
-            style[k] = v
+            style.push(k + ":" + v)
     }
+    props.style = style.join(";")
     return vdom
 }
 

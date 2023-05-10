@@ -1742,17 +1742,8 @@
   var TEXT_NODE = 3;
   var merge = (a, b) => ({ ...a, ...b });
   var compose = (f, g) => f && g ? (x) => f(g(x)) : f || g;
-  var patchProperty = (node, key2, oldValue, newValue, listener, isSvg, mapf) => {
-    if (key2 === "style") {
-      for (let k in merge(oldValue, newValue)) {
-        oldValue = newValue == null || newValue[k] == null ? "" : newValue[k];
-        if (k[0] === "-") {
-          node[key2].setProperty(k, oldValue);
-        } else {
-          node[key2][k] = oldValue;
-        }
-      }
-    } else if (key2[0] === "o" && key2[1] === "n") {
+  var patchProperty = (node, key2, oldValue, newValue, listener, mapf) => {
+    if (key2[0] === "o" && key2[1] === "n") {
       const key22 = key2.slice(2);
       if (!node.actions)
         node.actions = {};
@@ -1762,8 +1753,6 @@
       } else if (!oldValue) {
         node.addEventListener(key22, listener);
       }
-    } else if (!isSvg && key2 in node) {
-      node[key2] = newValue;
     } else if (newValue == null || newValue === false || key2 === "class" && !newValue) {
       node.removeAttribute(key2);
     } else {
@@ -1775,7 +1764,7 @@
     const props = vnode.props;
     const mapf2 = compose(mapf, vnode.mapf);
     for (let k in props) {
-      patchProperty(node, k, null, props[k], listener, isSvg, mapf2);
+      patchProperty(node, k, null, props[k], listener, mapf2);
     }
     for (let i = 0, len = vnode.children.length; i < len; i++) {
       node.appendChild(
@@ -1814,7 +1803,7 @@
       isSvg = isSvg || newVNode.tag === "svg";
       for (let i in merge(oldVProps, newVProps)) {
         if ((i === "value" || i === "selected" || i === "checked" ? node[i] : oldVProps[i]) !== newVProps[i]) {
-          patchProperty(node, i, oldVProps[i], newVProps[i], listener, isSvg, mapf);
+          patchProperty(node, i, oldVProps[i], newVProps[i], listener, mapf);
         }
       }
       if (!newVNode.keyed) {
@@ -1944,8 +1933,8 @@
 
   // output-es/Pha.Html.Core/foreign.js
   var _h = (tag, ps, children2, keyed = false) => {
-    const style = {};
-    const props = { style };
+    const style = [];
+    const props = {};
     const vdom = { tag, children: children2, props, node: null, keyed };
     const n = ps.length;
     for (let i = 0; i < n; i++) {
@@ -1955,8 +1944,9 @@
       else if (t === 2)
         props.class = props.class ? props.class + " " + k : k;
       else if (t === 3)
-        style[k] = v;
+        style.push(k + ":" + v);
     }
+    props.style = style.join(";");
     return vdom;
   };
   var elemImpl = (tag, ps, children2) => _h(tag, ps, children2.map((html) => ({ key: null, html })));
@@ -1968,8 +1958,8 @@
     type: 3
   });
   var class_ = (cls) => [2, cls];
-  var noProp = [-1];
   var unsafeOnWithEffectImpl = (k, v) => [1, "on" + k, v];
+  var styleImpl = (k, v) => [3, k, v];
   var text = createTextVNode;
   var lazyImpl = (view2, val) => ({ memo: [val], type: view2 });
 
@@ -2416,7 +2406,7 @@
         [],
         [
           elemImpl("span", [], [text("green when the counter is even")]),
-          elemImpl("div", [class_("box"), (counter & 1) === 0 ? class_("even") : noProp], [])
+          elemImpl("div", [class_("box"), styleImpl("background-color", (counter & 1) === 0 ? "blue" : "red")], [])
         ]
       ),
       elemImpl("h3", [], [text("press I to increment the counter")]),

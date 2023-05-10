@@ -7,17 +7,8 @@ const TEXT_NODE = 3
 const merge = (a, b) => ({...a, ...b})
 const compose = (f, g) => f && g ? x => f(g(x)) : f || g
 
-const patchProperty = (node, key, oldValue, newValue, listener, isSvg, mapf) => {
-    if (key === "style") {
-        for (let k in merge(oldValue, newValue)) {
-            oldValue = newValue == null || newValue[k] == null ? "" : newValue[k]
-            if (k[0] === "-") {
-                node[key].setProperty(k, oldValue)
-            } else {
-                node[key][k] = oldValue
-            }
-        }
-    } else if (key[0] === "o" && key[1] === "n") {
+const patchProperty = (node, key, oldValue, newValue, listener, mapf) => {
+    if (key[0] === "o" && key[1] === "n") {
         const key2 = key.slice(2)
         if (!node.actions)
             node.actions = {}
@@ -27,9 +18,8 @@ const patchProperty = (node, key, oldValue, newValue, listener, isSvg, mapf) => 
         } else if (!oldValue) {
             node.addEventListener(key2, listener)
         }
-    } else if (!isSvg && key in node) {
-        node[key] = newValue
-    } else if (newValue == null || newValue === false || (key === "class" && !newValue)) {
+    }
+    else if (newValue == null || newValue === false || (key === "class" && !newValue)) {
         node.removeAttribute(key)
     } else {
         node.setAttribute(key, newValue)
@@ -47,7 +37,7 @@ const createNode = (vnode, listener, isSvg, mapf) => {
     const mapf2 = compose(mapf, vnode.mapf)
 
     for (let k in props) {
-        patchProperty(node, k, null, props[k], listener, isSvg, mapf2)
+        patchProperty(node, k, null, props[k], listener, mapf2)
     }
     for (let i = 0, len = vnode.children.length; i < len; i++) {
         node.appendChild(
@@ -94,7 +84,7 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
                     ? node[i]
                     : oldVProps[i]) !== newVProps[i]
             ) {
-                patchProperty(node, i, oldVProps[i], newVProps[i], listener, isSvg, mapf)
+                patchProperty(node, i, oldVProps[i], newVProps[i], listener, mapf)
             }
         }
 

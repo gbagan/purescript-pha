@@ -30,7 +30,7 @@ const createTextVNode = text => ({
 })
 
 export const mapView = (mapf, vnode) => ({...vnode, mapf: compose(vnode.mapf, mapf)})
-export const attr = k => v => [1, k, v]
+export const attrImpl = (k, v) => [1, k, v]
 export const class_ = cls => [2, cls]
 export const noProp = [-1]
 export const unsafeOnWithEffectImpl = (k, v) => [1, "on"+k, v]

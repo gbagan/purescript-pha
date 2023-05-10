@@ -37,8 +37,12 @@ type EventHandler msg = Event → Effect (Maybe msg)
 
 foreign import data Prop ∷ Type → Type
   
-foreign import attr ∷ ∀msg. String → String → Prop msg
-  
+
+attr ∷ ∀msg. String → String → Prop msg
+attr key val = runFn2 attrImpl key val
+
+foreign import attrImpl ∷ ∀msg. Fn2 String String (Prop msg)
+
 foreign import class_ ∷ ∀msg. String → Prop msg
 
 foreign import noProp ∷ ∀msg. Prop msg

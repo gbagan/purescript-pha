@@ -10,6 +10,10 @@ module Pha.Html.Events
   , onPointerOut
   , onPointerOver
   , onPointerUp
+  , onBlur
+  , onFocus
+  , onFocusIn
+  , onFocusOut
   , onChecked
   , onValueChange
   ) where
@@ -24,12 +28,16 @@ import Web.Event.Event as Event
 import Web.HTML.HTMLInputElement as HTMLInput
 import Web.HTML.HTMLSelectElement as HTMLSelect
 import Web.PointerEvent (PointerEvent)
+import Web.UIEvent.FocusEvent (FocusEvent)
 
 on ∷ ∀ msg. String → EventHandler msg → Prop msg
 on = unsafeOnWithEffect
 
 pointerCoerce ∷ Event → PointerEvent
 pointerCoerce = unsafeCoerce
+
+focusCoerce ∷ Event → FocusEvent
+focusCoerce = unsafeCoerce
 
 onClick ∷ ∀ msg. (PointerEvent → msg) → Prop msg
 onClick handler = on "click" (pure <<< Just <<< handler <<< unsafeCoerce)
@@ -62,6 +70,18 @@ onContextMenu ∷ ∀ msg. (PointerEvent → msg) → Prop msg
 onContextMenu handler = on "contextmenu" \ev → do
   Event.preventDefault ev
   pure $ Just $ handler $ unsafeCoerce ev
+
+onBlur ∷ ∀ msg. (FocusEvent → msg) → Prop msg
+onBlur handler = on "blur" (pure <<< Just <<< handler <<< focusCoerce)
+
+onFocus ∷ ∀ msg. (FocusEvent → msg) → Prop msg
+onFocus handler = on "focus" (pure <<< Just <<< handler <<< focusCoerce)
+
+onFocusIn ∷ ∀ msg. (FocusEvent → msg) → Prop msg
+onFocusIn handler = on "focusin" (pure <<< Just <<< handler <<< focusCoerce)
+
+onFocusOut ∷ ∀ msg. (FocusEvent → msg) → Prop msg
+onFocusOut handler = on "focusout" (pure <<< Just <<< handler <<< focusCoerce)
 
 onValueChange ∷ ∀ msg. (String → msg) → Prop msg
 onValueChange f = on "change" fn

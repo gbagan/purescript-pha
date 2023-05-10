@@ -12,6 +12,7 @@ You can edit this file as you like.
   , "effect"
   , "foldable-traversable"
   , "free"
+  , "functions"
   , "integers"
   , "maybe"
   , "ordered-collections"
@@ -31,5 +32,5 @@ You can edit this file as you like.
   ]
 , packages = ./packages.dhall
 , repository = "https://github.com/gbagan/purescript-pha"
-, sources = [ "src/**/*.purs", "examples/**/*.purs", "test/**/*.purs" ]
+, sources = [ "src/**/*.purs" ]
 }

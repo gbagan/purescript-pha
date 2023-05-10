@@ -1,13 +1,14 @@
 {
   "dependencies": {
-    "esbuild": "^0.17.8",
+    "esbuild": "^0.17.18",
     "purescript": "^0.15.9",
     "purescript-psa": "^0.8.2",
-    "spago": "^0.20.8"
+    "purs-backend-es": "^1.3.2",
+    "spago": "^0.21.0"
   },
   "scripts": {
     "clean": "rimraf output && rimraf .spago",
     "build": "spago build --purs-args '--censor-lib --strict'",
-    "example-counter2": "spago bundle-app -m Example.Counter2 --to examples/dist/bundle-counter2.js"
+    "example-counter2": "spago -x test.dhall build && purs-backend-es bundle-app --no-build -m Example.Counter2 --to examples/dist/bundle-counter2.js"
   }
 }

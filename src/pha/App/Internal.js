@@ -74,7 +74,7 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
             node
         )
         if (oldVNode) {
-            parent.removeChild(oldVNode.node)
+            oldVNode.node.remove()
         }
     } else {
         const oldVProps = oldVNode.props
@@ -111,7 +111,7 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
                 )
             }
             for (let i = newTail + 1; i <= oldTail; i++) {
-                node.removeChild(oldVKids[i].html.node)
+                oldVKids[i].html.node.remove()
             }
 
         } else { //  node.keyed == true
@@ -148,7 +148,7 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
                 }
             } else if (newHead > newTail) {
                 while (oldHead <= oldTail) {
-                    node.removeChild(oldVKids[oldHead].html.node)
+                    oldVKids[oldHead].html.node.remove()
                     oldHead++
                 }
             } else {
@@ -201,7 +201,7 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
                 */
                 for (let i in keyed) {
                     if (!newKeyed[i]) {
-                        node.removeChild(keyed[i].node)
+                        keyed[i].node.remove()
                     }
                 }
             }
@@ -235,8 +235,7 @@ export const copyVNode = vnode => ({
                             ...vnode,
                             children: vnode.children && vnode.children.map(({key, html}) => ({key, html: copyVNode(html)}))
                         })
-export const getAction = target => type => () => target.actions[type]
-export const unsafePatch = parent => node => oldVDom => newVDom => listener => () =>
-                            patch(parent, node, oldVDom, newVDom, e => listener(e)())
+export const getAction = (target, type) => target.actions[type]
+export const unsafePatch = patch
 
 export const unsafeLinkNode = node => vdom => { vdom.node = node; return vdom; }

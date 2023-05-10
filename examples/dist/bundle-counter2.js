@@ -1,43 +1,10 @@
 (() => {
-  // output/Control.Semigroupoid/index.js
-  var semigroupoidFn = {
-    compose: function(f) {
-      return function(g) {
-        return function(x) {
-          return f(g(x));
-        };
-      };
-    }
-  };
+  // output-es/runtime.js
+  function fail() {
+    throw new Error("Failed pattern match");
+  }
 
-  // output/Control.Category/index.js
-  var identity = function(dict) {
-    return dict.identity;
-  };
-  var categoryFn = {
-    identity: function(x) {
-      return x;
-    },
-    Semigroupoid0: function() {
-      return semigroupoidFn;
-    }
-  };
-
-  // output/Data.Function/index.js
-  var flip = function(f) {
-    return function(b) {
-      return function(a) {
-        return f(a)(b);
-      };
-    };
-  };
-  var $$const = function(a) {
-    return function(v) {
-      return a;
-    };
-  };
-
-  // output/Data.Functor/foreign.js
+  // output-es/Data.Functor/foreign.js
   var arrayMap = function(f) {
     return function(arr) {
       var l = arr.length;
@@ -49,187 +16,435 @@
     };
   };
 
-  // output/Data.Unit/foreign.js
-  var unit = void 0;
+  // output-es/Control.Apply/index.js
+  var identity = (x) => x;
 
-  // output/Data.Functor/index.js
-  var map = function(dict) {
-    return dict.map;
-  };
-  var mapFlipped = function(dictFunctor) {
-    var map12 = map(dictFunctor);
-    return function(fa) {
-      return function(f) {
-        return map12(f)(fa);
-      };
-    };
-  };
-  var $$void = function(dictFunctor) {
-    return map(dictFunctor)($$const(unit));
-  };
-  var functorArray = {
-    map: arrayMap
-  };
-
-  // output/Control.Apply/index.js
-  var identity2 = /* @__PURE__ */ identity(categoryFn);
-  var apply = function(dict) {
-    return dict.apply;
-  };
-  var applySecond = function(dictApply) {
-    var apply1 = apply(dictApply);
-    var map7 = map(dictApply.Functor0());
-    return function(a) {
-      return function(b) {
-        return apply1(map7($$const(identity2))(a))(b);
-      };
-    };
-  };
-
-  // output/Control.Applicative/index.js
-  var pure = function(dict) {
-    return dict.pure;
-  };
-  var unless = function(dictApplicative) {
-    var pure1 = pure(dictApplicative);
-    return function(v) {
-      return function(v1) {
-        if (!v) {
-          return v1;
-        }
-        ;
-        if (v) {
-          return pure1(unit);
-        }
-        ;
-        throw new Error("Failed pattern match at Control.Applicative (line 68, column 1 - line 68, column 65): " + [v.constructor.name, v1.constructor.name]);
-      };
-    };
-  };
-  var liftA1 = function(dictApplicative) {
-    var apply2 = apply(dictApplicative.Apply0());
-    var pure1 = pure(dictApplicative);
-    return function(f) {
-      return function(a) {
-        return apply2(pure1(f))(a);
-      };
-    };
-  };
-
-  // output/Control.Bind/index.js
-  var discard = function(dict) {
-    return dict.discard;
-  };
-  var bind = function(dict) {
-    return dict.bind;
-  };
-  var bindFlipped = function(dictBind) {
-    return flip(bind(dictBind));
-  };
-  var discardUnit = {
-    discard: function(dictBind) {
-      return bind(dictBind);
-    }
-  };
-
-  // output/Data.Bounded/foreign.js
-  var topChar = String.fromCharCode(65535);
-  var bottomChar = String.fromCharCode(0);
-  var topNumber = Number.POSITIVE_INFINITY;
-  var bottomNumber = Number.NEGATIVE_INFINITY;
-
-  // output/Data.Ring/foreign.js
-  var intSub = function(x) {
-    return function(y) {
-      return x - y | 0;
-    };
-  };
-
-  // output/Data.Semiring/foreign.js
-  var intAdd = function(x) {
-    return function(y) {
-      return x + y | 0;
-    };
-  };
-  var intMul = function(x) {
-    return function(y) {
-      return x * y | 0;
-    };
-  };
-
-  // output/Data.Semiring/index.js
-  var semiringInt = {
-    add: intAdd,
-    zero: 0,
-    mul: intMul,
-    one: 1
-  };
-
-  // output/Data.Ring/index.js
-  var ringInt = {
-    sub: intSub,
-    Semiring0: function() {
-      return semiringInt;
-    }
-  };
-
-  // output/Data.Show/foreign.js
+  // output-es/Data.Show/foreign.js
   var showIntImpl = function(n) {
     return n.toString();
   };
 
-  // output/Data.Show/index.js
-  var showInt = {
-    show: showIntImpl
-  };
-  var show = function(dict) {
-    return dict.show;
-  };
+  // output-es/Data.Ordering/index.js
+  var $Ordering = (tag) => ({ tag });
+  var LT = /* @__PURE__ */ $Ordering("LT");
+  var GT = /* @__PURE__ */ $Ordering("GT");
+  var EQ = /* @__PURE__ */ $Ordering("EQ");
 
-  // output/Data.EuclideanRing/foreign.js
-  var intDegree = function(x) {
-    return Math.min(Math.abs(x), 2147483647);
-  };
-  var intDiv = function(x) {
-    return function(y) {
-      if (y === 0)
-        return 0;
-      return y > 0 ? Math.floor(x / y) : -Math.floor(x / -y);
-    };
-  };
-  var intMod = function(x) {
-    return function(y) {
-      if (y === 0)
-        return 0;
-      var yy = Math.abs(y);
-      return (x % yy + yy) % yy;
+  // output-es/Data.Maybe/index.js
+  var $Maybe = (tag, _1) => ({ tag, _1 });
+  var Nothing = /* @__PURE__ */ $Maybe("Nothing");
+  var Just = (value0) => $Maybe("Just", value0);
+
+  // output-es/Data.Either/index.js
+  var $Either = (tag, _1) => ({ tag, _1 });
+  var Left = (value0) => $Either("Left", value0);
+  var Right = (value0) => $Either("Right", value0);
+
+  // output-es/Effect/foreign.js
+  var pureE = function(a) {
+    return function() {
+      return a;
     };
   };
 
-  // output/Data.CommutativeRing/index.js
-  var commutativeRingInt = {
-    Ring0: function() {
-      return ringInt;
+  // output-es/Effect/index.js
+  var applyEffect = {
+    apply: (f) => (a) => () => {
+      const f$p = f();
+      const a$p = a();
+      return applicativeEffect.pure(f$p(a$p))();
+    },
+    Functor0: () => functorEffect
+  };
+  var applicativeEffect = { pure: pureE, Apply0: () => applyEffect };
+  var functorEffect = {
+    map: (f) => (a) => () => {
+      const a$p = a();
+      return f(a$p);
     }
   };
 
-  // output/Data.EuclideanRing/index.js
-  var mod = function(dict) {
-    return dict.mod;
+  // output-es/Control.Monad.Rec.Class/index.js
+  var $Step = (tag, _1) => ({ tag, _1 });
+  var Loop = (value0) => $Step("Loop", value0);
+  var Done = (value0) => $Step("Done", value0);
+
+  // output-es/Data.Foldable/index.js
+  var traverse_ = (dictApplicative) => {
+    const $0 = dictApplicative.Apply0();
+    const map = $0.Functor0().map;
+    return (dictFoldable) => (f) => dictFoldable.foldr((x) => {
+      const $1 = f(x);
+      return (b) => $0.apply(map((v) => identity)($1))(b);
+    })(dictApplicative.pure());
   };
-  var euclideanRingInt = {
-    degree: intDegree,
-    div: intDiv,
-    mod: intMod,
-    CommutativeRing0: function() {
-      return commutativeRingInt;
+  var for_ = (dictApplicative) => {
+    const traverse_1 = traverse_(dictApplicative);
+    return (dictFoldable) => {
+      const $0 = traverse_1(dictFoldable);
+      return (b) => (a) => $0(a)(b);
+    };
+  };
+  var foldableMaybe = {
+    foldr: (v) => (v1) => (v2) => {
+      if (v2.tag === "Nothing") {
+        return v1;
+      }
+      if (v2.tag === "Just") {
+        return v(v2._1)(v1);
+      }
+      fail();
+    },
+    foldl: (v) => (v1) => (v2) => {
+      if (v2.tag === "Nothing") {
+        return v1;
+      }
+      if (v2.tag === "Just") {
+        return v(v1)(v2._1);
+      }
+      fail();
+    },
+    foldMap: (dictMonoid) => {
+      const mempty = dictMonoid.mempty;
+      return (v) => (v1) => {
+        if (v1.tag === "Nothing") {
+          return mempty;
+        }
+        if (v1.tag === "Just") {
+          return v(v1._1);
+        }
+        fail();
+      };
     }
   };
-  var div = function(dict) {
-    return dict.div;
+
+  // output-es/Data.Tuple/index.js
+  var $Tuple = (_1, _2) => ({ tag: "Tuple", _1, _2 });
+
+  // output-es/Data.List.Types/index.js
+  var $List = (tag, _1, _2) => ({ tag, _1, _2 });
+  var Nil = /* @__PURE__ */ $List("Nil");
+
+  // output-es/Data.List/index.js
+  var reverse = /* @__PURE__ */ (() => {
+    const go = (go$a0$copy) => (go$a1$copy) => {
+      let go$a0 = go$a0$copy, go$a1 = go$a1$copy, go$c = true, go$r;
+      while (go$c) {
+        const v = go$a0, v1 = go$a1;
+        if (v1.tag === "Nil") {
+          go$c = false;
+          go$r = v;
+          continue;
+        }
+        if (v1.tag === "Cons") {
+          go$a0 = $List("Cons", v1._1, v);
+          go$a1 = v1._2;
+          continue;
+        }
+        fail();
+      }
+      return go$r;
+    };
+    return go(Nil);
+  })();
+
+  // output-es/Data.Traversable/foreign.js
+  var traverseArrayImpl = function() {
+    function array1(a) {
+      return [a];
+    }
+    function array2(a) {
+      return function(b) {
+        return [a, b];
+      };
+    }
+    function array3(a) {
+      return function(b) {
+        return function(c) {
+          return [a, b, c];
+        };
+      };
+    }
+    function concat2(xs) {
+      return function(ys) {
+        return xs.concat(ys);
+      };
+    }
+    return function(apply) {
+      return function(map) {
+        return function(pure) {
+          return function(f) {
+            return function(array) {
+              function go(bot, top) {
+                switch (top - bot) {
+                  case 0:
+                    return pure([]);
+                  case 1:
+                    return map(array1)(f(array[bot]));
+                  case 2:
+                    return apply(map(array2)(f(array[bot])))(f(array[bot + 1]));
+                  case 3:
+                    return apply(apply(map(array3)(f(array[bot])))(f(array[bot + 1])))(f(array[bot + 2]));
+                  default:
+                    var pivot = bot + Math.floor((top - bot) / 4) * 2;
+                    return apply(map(concat2)(go(bot, pivot)))(go(pivot, top));
+                }
+              }
+              return go(0, array.length);
+            };
+          };
+        };
+      };
+    };
+  }();
+
+  // output-es/Data.CatQueue/index.js
+  var $CatQueue = (_1, _2) => ({ tag: "CatQueue", _1, _2 });
+  var uncons = (uncons$a0$copy) => {
+    let uncons$a0 = uncons$a0$copy, uncons$c = true, uncons$r;
+    while (uncons$c) {
+      const v = uncons$a0;
+      if (v._1.tag === "Nil") {
+        if (v._2.tag === "Nil") {
+          uncons$c = false;
+          uncons$r = Nothing;
+          continue;
+        }
+        uncons$a0 = $CatQueue(reverse(v._2), Nil);
+        continue;
+      }
+      if (v._1.tag === "Cons") {
+        uncons$c = false;
+        uncons$r = $Maybe("Just", $Tuple(v._1._1, $CatQueue(v._1._2, v._2)));
+        continue;
+      }
+      fail();
+    }
+    return uncons$r;
   };
 
-  // output/Data.Semigroup/foreign.js
+  // output-es/Data.CatList/index.js
+  var $CatList = (tag, _1, _2) => ({ tag, _1, _2 });
+  var CatNil = /* @__PURE__ */ $CatList("CatNil");
+  var link = (v) => (v1) => {
+    if (v.tag === "CatNil") {
+      return v1;
+    }
+    if (v1.tag === "CatNil") {
+      return v;
+    }
+    if (v.tag === "CatCons") {
+      return $CatList("CatCons", v._1, $CatQueue(v._2._1, $List("Cons", v1, v._2._2)));
+    }
+    fail();
+  };
+  var foldr = (k) => (b) => (q) => {
+    const foldl = (foldl$a0$copy) => (foldl$a1$copy) => (foldl$a2$copy) => {
+      let foldl$a0 = foldl$a0$copy, foldl$a1 = foldl$a1$copy, foldl$a2 = foldl$a2$copy, foldl$c = true, foldl$r;
+      while (foldl$c) {
+        const v = foldl$a0, v1 = foldl$a1, v2 = foldl$a2;
+        if (v2.tag === "Nil") {
+          foldl$c = false;
+          foldl$r = v1;
+          continue;
+        }
+        if (v2.tag === "Cons") {
+          foldl$a0 = v;
+          foldl$a1 = v(v1)(v2._1);
+          foldl$a2 = v2._2;
+          continue;
+        }
+        fail();
+      }
+      return foldl$r;
+    };
+    const go = (go$a0$copy) => (go$a1$copy) => {
+      let go$a0 = go$a0$copy, go$a1 = go$a1$copy, go$c = true, go$r;
+      while (go$c) {
+        const xs = go$a0, ys = go$a1;
+        const v = uncons(xs);
+        if (v.tag === "Nothing") {
+          go$c = false;
+          go$r = foldl((x) => (i) => i(x))(b)(ys);
+          continue;
+        }
+        if (v.tag === "Just") {
+          go$a0 = v._1._2;
+          go$a1 = $List("Cons", k(v._1._1), ys);
+          continue;
+        }
+        fail();
+      }
+      return go$r;
+    };
+    return go(q)(Nil);
+  };
+  var uncons2 = (v) => {
+    if (v.tag === "CatNil") {
+      return Nothing;
+    }
+    if (v.tag === "CatCons") {
+      return $Maybe("Just", $Tuple(v._1, (v._2._1.tag === "Nil" ? v._2._2.tag === "Nil" : false) ? CatNil : foldr(link)(CatNil)(v._2)));
+    }
+    fail();
+  };
+
+  // output-es/Control.Monad.Free/index.js
+  var $Free = (_1, _2) => ({ tag: "Free", _1, _2 });
+  var $FreeView = (tag, _1, _2) => ({ tag, _1, _2 });
+  var toView = (toView$a0$copy) => {
+    let toView$a0 = toView$a0$copy, toView$c = true, toView$r;
+    while (toView$c) {
+      const v = toView$a0;
+      if (v._1.tag === "Return") {
+        const v2 = uncons2(v._2);
+        if (v2.tag === "Nothing") {
+          toView$c = false;
+          toView$r = $FreeView("Return", v._1._1);
+          continue;
+        }
+        if (v2.tag === "Just") {
+          toView$a0 = (() => {
+            const $0 = v2._1._1(v._1._1);
+            return $Free($0._1, link($0._2)(v2._1._2));
+          })();
+          continue;
+        }
+        fail();
+      }
+      if (v._1.tag === "Bind") {
+        toView$c = false;
+        toView$r = $FreeView(
+          "Bind",
+          v._1._1,
+          (a) => {
+            const $0 = v._1._2(a);
+            return $Free($0._1, link($0._2)(v._2));
+          }
+        );
+        continue;
+      }
+      fail();
+    }
+    return toView$r;
+  };
+  var runFreeM = (dictFunctor) => (dictMonadRec) => {
+    const Monad0 = dictMonadRec.Monad0();
+    const map2 = Monad0.Bind1().Apply0().Functor0().map;
+    const pure1 = Monad0.Applicative0().pure;
+    return (k) => dictMonadRec.tailRecM((f) => {
+      const v = toView(f);
+      if (v.tag === "Return") {
+        return map2(Done)(pure1(v._1));
+      }
+      if (v.tag === "Bind") {
+        return map2(Loop)(k(dictFunctor.map(v._2)(v._1)));
+      }
+      fail();
+    });
+  };
+  var freeMonad = { Applicative0: () => freeApplicative, Bind1: () => freeBind };
+  var freeFunctor = { map: (k) => (f) => freeBind.bind(f)((x) => freeApplicative.pure(k(x))) };
+  var freeBind = {
+    bind: (v) => (k) => $Free(v._1, link(v._2)($CatList("CatCons", k, $CatQueue(Nil, Nil)))),
+    Apply0: () => freeApply
+  };
+  var freeApply = {
+    apply: (f) => (a) => $Free(
+      f._1,
+      link(f._2)($CatList(
+        "CatCons",
+        (f$p) => $Free(
+          a._1,
+          link(a._2)($CatList("CatCons", (a$p) => freeApplicative.pure(f$p(a$p)), $CatQueue(Nil, Nil)))
+        ),
+        $CatQueue(Nil, Nil)
+      ))
+    ),
+    Functor0: () => freeFunctor
+  };
+  var freeApplicative = { pure: (x) => $Free($FreeView("Return", x), CatNil), Apply0: () => freeApply };
+
+  // output-es/Data.Array.ST/foreign.js
+  var sortByImpl = function() {
+    function mergeFromTo(compare, fromOrdering, xs1, xs2, from, to) {
+      var mid;
+      var i;
+      var j;
+      var k;
+      var x;
+      var y;
+      var c;
+      mid = from + (to - from >> 1);
+      if (mid - from > 1)
+        mergeFromTo(compare, fromOrdering, xs2, xs1, from, mid);
+      if (to - mid > 1)
+        mergeFromTo(compare, fromOrdering, xs2, xs1, mid, to);
+      i = from;
+      j = mid;
+      k = from;
+      while (i < mid && j < to) {
+        x = xs2[i];
+        y = xs2[j];
+        c = fromOrdering(compare(x)(y));
+        if (c > 0) {
+          xs1[k++] = y;
+          ++j;
+        } else {
+          xs1[k++] = x;
+          ++i;
+        }
+      }
+      while (i < mid) {
+        xs1[k++] = xs2[i++];
+      }
+      while (j < to) {
+        xs1[k++] = xs2[j++];
+      }
+    }
+    return function(compare) {
+      return function(fromOrdering) {
+        return function(xs) {
+          return function() {
+            if (xs.length < 2)
+              return xs;
+            mergeFromTo(compare, fromOrdering, xs, xs.slice(0), 0, xs.length);
+            return xs;
+          };
+        };
+      };
+    };
+  }();
+
+  // output-es/Data.Eq/foreign.js
+  var refEq = function(r1) {
+    return function(r2) {
+      return r1 === r2;
+    };
+  };
+  var eqIntImpl = refEq;
+
+  // output-es/Data.Eq/index.js
+  var eqInt = { eq: eqIntImpl };
+
+  // output-es/Data.Ord/foreign.js
+  var unsafeCompareImpl = function(lt) {
+    return function(eq) {
+      return function(gt) {
+        return function(x) {
+          return function(y) {
+            return x < y ? lt : x === y ? eq : gt;
+          };
+        };
+      };
+    };
+  };
+  var ordIntImpl = unsafeCompareImpl;
+
+  // output-es/Data.Ord/index.js
+  var ordInt = { compare: /* @__PURE__ */ ordIntImpl(LT)(EQ)(GT), Eq0: () => eqInt };
+
+  // output-es/Data.Semigroup/foreign.js
   var concatArray = function(xs) {
     return function(ys) {
       if (xs.length === 0)
@@ -240,76 +455,35 @@
     };
   };
 
-  // output/Data.Semigroup/index.js
-  var semigroupArray = {
-    append: concatArray
-  };
-  var append = function(dict) {
-    return dict.append;
-  };
-
-  // output/Data.Monoid/index.js
-  var mempty = function(dict) {
-    return dict.mempty;
-  };
-
-  // output/Data.Tuple/index.js
-  var Tuple = /* @__PURE__ */ function() {
-    function Tuple2(value0, value1) {
-      this.value0 = value0;
-      this.value1 = value1;
-    }
-    ;
-    Tuple2.create = function(value0) {
-      return function(value1) {
-        return new Tuple2(value0, value1);
-      };
-    };
-    return Tuple2;
-  }();
-
-  // output/Control.Monad.State.Class/index.js
-  var state = function(dict) {
-    return dict.state;
-  };
-  var modify_ = function(dictMonadState) {
-    var state1 = state(dictMonadState);
-    return function(f) {
-      return state1(function(s) {
-        return new Tuple(unit, f(s));
-      });
-    };
-  };
-
-  // output/Data.Array/foreign.js
-  var range = function(start2) {
+  // output-es/Data.Array/foreign.js
+  var range = function(start) {
     return function(end) {
-      var step2 = start2 > end ? -1 : 1;
-      var result = new Array(step2 * (end - start2) + 1);
-      var i = start2, n = 0;
+      var step = start > end ? -1 : 1;
+      var result = new Array(step * (end - start) + 1);
+      var i = start, n = 0;
       while (i !== end) {
         result[n++] = i;
-        i += step2;
+        i += step;
       }
       result[n] = i;
       return result;
     };
   };
   var replicateFill = function(count) {
-    return function(value12) {
+    return function(value) {
       if (count < 1) {
         return [];
       }
       var result = new Array(count);
-      return result.fill(value12);
+      return result.fill(value);
     };
   };
   var replicatePolyfill = function(count) {
-    return function(value12) {
+    return function(value) {
       var result = [];
       var n = 0;
       for (var i = 0; i < count; i++) {
-        result[n++] = value12;
+        result[n++] = value;
       }
       return result;
     };
@@ -336,14 +510,14 @@
       }
       return result;
     }
-    return function(foldr3) {
+    return function(foldr2) {
       return function(xs) {
-        return listToArray(foldr3(curryCons)(emptyList)(xs));
+        return listToArray(foldr2(curryCons)(emptyList)(xs));
       };
     };
   }();
-  var sortByImpl = function() {
-    function mergeFromTo(compare2, fromOrdering, xs1, xs2, from2, to) {
+  var sortByImpl2 = function() {
+    function mergeFromTo(compare, fromOrdering, xs1, xs2, from, to) {
       var mid;
       var i;
       var j;
@@ -351,18 +525,18 @@
       var x;
       var y;
       var c;
-      mid = from2 + (to - from2 >> 1);
-      if (mid - from2 > 1)
-        mergeFromTo(compare2, fromOrdering, xs2, xs1, from2, mid);
+      mid = from + (to - from >> 1);
+      if (mid - from > 1)
+        mergeFromTo(compare, fromOrdering, xs2, xs1, from, mid);
       if (to - mid > 1)
-        mergeFromTo(compare2, fromOrdering, xs2, xs1, mid, to);
-      i = from2;
+        mergeFromTo(compare, fromOrdering, xs2, xs1, mid, to);
+      i = from;
       j = mid;
-      k = from2;
+      k = from;
       while (i < mid && j < to) {
         x = xs2[i];
         y = xs2[j];
-        c = fromOrdering(compare2(x)(y));
+        c = fromOrdering(compare(x)(y));
         if (c > 0) {
           xs1[k++] = y;
           ++j;
@@ -378,486 +552,43 @@
         xs1[k++] = xs2[j++];
       }
     }
-    return function(compare2) {
+    return function(compare) {
       return function(fromOrdering) {
         return function(xs) {
           var out;
           if (xs.length < 2)
             return xs;
           out = xs.slice(0);
-          mergeFromTo(compare2, fromOrdering, out, xs.slice(0), 0, xs.length);
+          mergeFromTo(compare, fromOrdering, out, xs.slice(0), 0, xs.length);
           return out;
         };
       };
     };
   }();
 
-  // output/Control.Monad/index.js
-  var ap = function(dictMonad) {
-    var bind4 = bind(dictMonad.Bind1());
-    var pure7 = pure(dictMonad.Applicative0());
-    return function(f) {
-      return function(a) {
-        return bind4(f)(function(f$prime) {
-          return bind4(a)(function(a$prime) {
-            return pure7(f$prime(a$prime));
-          });
-        });
-      };
+  // output-es/Data.EuclideanRing/foreign.js
+  var intDiv = function(x) {
+    return function(y) {
+      if (y === 0)
+        return 0;
+      return y > 0 ? Math.floor(x / y) : -Math.floor(x / -y);
+    };
+  };
+  var intMod = function(x) {
+    return function(y) {
+      if (y === 0)
+        return 0;
+      var yy = Math.abs(y);
+      return (x % yy + yy) % yy;
     };
   };
 
-  // output/Data.Maybe/index.js
-  var Nothing = /* @__PURE__ */ function() {
-    function Nothing2() {
-    }
-    ;
-    Nothing2.value = new Nothing2();
-    return Nothing2;
-  }();
-  var Just = /* @__PURE__ */ function() {
-    function Just2(value0) {
-      this.value0 = value0;
-    }
-    ;
-    Just2.create = function(value0) {
-      return new Just2(value0);
-    };
-    return Just2;
-  }();
-  var functorMaybe = {
-    map: function(v) {
-      return function(v1) {
-        if (v1 instanceof Just) {
-          return new Just(v(v1.value0));
-        }
-        ;
-        return Nothing.value;
-      };
-    }
-  };
-  var map2 = /* @__PURE__ */ map(functorMaybe);
-  var applyMaybe = {
-    apply: function(v) {
-      return function(v1) {
-        if (v instanceof Just) {
-          return map2(v.value0)(v1);
-        }
-        ;
-        if (v instanceof Nothing) {
-          return Nothing.value;
-        }
-        ;
-        throw new Error("Failed pattern match at Data.Maybe (line 67, column 1 - line 69, column 30): " + [v.constructor.name, v1.constructor.name]);
-      };
-    },
-    Functor0: function() {
-      return functorMaybe;
-    }
-  };
-  var bindMaybe = {
-    bind: function(v) {
-      return function(v1) {
-        if (v instanceof Just) {
-          return v1(v.value0);
-        }
-        ;
-        if (v instanceof Nothing) {
-          return Nothing.value;
-        }
-        ;
-        throw new Error("Failed pattern match at Data.Maybe (line 125, column 1 - line 127, column 28): " + [v.constructor.name, v1.constructor.name]);
-      };
-    },
-    Apply0: function() {
-      return applyMaybe;
-    }
+  // output-es/Partial/foreign.js
+  var _crashWith = function(msg) {
+    throw new Error(msg);
   };
 
-  // output/Data.Either/index.js
-  var Left = /* @__PURE__ */ function() {
-    function Left2(value0) {
-      this.value0 = value0;
-    }
-    ;
-    Left2.create = function(value0) {
-      return new Left2(value0);
-    };
-    return Left2;
-  }();
-  var Right = /* @__PURE__ */ function() {
-    function Right2(value0) {
-      this.value0 = value0;
-    }
-    ;
-    Right2.create = function(value0) {
-      return new Right2(value0);
-    };
-    return Right2;
-  }();
-
-  // output/Effect/foreign.js
-  var pureE = function(a) {
-    return function() {
-      return a;
-    };
-  };
-  var bindE = function(a) {
-    return function(f) {
-      return function() {
-        return f(a())();
-      };
-    };
-  };
-
-  // output/Effect/index.js
-  var $runtime_lazy = function(name15, moduleName, init) {
-    var state3 = 0;
-    var val;
-    return function(lineNumber) {
-      if (state3 === 2)
-        return val;
-      if (state3 === 1)
-        throw new ReferenceError(name15 + " was needed before it finished initializing (module " + moduleName + ", line " + lineNumber + ")", moduleName, lineNumber);
-      state3 = 1;
-      val = init();
-      state3 = 2;
-      return val;
-    };
-  };
-  var monadEffect = {
-    Applicative0: function() {
-      return applicativeEffect;
-    },
-    Bind1: function() {
-      return bindEffect;
-    }
-  };
-  var bindEffect = {
-    bind: bindE,
-    Apply0: function() {
-      return $lazy_applyEffect(0);
-    }
-  };
-  var applicativeEffect = {
-    pure: pureE,
-    Apply0: function() {
-      return $lazy_applyEffect(0);
-    }
-  };
-  var $lazy_functorEffect = /* @__PURE__ */ $runtime_lazy("functorEffect", "Effect", function() {
-    return {
-      map: liftA1(applicativeEffect)
-    };
-  });
-  var $lazy_applyEffect = /* @__PURE__ */ $runtime_lazy("applyEffect", "Effect", function() {
-    return {
-      apply: ap(monadEffect),
-      Functor0: function() {
-        return $lazy_functorEffect(0);
-      }
-    };
-  });
-  var functorEffect = /* @__PURE__ */ $lazy_functorEffect(20);
-
-  // output/Effect.Ref/foreign.js
-  var _new = function(val) {
-    return function() {
-      return { value: val };
-    };
-  };
-  var read = function(ref) {
-    return function() {
-      return ref.value;
-    };
-  };
-  var write = function(val) {
-    return function(ref) {
-      return function() {
-        ref.value = val;
-      };
-    };
-  };
-
-  // output/Effect.Ref/index.js
-  var $$new = _new;
-
-  // output/Control.Monad.Rec.Class/index.js
-  var Loop = /* @__PURE__ */ function() {
-    function Loop2(value0) {
-      this.value0 = value0;
-    }
-    ;
-    Loop2.create = function(value0) {
-      return new Loop2(value0);
-    };
-    return Loop2;
-  }();
-  var Done = /* @__PURE__ */ function() {
-    function Done2(value0) {
-      this.value0 = value0;
-    }
-    ;
-    Done2.create = function(value0) {
-      return new Done2(value0);
-    };
-    return Done2;
-  }();
-  var tailRecM = function(dict) {
-    return dict.tailRecM;
-  };
-
-  // output/Data.Array.ST/foreign.js
-  var sortByImpl2 = function() {
-    function mergeFromTo(compare2, fromOrdering, xs1, xs2, from2, to) {
-      var mid;
-      var i;
-      var j;
-      var k;
-      var x;
-      var y;
-      var c;
-      mid = from2 + (to - from2 >> 1);
-      if (mid - from2 > 1)
-        mergeFromTo(compare2, fromOrdering, xs2, xs1, from2, mid);
-      if (to - mid > 1)
-        mergeFromTo(compare2, fromOrdering, xs2, xs1, mid, to);
-      i = from2;
-      j = mid;
-      k = from2;
-      while (i < mid && j < to) {
-        x = xs2[i];
-        y = xs2[j];
-        c = fromOrdering(compare2(x)(y));
-        if (c > 0) {
-          xs1[k++] = y;
-          ++j;
-        } else {
-          xs1[k++] = x;
-          ++i;
-        }
-      }
-      while (i < mid) {
-        xs1[k++] = xs2[i++];
-      }
-      while (j < to) {
-        xs1[k++] = xs2[j++];
-      }
-    }
-    return function(compare2) {
-      return function(fromOrdering) {
-        return function(xs) {
-          return function() {
-            if (xs.length < 2)
-              return xs;
-            mergeFromTo(compare2, fromOrdering, xs, xs.slice(0), 0, xs.length);
-            return xs;
-          };
-        };
-      };
-    };
-  }();
-
-  // output/Data.Foldable/foreign.js
-  var foldrArray = function(f) {
-    return function(init) {
-      return function(xs) {
-        var acc = init;
-        var len = xs.length;
-        for (var i = len - 1; i >= 0; i--) {
-          acc = f(xs[i])(acc);
-        }
-        return acc;
-      };
-    };
-  };
-  var foldlArray = function(f) {
-    return function(init) {
-      return function(xs) {
-        var acc = init;
-        var len = xs.length;
-        for (var i = 0; i < len; i++) {
-          acc = f(acc)(xs[i]);
-        }
-        return acc;
-      };
-    };
-  };
-
-  // output/Data.Bifunctor/index.js
-  var identity3 = /* @__PURE__ */ identity(categoryFn);
-  var bimap = function(dict) {
-    return dict.bimap;
-  };
-  var lmap = function(dictBifunctor) {
-    var bimap1 = bimap(dictBifunctor);
-    return function(f) {
-      return bimap1(f)(identity3);
-    };
-  };
-  var bifunctorTuple = {
-    bimap: function(f) {
-      return function(g) {
-        return function(v) {
-          return new Tuple(f(v.value0), g(v.value1));
-        };
-      };
-    }
-  };
-
-  // output/Unsafe.Coerce/foreign.js
-  var unsafeCoerce2 = function(x) {
-    return x;
-  };
-
-  // output/Data.Foldable/index.js
-  var foldr = function(dict) {
-    return dict.foldr;
-  };
-  var traverse_ = function(dictApplicative) {
-    var applySecond2 = applySecond(dictApplicative.Apply0());
-    var pure7 = pure(dictApplicative);
-    return function(dictFoldable) {
-      var foldr22 = foldr(dictFoldable);
-      return function(f) {
-        return foldr22(function($454) {
-          return applySecond2(f($454));
-        })(pure7(unit));
-      };
-    };
-  };
-  var for_ = function(dictApplicative) {
-    var traverse_1 = traverse_(dictApplicative);
-    return function(dictFoldable) {
-      return flip(traverse_1(dictFoldable));
-    };
-  };
-  var foldableMaybe = {
-    foldr: function(v) {
-      return function(v1) {
-        return function(v2) {
-          if (v2 instanceof Nothing) {
-            return v1;
-          }
-          ;
-          if (v2 instanceof Just) {
-            return v(v2.value0)(v1);
-          }
-          ;
-          throw new Error("Failed pattern match at Data.Foldable (line 138, column 1 - line 144, column 27): " + [v.constructor.name, v1.constructor.name, v2.constructor.name]);
-        };
-      };
-    },
-    foldl: function(v) {
-      return function(v1) {
-        return function(v2) {
-          if (v2 instanceof Nothing) {
-            return v1;
-          }
-          ;
-          if (v2 instanceof Just) {
-            return v(v1)(v2.value0);
-          }
-          ;
-          throw new Error("Failed pattern match at Data.Foldable (line 138, column 1 - line 144, column 27): " + [v.constructor.name, v1.constructor.name, v2.constructor.name]);
-        };
-      };
-    },
-    foldMap: function(dictMonoid) {
-      var mempty2 = mempty(dictMonoid);
-      return function(v) {
-        return function(v1) {
-          if (v1 instanceof Nothing) {
-            return mempty2;
-          }
-          ;
-          if (v1 instanceof Just) {
-            return v(v1.value0);
-          }
-          ;
-          throw new Error("Failed pattern match at Data.Foldable (line 138, column 1 - line 144, column 27): " + [v.constructor.name, v1.constructor.name]);
-        };
-      };
-    }
-  };
-  var foldMapDefaultR = function(dictFoldable) {
-    var foldr22 = foldr(dictFoldable);
-    return function(dictMonoid) {
-      var append5 = append(dictMonoid.Semigroup0());
-      var mempty2 = mempty(dictMonoid);
-      return function(f) {
-        return foldr22(function(x) {
-          return function(acc) {
-            return append5(f(x))(acc);
-          };
-        })(mempty2);
-      };
-    };
-  };
-  var foldableArray = {
-    foldr: foldrArray,
-    foldl: foldlArray,
-    foldMap: function(dictMonoid) {
-      return foldMapDefaultR(foldableArray)(dictMonoid);
-    }
-  };
-
-  // output/Data.Traversable/foreign.js
-  var traverseArrayImpl = function() {
-    function array1(a) {
-      return [a];
-    }
-    function array2(a) {
-      return function(b) {
-        return [a, b];
-      };
-    }
-    function array3(a) {
-      return function(b) {
-        return function(c) {
-          return [a, b, c];
-        };
-      };
-    }
-    function concat2(xs) {
-      return function(ys) {
-        return xs.concat(ys);
-      };
-    }
-    return function(apply2) {
-      return function(map7) {
-        return function(pure7) {
-          return function(f) {
-            return function(array) {
-              function go2(bot, top2) {
-                switch (top2 - bot) {
-                  case 0:
-                    return pure7([]);
-                  case 1:
-                    return map7(array1)(f(array[bot]));
-                  case 2:
-                    return apply2(map7(array2)(f(array[bot])))(f(array[bot + 1]));
-                  case 3:
-                    return apply2(apply2(map7(array3)(f(array[bot])))(f(array[bot + 1])))(f(array[bot + 2]));
-                  default:
-                    var pivot = bot + Math.floor((top2 - bot) / 4) * 2;
-                    return apply2(map7(concat2)(go2(bot, pivot)))(go2(pivot, top2));
-                }
-              }
-              return go2(0, array.length);
-            };
-          };
-        };
-      };
-    };
-  }();
-
-  // output/Data.Int/index.js
-  var even = function(x) {
-    return (x & 1) === 0;
-  };
-
-  // output/Effect.Aff/foreign.js
+  // output-es/Effect.Aff/foreign.js
   var Aff = function() {
     var EMPTY = {};
     var PURE = "Pure";
@@ -922,15 +653,15 @@
     }
     var Scheduler = function() {
       var limit = 1024;
-      var size3 = 0;
+      var size = 0;
       var ix = 0;
       var queue = new Array(limit);
       var draining = false;
       function drain() {
         var thunk;
         draining = true;
-        while (size3 !== 0) {
-          size3--;
+        while (size !== 0) {
+          size--;
           thunk = queue[ix];
           queue[ix] = void 0;
           ix = (ix + 1) % limit;
@@ -944,13 +675,13 @@
         },
         enqueue: function(cb) {
           var i, tmp;
-          if (size3 === limit) {
+          if (size === limit) {
             tmp = draining;
             drain();
             draining = tmp;
           }
-          queue[(ix + size3) % limit] = cb;
-          size3++;
+          queue[(ix + size) % limit] = cb;
+          size++;
           if (!draining) {
             drain();
           }
@@ -1034,8 +765,8 @@
     function Fiber(util, supervisor, aff) {
       var runTick = 0;
       var status = SUSPENDED;
-      var step2 = aff;
-      var fail = null;
+      var step = aff;
+      var fail2 = null;
       var interrupt = null;
       var bhead = null;
       var btail = null;
@@ -1044,7 +775,7 @@
       var joinId = 0;
       var joins = null;
       var rethrow = true;
-      function run3(localRunTick) {
+      function run2(localRunTick) {
         var tmp, result, attempt;
         while (true) {
           tmp = null;
@@ -1054,7 +785,7 @@
             case STEP_BIND:
               status = CONTINUE;
               try {
-                step2 = bhead(step2);
+                step = bhead(step);
                 if (btail === null) {
                   bhead = null;
                 } else {
@@ -1063,48 +794,48 @@
                 }
               } catch (e) {
                 status = RETURN;
-                fail = util.left(e);
-                step2 = null;
+                fail2 = util.left(e);
+                step = null;
               }
               break;
             case STEP_RESULT:
-              if (util.isLeft(step2)) {
+              if (util.isLeft(step)) {
                 status = RETURN;
-                fail = step2;
-                step2 = null;
+                fail2 = step;
+                step = null;
               } else if (bhead === null) {
                 status = RETURN;
               } else {
                 status = STEP_BIND;
-                step2 = util.fromRight(step2);
+                step = util.fromRight(step);
               }
               break;
             case CONTINUE:
-              switch (step2.tag) {
+              switch (step.tag) {
                 case BIND:
                   if (bhead) {
                     btail = new Aff2(CONS, bhead, btail);
                   }
-                  bhead = step2._2;
+                  bhead = step._2;
                   status = CONTINUE;
-                  step2 = step2._1;
+                  step = step._1;
                   break;
                 case PURE:
                   if (bhead === null) {
                     status = RETURN;
-                    step2 = util.right(step2._1);
+                    step = util.right(step._1);
                   } else {
                     status = STEP_BIND;
-                    step2 = step2._1;
+                    step = step._1;
                   }
                   break;
                 case SYNC:
                   status = STEP_RESULT;
-                  step2 = runSync(util.left, util.right, step2._1);
+                  step = runSync(util.left, util.right, step._1);
                   break;
                 case ASYNC:
                   status = PENDING;
-                  step2 = runAsync(util.left, step2._1, function(result2) {
+                  step = runAsync(util.left, step._1, function(result2) {
                     return function() {
                       if (runTick !== localRunTick) {
                         return;
@@ -1115,54 +846,54 @@
                           return;
                         }
                         status = STEP_RESULT;
-                        step2 = result2;
-                        run3(runTick);
+                        step = result2;
+                        run2(runTick);
                       });
                     };
                   });
                   return;
                 case THROW:
                   status = RETURN;
-                  fail = util.left(step2._1);
-                  step2 = null;
+                  fail2 = util.left(step._1);
+                  step = null;
                   break;
                 case CATCH:
                   if (bhead === null) {
-                    attempts = new Aff2(CONS, step2, attempts, interrupt);
+                    attempts = new Aff2(CONS, step, attempts, interrupt);
                   } else {
-                    attempts = new Aff2(CONS, step2, new Aff2(CONS, new Aff2(RESUME, bhead, btail), attempts, interrupt), interrupt);
+                    attempts = new Aff2(CONS, step, new Aff2(CONS, new Aff2(RESUME, bhead, btail), attempts, interrupt), interrupt);
                   }
                   bhead = null;
                   btail = null;
                   status = CONTINUE;
-                  step2 = step2._1;
+                  step = step._1;
                   break;
                 case BRACKET:
                   bracketCount++;
                   if (bhead === null) {
-                    attempts = new Aff2(CONS, step2, attempts, interrupt);
+                    attempts = new Aff2(CONS, step, attempts, interrupt);
                   } else {
-                    attempts = new Aff2(CONS, step2, new Aff2(CONS, new Aff2(RESUME, bhead, btail), attempts, interrupt), interrupt);
+                    attempts = new Aff2(CONS, step, new Aff2(CONS, new Aff2(RESUME, bhead, btail), attempts, interrupt), interrupt);
                   }
                   bhead = null;
                   btail = null;
                   status = CONTINUE;
-                  step2 = step2._1;
+                  step = step._1;
                   break;
                 case FORK:
                   status = STEP_RESULT;
-                  tmp = Fiber(util, supervisor, step2._2);
+                  tmp = Fiber(util, supervisor, step._2);
                   if (supervisor) {
                     supervisor.register(tmp);
                   }
-                  if (step2._1) {
+                  if (step._1) {
                     tmp.run();
                   }
-                  step2 = util.right(tmp);
+                  step = util.right(tmp);
                   break;
                 case SEQ:
                   status = CONTINUE;
-                  step2 = sequential2(util, supervisor, step2._1);
+                  step = sequential(util, supervisor, step._1);
                   break;
               }
               break;
@@ -1171,7 +902,7 @@
               btail = null;
               if (attempts === null) {
                 status = COMPLETED;
-                step2 = interrupt || fail || step2;
+                step = interrupt || fail2 || step;
               } else {
                 tmp = attempts._3;
                 attempt = attempts._1;
@@ -1180,57 +911,57 @@
                   case CATCH:
                     if (interrupt && interrupt !== tmp && bracketCount === 0) {
                       status = RETURN;
-                    } else if (fail) {
+                    } else if (fail2) {
                       status = CONTINUE;
-                      step2 = attempt._2(util.fromLeft(fail));
-                      fail = null;
+                      step = attempt._2(util.fromLeft(fail2));
+                      fail2 = null;
                     }
                     break;
                   case RESUME:
-                    if (interrupt && interrupt !== tmp && bracketCount === 0 || fail) {
+                    if (interrupt && interrupt !== tmp && bracketCount === 0 || fail2) {
                       status = RETURN;
                     } else {
                       bhead = attempt._1;
                       btail = attempt._2;
                       status = STEP_BIND;
-                      step2 = util.fromRight(step2);
+                      step = util.fromRight(step);
                     }
                     break;
                   case BRACKET:
                     bracketCount--;
-                    if (fail === null) {
-                      result = util.fromRight(step2);
+                    if (fail2 === null) {
+                      result = util.fromRight(step);
                       attempts = new Aff2(CONS, new Aff2(RELEASE, attempt._2, result), attempts, tmp);
                       if (interrupt === tmp || bracketCount > 0) {
                         status = CONTINUE;
-                        step2 = attempt._3(result);
+                        step = attempt._3(result);
                       }
                     }
                     break;
                   case RELEASE:
-                    attempts = new Aff2(CONS, new Aff2(FINALIZED, step2, fail), attempts, interrupt);
+                    attempts = new Aff2(CONS, new Aff2(FINALIZED, step, fail2), attempts, interrupt);
                     status = CONTINUE;
                     if (interrupt && interrupt !== tmp && bracketCount === 0) {
-                      step2 = attempt._1.killed(util.fromLeft(interrupt))(attempt._2);
-                    } else if (fail) {
-                      step2 = attempt._1.failed(util.fromLeft(fail))(attempt._2);
+                      step = attempt._1.killed(util.fromLeft(interrupt))(attempt._2);
+                    } else if (fail2) {
+                      step = attempt._1.failed(util.fromLeft(fail2))(attempt._2);
                     } else {
-                      step2 = attempt._1.completed(util.fromRight(step2))(attempt._2);
+                      step = attempt._1.completed(util.fromRight(step))(attempt._2);
                     }
-                    fail = null;
+                    fail2 = null;
                     bracketCount++;
                     break;
                   case FINALIZER:
                     bracketCount++;
-                    attempts = new Aff2(CONS, new Aff2(FINALIZED, step2, fail), attempts, interrupt);
+                    attempts = new Aff2(CONS, new Aff2(FINALIZED, step, fail2), attempts, interrupt);
                     status = CONTINUE;
-                    step2 = attempt._1;
+                    step = attempt._1;
                     break;
                   case FINALIZED:
                     bracketCount--;
                     status = RETURN;
-                    step2 = attempt._1;
-                    fail = attempt._2;
+                    step = attempt._1;
+                    fail2 = attempt._2;
                     break;
                 }
               }
@@ -1239,18 +970,18 @@
               for (var k in joins) {
                 if (joins.hasOwnProperty(k)) {
                   rethrow = rethrow && joins[k].rethrow;
-                  runEff(joins[k].handler(step2));
+                  runEff(joins[k].handler(step));
                 }
               }
               joins = null;
-              if (interrupt && fail) {
+              if (interrupt && fail2) {
                 setTimeout(function() {
-                  throw util.fromLeft(fail);
+                  throw util.fromLeft(fail2);
                 }, 0);
-              } else if (util.isLeft(step2) && rethrow) {
+              } else if (util.isLeft(step) && rethrow) {
                 setTimeout(function() {
                   if (rethrow) {
-                    throw util.fromLeft(step2);
+                    throw util.fromLeft(step);
                   }
                 }, 0);
               }
@@ -1263,17 +994,17 @@
           }
         }
       }
-      function onComplete(join3) {
+      function onComplete(join2) {
         return function() {
           if (status === COMPLETED) {
-            rethrow = rethrow && join3.rethrow;
-            join3.handler(step2)();
+            rethrow = rethrow && join2.rethrow;
+            join2.handler(step)();
             return function() {
             };
           }
           var jid = joinId++;
           joins = joins || {};
-          joins[jid] = join3;
+          joins[jid] = join2;
           return function() {
             if (joins !== null) {
               delete joins[jid];
@@ -1298,8 +1029,8 @@
             case SUSPENDED:
               interrupt = util.left(error2);
               status = COMPLETED;
-              step2 = interrupt;
-              run3(runTick);
+              step = interrupt;
+              run2(runTick);
               break;
             case PENDING:
               if (interrupt === null) {
@@ -1307,12 +1038,12 @@
               }
               if (bracketCount === 0) {
                 if (status === PENDING) {
-                  attempts = new Aff2(CONS, new Aff2(FINALIZER, step2(error2)), attempts, interrupt);
+                  attempts = new Aff2(CONS, new Aff2(FINALIZER, step(error2)), attempts, interrupt);
                 }
                 status = RETURN;
-                step2 = null;
-                fail = null;
-                run3(++runTick);
+                step = null;
+                fail2 = null;
+                run2(++runTick);
               }
               break;
             default:
@@ -1321,28 +1052,28 @@
               }
               if (bracketCount === 0) {
                 status = RETURN;
-                step2 = null;
-                fail = null;
+                step = null;
+                fail2 = null;
               }
           }
           return canceler;
         };
       }
-      function join2(cb) {
+      function join(cb) {
         return function() {
           var canceler = onComplete({
             rethrow: false,
             handler: cb
           })();
           if (status === SUSPENDED) {
-            run3(runTick);
+            run2(runTick);
           }
           return canceler;
         };
       }
       return {
         kill,
-        join: join2,
+        join,
         onComplete,
         isSuspended: function() {
           return status === SUSPENDED;
@@ -1351,10 +1082,10 @@
           if (status === SUSPENDED) {
             if (!Scheduler.isDraining()) {
               Scheduler.enqueue(function() {
-                run3(runTick);
+                run2(runTick);
               });
             } else {
-              run3(runTick);
+              run2(runTick);
             }
           }
         }
@@ -1369,7 +1100,7 @@
       var interrupt = null;
       var root = EMPTY;
       function kill(error2, par2, cb2) {
-        var step2 = par2;
+        var step = par2;
         var head = null;
         var tail = null;
         var count = 0;
@@ -1378,10 +1109,10 @@
         loop:
           while (true) {
             tmp = null;
-            switch (step2.tag) {
+            switch (step.tag) {
               case FORKED:
-                if (step2._3 === EMPTY) {
-                  tmp = fibers[step2._1];
+                if (step._3 === EMPTY) {
+                  tmp = fibers[step._1];
                   kills2[count++] = tmp.kill(error2, function(result) {
                     return function() {
                       count--;
@@ -1394,7 +1125,7 @@
                 if (head === null) {
                   break loop;
                 }
-                step2 = head._2;
+                step = head._2;
                 if (tail === null) {
                   head = null;
                 } else {
@@ -1403,15 +1134,15 @@
                 }
                 break;
               case MAP:
-                step2 = step2._2;
+                step = step._2;
                 break;
               case APPLY:
               case ALT:
                 if (head) {
                   tail = new Aff2(CONS, head, tail);
                 }
-                head = step2;
-                step2 = step2._1;
+                head = step;
+                step = step._1;
                 break;
             }
           }
@@ -1426,14 +1157,14 @@
         }
         return kills2;
       }
-      function join2(result, head, tail) {
-        var fail, step2, lhs, rhs, tmp, kid;
+      function join(result, head, tail) {
+        var fail2, step, lhs, rhs, tmp, kid;
         if (util.isLeft(result)) {
-          fail = result;
-          step2 = null;
+          fail2 = result;
+          step = null;
         } else {
-          step2 = result;
-          fail = null;
+          step = result;
+          fail2 = null;
         }
         loop:
           while (true) {
@@ -1445,7 +1176,7 @@
               return;
             }
             if (head === null) {
-              cb(fail || step2)();
+              cb(fail2 || step)();
               return;
             }
             if (head._3 !== EMPTY) {
@@ -1453,29 +1184,29 @@
             }
             switch (head.tag) {
               case MAP:
-                if (fail === null) {
-                  head._3 = util.right(head._1(util.fromRight(step2)));
-                  step2 = head._3;
+                if (fail2 === null) {
+                  head._3 = util.right(head._1(util.fromRight(step)));
+                  step = head._3;
                 } else {
-                  head._3 = fail;
+                  head._3 = fail2;
                 }
                 break;
               case APPLY:
                 lhs = head._1._3;
                 rhs = head._2._3;
-                if (fail) {
-                  head._3 = fail;
+                if (fail2) {
+                  head._3 = fail2;
                   tmp = true;
                   kid = killId++;
-                  kills[kid] = kill(early, fail === lhs ? head._2 : head._1, function() {
+                  kills[kid] = kill(early, fail2 === lhs ? head._2 : head._1, function() {
                     return function() {
                       delete kills[kid];
                       if (tmp) {
                         tmp = false;
                       } else if (tail === null) {
-                        join2(fail, null, null);
+                        join(fail2, null, null);
                       } else {
-                        join2(fail, tail._1, tail._2);
+                        join(fail2, tail._1, tail._2);
                       }
                     };
                   });
@@ -1486,8 +1217,8 @@
                 } else if (lhs === EMPTY || rhs === EMPTY) {
                   return;
                 } else {
-                  step2 = util.right(util.fromRight(lhs)(util.fromRight(rhs)));
-                  head._3 = step2;
+                  step = util.right(util.fromRight(lhs)(util.fromRight(rhs)));
+                  head._3 = step;
                 }
                 break;
               case ALT:
@@ -1497,22 +1228,22 @@
                   return;
                 }
                 if (lhs !== EMPTY && util.isLeft(lhs) && rhs !== EMPTY && util.isLeft(rhs)) {
-                  fail = step2 === lhs ? rhs : lhs;
-                  step2 = null;
-                  head._3 = fail;
+                  fail2 = step === lhs ? rhs : lhs;
+                  step = null;
+                  head._3 = fail2;
                 } else {
-                  head._3 = step2;
+                  head._3 = step;
                   tmp = true;
                   kid = killId++;
-                  kills[kid] = kill(early, step2 === lhs ? head._2 : head._1, function() {
+                  kills[kid] = kill(early, step === lhs ? head._2 : head._1, function() {
                     return function() {
                       delete kills[kid];
                       if (tmp) {
                         tmp = false;
                       } else if (tail === null) {
-                        join2(step2, null, null);
+                        join(step, null, null);
                       } else {
-                        join2(step2, tail._1, tail._2);
+                        join(step, tail._1, tail._2);
                       }
                     };
                   });
@@ -1536,13 +1267,13 @@
           return function() {
             delete fibers[fiber._1];
             fiber._3 = result;
-            join2(result, fiber._2._1, fiber._2._2);
+            join(result, fiber._2._1, fiber._2._2);
           };
         };
       }
-      function run3() {
+      function run2() {
         var status = CONTINUE;
-        var step2 = par;
+        var step = par;
         var head = null;
         var tail = null;
         var tmp, fid;
@@ -1552,37 +1283,37 @@
             fid = null;
             switch (status) {
               case CONTINUE:
-                switch (step2.tag) {
+                switch (step.tag) {
                   case MAP:
                     if (head) {
                       tail = new Aff2(CONS, head, tail);
                     }
-                    head = new Aff2(MAP, step2._1, EMPTY, EMPTY);
-                    step2 = step2._2;
+                    head = new Aff2(MAP, step._1, EMPTY, EMPTY);
+                    step = step._2;
                     break;
                   case APPLY:
                     if (head) {
                       tail = new Aff2(CONS, head, tail);
                     }
-                    head = new Aff2(APPLY, EMPTY, step2._2, EMPTY);
-                    step2 = step2._1;
+                    head = new Aff2(APPLY, EMPTY, step._2, EMPTY);
+                    step = step._1;
                     break;
                   case ALT:
                     if (head) {
                       tail = new Aff2(CONS, head, tail);
                     }
-                    head = new Aff2(ALT, EMPTY, step2._2, EMPTY);
-                    step2 = step2._1;
+                    head = new Aff2(ALT, EMPTY, step._2, EMPTY);
+                    step = step._1;
                     break;
                   default:
                     fid = fiberId++;
                     status = RETURN;
-                    tmp = step2;
-                    step2 = new Aff2(FORKED, fid, new Aff2(CONS, head, tail), EMPTY);
+                    tmp = step;
+                    step = new Aff2(FORKED, fid, new Aff2(CONS, head, tail), EMPTY);
                     tmp = Fiber(util, supervisor, tmp);
                     tmp.onComplete({
                       rethrow: false,
-                      handler: resolve(step2)
+                      handler: resolve(step)
                     })();
                     fibers[fid] = tmp;
                     if (supervisor) {
@@ -1595,13 +1326,13 @@
                   break loop;
                 }
                 if (head._1 === EMPTY) {
-                  head._1 = step2;
+                  head._1 = step;
                   status = CONTINUE;
-                  step2 = head._2;
+                  step = head._2;
                   head._2 = EMPTY;
                 } else {
-                  head._2 = step2;
-                  step2 = head;
+                  head._2 = step;
+                  step = head;
                   if (tail === null) {
                     head = null;
                   } else {
@@ -1611,7 +1342,7 @@
                 }
             }
           }
-        root = step2;
+        root = step;
         for (fid = 0; fid < fiberId; fid++) {
           fibers[fid].run();
         }
@@ -1644,7 +1375,7 @@
           });
         };
       }
-      run3();
+      run2();
       return function(killError) {
         return new Aff2(ASYNC, function(killCb) {
           return function() {
@@ -1653,7 +1384,7 @@
         });
       };
     }
-    function sequential2(util, supervisor, par) {
+    function sequential(util, supervisor, par) {
       return new Aff2(ASYNC, function(cb) {
         return function() {
           return runPar(util, supervisor, par, cb);
@@ -1686,8 +1417,8 @@
       if (aff.tag === Aff.Pure.tag) {
         return Aff.Pure(f(aff._1));
       } else {
-        return Aff.Bind(aff, function(value12) {
-          return Aff.Pure(f(value12));
+        return Aff.Bind(aff, function(value) {
+          return Aff.Pure(f(value));
         });
       }
     };
@@ -1734,611 +1465,283 @@
   }();
   var _sequential = Aff.Seq;
 
-  // output/Effect.Class/index.js
-  var liftEffect = function(dict) {
-    return dict.liftEffect;
-  };
-
-  // output/Partial.Unsafe/foreign.js
-  var _unsafePartial = function(f) {
-    return f();
-  };
-
-  // output/Partial/foreign.js
-  var _crashWith = function(msg) {
-    throw new Error(msg);
-  };
-
-  // output/Partial/index.js
-  var crashWith = function() {
-    return _crashWith;
-  };
-
-  // output/Partial.Unsafe/index.js
-  var crashWith2 = /* @__PURE__ */ crashWith();
-  var unsafePartial = _unsafePartial;
-  var unsafeCrashWith = function(msg) {
-    return unsafePartial(function() {
-      return crashWith2(msg);
-    });
-  };
-
-  // output/Effect.Aff/index.js
-  var $runtime_lazy2 = function(name15, moduleName, init) {
-    var state3 = 0;
-    var val;
-    return function(lineNumber) {
-      if (state3 === 2)
-        return val;
-      if (state3 === 1)
-        throw new ReferenceError(name15 + " was needed before it finished initializing (module " + moduleName + ", line " + lineNumber + ")", moduleName, lineNumber);
-      state3 = 1;
-      val = init();
-      state3 = 2;
-      return val;
-    };
-  };
-  var $$void2 = /* @__PURE__ */ $$void(functorEffect);
-  var functorAff = {
-    map: _map
-  };
-  var ffiUtil = /* @__PURE__ */ function() {
-    var unsafeFromRight = function(v) {
-      if (v instanceof Right) {
-        return v.value0;
-      }
-      ;
-      if (v instanceof Left) {
-        return unsafeCrashWith("unsafeFromRight: Left");
-      }
-      ;
-      throw new Error("Failed pattern match at Effect.Aff (line 412, column 21 - line 414, column 54): " + [v.constructor.name]);
-    };
-    var unsafeFromLeft = function(v) {
-      if (v instanceof Left) {
-        return v.value0;
-      }
-      ;
-      if (v instanceof Right) {
-        return unsafeCrashWith("unsafeFromLeft: Right");
-      }
-      ;
-      throw new Error("Failed pattern match at Effect.Aff (line 407, column 20 - line 409, column 55): " + [v.constructor.name]);
-    };
-    var isLeft = function(v) {
-      if (v instanceof Left) {
+  // output-es/Effect.Aff/index.js
+  var functorAff = { map: _map };
+  var ffiUtil = {
+    isLeft: (v) => {
+      if (v.tag === "Left") {
         return true;
       }
-      ;
-      if (v instanceof Right) {
+      if (v.tag === "Right") {
         return false;
       }
-      ;
-      throw new Error("Failed pattern match at Effect.Aff (line 402, column 12 - line 404, column 21): " + [v.constructor.name]);
-    };
-    return {
-      isLeft,
-      fromLeft: unsafeFromLeft,
-      fromRight: unsafeFromRight,
-      left: Left.create,
-      right: Right.create
-    };
-  }();
-  var makeFiber = function(aff) {
-    return _makeFiber(ffiUtil, aff);
-  };
-  var launchAff = function(aff) {
-    return function __do() {
-      var fiber = makeFiber(aff)();
-      fiber.run();
-      return fiber;
-    };
-  };
-  var launchAff_ = function($74) {
-    return $$void2(launchAff($74));
-  };
-  var delay = function(v) {
-    return _delay(Right.create, v);
-  };
-  var monadAff = {
-    Applicative0: function() {
-      return applicativeAff;
+      fail();
     },
-    Bind1: function() {
-      return bindAff;
-    }
-  };
-  var bindAff = {
-    bind: _bind,
-    Apply0: function() {
-      return $lazy_applyAff(0);
-    }
-  };
-  var applicativeAff = {
-    pure: _pure,
-    Apply0: function() {
-      return $lazy_applyAff(0);
-    }
-  };
-  var $lazy_applyAff = /* @__PURE__ */ $runtime_lazy2("applyAff", "Effect.Aff", function() {
-    return {
-      apply: ap(monadAff),
-      Functor0: function() {
-        return functorAff;
+    fromLeft: (v) => {
+      if (v.tag === "Left") {
+        return v._1;
       }
-    };
-  });
-  var pure2 = /* @__PURE__ */ pure(applicativeAff);
-  var bind1 = /* @__PURE__ */ bind(bindAff);
-  var monadEffectAff = {
-    liftEffect: _liftEffect,
-    Monad0: function() {
-      return monadAff;
-    }
+      if (v.tag === "Right") {
+        return _crashWith("unsafeFromLeft: Right");
+      }
+      fail();
+    },
+    fromRight: (v) => {
+      if (v.tag === "Right") {
+        return v._1;
+      }
+      if (v.tag === "Left") {
+        return _crashWith("unsafeFromRight: Left");
+      }
+      fail();
+    },
+    left: Left,
+    right: Right
   };
+  var monadAff = { Applicative0: () => applicativeAff, Bind1: () => bindAff };
+  var bindAff = { bind: _bind, Apply0: () => applyAff };
+  var applyAff = { apply: (f) => (a) => _bind(f)((f$p) => _bind(a)((a$p) => applicativeAff.pure(f$p(a$p)))), Functor0: () => functorAff };
+  var applicativeAff = { pure: _pure, Apply0: () => applyAff };
+  var monadEffectAff = { liftEffect: _liftEffect, Monad0: () => monadAff };
   var monadRecAff = {
-    tailRecM: function(k) {
-      var go2 = function(a) {
-        return bind1(k(a))(function(res) {
-          if (res instanceof Done) {
-            return pure2(res.value0);
-          }
-          ;
-          if (res instanceof Loop) {
-            return go2(res.value0);
-          }
-          ;
-          throw new Error("Failed pattern match at Effect.Aff (line 104, column 7 - line 106, column 23): " + [res.constructor.name]);
-        });
-      };
-      return go2;
+    tailRecM: (k) => {
+      const go = (a) => _bind(k(a))((res) => {
+        if (res.tag === "Done") {
+          return _pure(res._1);
+        }
+        if (res.tag === "Loop") {
+          return go(res._1);
+        }
+        fail();
+      });
+      return go;
     },
-    Monad0: function() {
-      return monadAff;
-    }
+    Monad0: () => monadAff
   };
 
-  // output/Effect.Aff.Class/index.js
-  var monadAffAff = {
-    liftAff: /* @__PURE__ */ identity(categoryFn),
-    MonadEffect0: function() {
-      return monadEffectAff;
-    }
-  };
-  var liftAff = function(dict) {
-    return dict.liftAff;
-  };
+  // output-es/Effect.Aff.Class/index.js
+  var monadAffAff = { liftAff: (x) => x, MonadEffect0: () => monadEffectAff };
 
-  // output/Data.List.Types/index.js
-  var Nil = /* @__PURE__ */ function() {
-    function Nil2() {
-    }
-    ;
-    Nil2.value = new Nil2();
-    return Nil2;
-  }();
-  var Cons = /* @__PURE__ */ function() {
-    function Cons2(value0, value1) {
-      this.value0 = value0;
-      this.value1 = value1;
-    }
-    ;
-    Cons2.create = function(value0) {
-      return function(value1) {
-        return new Cons2(value0, value1);
-      };
-    };
-    return Cons2;
-  }();
-
-  // output/Data.List/index.js
-  var reverse2 = /* @__PURE__ */ function() {
-    var go2 = function($copy_v) {
-      return function($copy_v1) {
-        var $tco_var_v = $copy_v;
-        var $tco_done = false;
-        var $tco_result;
-        function $tco_loop(v, v1) {
-          if (v1 instanceof Nil) {
-            $tco_done = true;
-            return v;
-          }
-          ;
-          if (v1 instanceof Cons) {
-            $tco_var_v = new Cons(v1.value0, v);
-            $copy_v1 = v1.value1;
-            return;
-          }
-          ;
-          throw new Error("Failed pattern match at Data.List (line 368, column 3 - line 368, column 19): " + [v.constructor.name, v1.constructor.name]);
+  // output-es/Data.Map.Internal/index.js
+  var $KickUp = (_1, _2, _3, _4) => ({ tag: "KickUp", _1, _2, _3, _4 });
+  var $$$Map = (tag, _1, _2, _3, _4, _5, _6, _7) => ({ tag, _1, _2, _3, _4, _5, _6, _7 });
+  var $TreeContext = (tag, _1, _2, _3, _4, _5, _6) => ({ tag, _1, _2, _3, _4, _5, _6 });
+  var Leaf2 = /* @__PURE__ */ $$$Map("Leaf");
+  var lookup = (dictOrd) => (k) => {
+    const go = (go$a0$copy) => {
+      let go$a0 = go$a0$copy, go$c = true, go$r;
+      while (go$c) {
+        const v = go$a0;
+        if (v.tag === "Leaf") {
+          go$c = false;
+          go$r = Nothing;
+          continue;
         }
-        ;
-        while (!$tco_done) {
-          $tco_result = $tco_loop($tco_var_v, $copy_v1);
+        if (v.tag === "Two") {
+          const v2 = dictOrd.compare(k)(v._2);
+          if (v2.tag === "EQ") {
+            go$c = false;
+            go$r = $Maybe("Just", v._3);
+            continue;
+          }
+          if (v2.tag === "LT") {
+            go$a0 = v._1;
+            continue;
+          }
+          go$a0 = v._4;
+          continue;
         }
-        ;
-        return $tco_result;
-      };
+        if (v.tag === "Three") {
+          const v3 = dictOrd.compare(k)(v._2);
+          if (v3.tag === "EQ") {
+            go$c = false;
+            go$r = $Maybe("Just", v._3);
+            continue;
+          }
+          const v4 = dictOrd.compare(k)(v._5);
+          if (v4.tag === "EQ") {
+            go$c = false;
+            go$r = $Maybe("Just", v._6);
+            continue;
+          }
+          if (v3.tag === "LT") {
+            go$a0 = v._1;
+            continue;
+          }
+          if (v4.tag === "GT") {
+            go$a0 = v._7;
+            continue;
+          }
+          go$a0 = v._4;
+          continue;
+        }
+        fail();
+      }
+      return go$r;
     };
-    return go2(Nil.value);
-  }();
-
-  // output/Data.CatQueue/index.js
-  var CatQueue = /* @__PURE__ */ function() {
-    function CatQueue2(value0, value1) {
-      this.value0 = value0;
-      this.value1 = value1;
-    }
-    ;
-    CatQueue2.create = function(value0) {
-      return function(value1) {
-        return new CatQueue2(value0, value1);
-      };
-    };
-    return CatQueue2;
-  }();
-  var uncons = function($copy_v) {
-    var $tco_done = false;
-    var $tco_result;
-    function $tco_loop(v) {
-      if (v.value0 instanceof Nil && v.value1 instanceof Nil) {
-        $tco_done = true;
-        return Nothing.value;
-      }
-      ;
-      if (v.value0 instanceof Nil) {
-        $copy_v = new CatQueue(reverse2(v.value1), Nil.value);
-        return;
-      }
-      ;
-      if (v.value0 instanceof Cons) {
-        $tco_done = true;
-        return new Just(new Tuple(v.value0.value0, new CatQueue(v.value0.value1, v.value1)));
-      }
-      ;
-      throw new Error("Failed pattern match at Data.CatQueue (line 82, column 1 - line 82, column 63): " + [v.constructor.name]);
-    }
-    ;
-    while (!$tco_done) {
-      $tco_result = $tco_loop($copy_v);
-    }
-    ;
-    return $tco_result;
+    return go;
   };
-  var snoc = function(v) {
-    return function(a) {
-      return new CatQueue(v.value0, new Cons(a, v.value1));
-    };
-  };
-  var $$null = function(v) {
-    if (v.value0 instanceof Nil && v.value1 instanceof Nil) {
-      return true;
-    }
-    ;
-    return false;
-  };
-  var empty2 = /* @__PURE__ */ function() {
-    return new CatQueue(Nil.value, Nil.value);
-  }();
-
-  // output/Data.CatList/index.js
-  var CatNil = /* @__PURE__ */ function() {
-    function CatNil2() {
-    }
-    ;
-    CatNil2.value = new CatNil2();
-    return CatNil2;
-  }();
-  var CatCons = /* @__PURE__ */ function() {
-    function CatCons2(value0, value1) {
-      this.value0 = value0;
-      this.value1 = value1;
-    }
-    ;
-    CatCons2.create = function(value0) {
-      return function(value1) {
-        return new CatCons2(value0, value1);
-      };
-    };
-    return CatCons2;
-  }();
-  var link = function(v) {
-    return function(v1) {
-      if (v instanceof CatNil) {
-        return v1;
+  var fromZipper = (fromZipper$a0$copy) => (fromZipper$a1$copy) => (fromZipper$a2$copy) => {
+    let fromZipper$a0 = fromZipper$a0$copy, fromZipper$a1 = fromZipper$a1$copy, fromZipper$a2 = fromZipper$a2$copy, fromZipper$c = true, fromZipper$r;
+    while (fromZipper$c) {
+      const dictOrd = fromZipper$a0, v = fromZipper$a1, v1 = fromZipper$a2;
+      if (v.tag === "Nil") {
+        fromZipper$c = false;
+        fromZipper$r = v1;
+        continue;
       }
-      ;
-      if (v1 instanceof CatNil) {
-        return v;
+      if (v.tag === "Cons") {
+        if (v._1.tag === "TwoLeft") {
+          fromZipper$a0 = dictOrd;
+          fromZipper$a1 = v._2;
+          fromZipper$a2 = $$$Map("Two", v1, v._1._1, v._1._2, v._1._3);
+          continue;
+        }
+        if (v._1.tag === "TwoRight") {
+          fromZipper$a0 = dictOrd;
+          fromZipper$a1 = v._2;
+          fromZipper$a2 = $$$Map("Two", v._1._1, v._1._2, v._1._3, v1);
+          continue;
+        }
+        if (v._1.tag === "ThreeLeft") {
+          fromZipper$a0 = dictOrd;
+          fromZipper$a1 = v._2;
+          fromZipper$a2 = $$$Map("Three", v1, v._1._1, v._1._2, v._1._3, v._1._4, v._1._5, v._1._6);
+          continue;
+        }
+        if (v._1.tag === "ThreeMiddle") {
+          fromZipper$a0 = dictOrd;
+          fromZipper$a1 = v._2;
+          fromZipper$a2 = $$$Map("Three", v._1._1, v._1._2, v._1._3, v1, v._1._4, v._1._5, v._1._6);
+          continue;
+        }
+        if (v._1.tag === "ThreeRight") {
+          fromZipper$a0 = dictOrd;
+          fromZipper$a1 = v._2;
+          fromZipper$a2 = $$$Map("Three", v._1._1, v._1._2, v._1._3, v._1._4, v._1._5, v._1._6, v1);
+          continue;
+        }
+        fail();
       }
-      ;
-      if (v instanceof CatCons) {
-        return new CatCons(v.value0, snoc(v.value1)(v1));
-      }
-      ;
-      throw new Error("Failed pattern match at Data.CatList (line 108, column 1 - line 108, column 54): " + [v.constructor.name, v1.constructor.name]);
-    };
+      fail();
+    }
+    return fromZipper$r;
   };
-  var foldr2 = function(k) {
-    return function(b) {
-      return function(q) {
-        var foldl2 = function($copy_v) {
-          return function($copy_v1) {
-            return function($copy_v2) {
-              var $tco_var_v = $copy_v;
-              var $tco_var_v1 = $copy_v1;
-              var $tco_done = false;
-              var $tco_result;
-              function $tco_loop(v, v1, v2) {
-                if (v2 instanceof Nil) {
-                  $tco_done = true;
-                  return v1;
-                }
-                ;
-                if (v2 instanceof Cons) {
-                  $tco_var_v = v;
-                  $tco_var_v1 = v(v1)(v2.value0);
-                  $copy_v2 = v2.value1;
-                  return;
-                }
-                ;
-                throw new Error("Failed pattern match at Data.CatList (line 124, column 3 - line 124, column 59): " + [v.constructor.name, v1.constructor.name, v2.constructor.name]);
-              }
-              ;
-              while (!$tco_done) {
-                $tco_result = $tco_loop($tco_var_v, $tco_var_v1, $copy_v2);
-              }
-              ;
-              return $tco_result;
-            };
-          };
-        };
-        var go2 = function($copy_xs) {
-          return function($copy_ys) {
-            var $tco_var_xs = $copy_xs;
-            var $tco_done1 = false;
-            var $tco_result;
-            function $tco_loop(xs, ys) {
-              var v = uncons(xs);
-              if (v instanceof Nothing) {
-                $tco_done1 = true;
-                return foldl2(function(x) {
-                  return function(i) {
-                    return i(x);
-                  };
-                })(b)(ys);
-              }
-              ;
-              if (v instanceof Just) {
-                $tco_var_xs = v.value0.value1;
-                $copy_ys = new Cons(k(v.value0.value0), ys);
-                return;
-              }
-              ;
-              throw new Error("Failed pattern match at Data.CatList (line 120, column 14 - line 122, column 67): " + [v.constructor.name]);
+  var insert = (dictOrd) => (k) => (v) => {
+    const up = (up$a0$copy) => (up$a1$copy) => {
+      let up$a0 = up$a0$copy, up$a1 = up$a1$copy, up$c = true, up$r;
+      while (up$c) {
+        const v1 = up$a0, v2 = up$a1;
+        if (v1.tag === "Nil") {
+          up$c = false;
+          up$r = $$$Map("Two", v2._1, v2._2, v2._3, v2._4);
+          continue;
+        }
+        if (v1.tag === "Cons") {
+          if (v1._1.tag === "TwoLeft") {
+            up$c = false;
+            up$r = fromZipper(dictOrd)(v1._2)($$$Map("Three", v2._1, v2._2, v2._3, v2._4, v1._1._1, v1._1._2, v1._1._3));
+            continue;
+          }
+          if (v1._1.tag === "TwoRight") {
+            up$c = false;
+            up$r = fromZipper(dictOrd)(v1._2)($$$Map("Three", v1._1._1, v1._1._2, v1._1._3, v2._1, v2._2, v2._3, v2._4));
+            continue;
+          }
+          if (v1._1.tag === "ThreeLeft") {
+            up$a0 = v1._2;
+            up$a1 = $KickUp($$$Map("Two", v2._1, v2._2, v2._3, v2._4), v1._1._1, v1._1._2, $$$Map("Two", v1._1._3, v1._1._4, v1._1._5, v1._1._6));
+            continue;
+          }
+          if (v1._1.tag === "ThreeMiddle") {
+            up$a0 = v1._2;
+            up$a1 = $KickUp($$$Map("Two", v1._1._1, v1._1._2, v1._1._3, v2._1), v2._2, v2._3, $$$Map("Two", v2._4, v1._1._4, v1._1._5, v1._1._6));
+            continue;
+          }
+          if (v1._1.tag === "ThreeRight") {
+            up$a0 = v1._2;
+            up$a1 = $KickUp($$$Map("Two", v1._1._1, v1._1._2, v1._1._3, v1._1._4), v1._1._5, v1._1._6, $$$Map("Two", v2._1, v2._2, v2._3, v2._4));
+            continue;
+          }
+          fail();
+        }
+        fail();
+      }
+      return up$r;
+    };
+    const down = (down$a0$copy) => (down$a1$copy) => {
+      let down$a0 = down$a0$copy, down$a1 = down$a1$copy, down$c = true, down$r;
+      while (down$c) {
+        const v1 = down$a0, v2 = down$a1;
+        if (v2.tag === "Leaf") {
+          down$c = false;
+          down$r = up(v1)($KickUp(Leaf2, k, v, Leaf2));
+          continue;
+        }
+        if (v2.tag === "Two") {
+          const v3 = dictOrd.compare(k)(v2._2);
+          if (v3.tag === "EQ") {
+            down$c = false;
+            down$r = fromZipper(dictOrd)(v1)($$$Map("Two", v2._1, k, v, v2._4));
+            continue;
+          }
+          if (v3.tag === "LT") {
+            down$a0 = $List("Cons", $TreeContext("TwoLeft", v2._2, v2._3, v2._4), v1);
+            down$a1 = v2._1;
+            continue;
+          }
+          down$a0 = $List("Cons", $TreeContext("TwoRight", v2._1, v2._2, v2._3), v1);
+          down$a1 = v2._4;
+          continue;
+        }
+        if (v2.tag === "Three") {
+          const v3 = dictOrd.compare(k)(v2._2);
+          if (v3.tag === "EQ") {
+            down$c = false;
+            down$r = fromZipper(dictOrd)(v1)($$$Map("Three", v2._1, k, v, v2._4, v2._5, v2._6, v2._7));
+            continue;
+          }
+          const v4 = dictOrd.compare(k)(v2._5);
+          if (v4.tag === "EQ") {
+            down$c = false;
+            down$r = fromZipper(dictOrd)(v1)($$$Map("Three", v2._1, v2._2, v2._3, v2._4, k, v, v2._7));
+            continue;
+          }
+          if (v3.tag === "LT") {
+            down$a0 = $List("Cons", $TreeContext("ThreeLeft", v2._2, v2._3, v2._4, v2._5, v2._6, v2._7), v1);
+            down$a1 = v2._1;
+            continue;
+          }
+          if (v3.tag === "GT") {
+            if (v4.tag === "LT") {
+              down$a0 = $List("Cons", $TreeContext("ThreeMiddle", v2._1, v2._2, v2._3, v2._5, v2._6, v2._7), v1);
+              down$a1 = v2._4;
+              continue;
             }
-            ;
-            while (!$tco_done1) {
-              $tco_result = $tco_loop($tco_var_xs, $copy_ys);
-            }
-            ;
-            return $tco_result;
-          };
-        };
-        return go2(q)(Nil.value);
-      };
-    };
-  };
-  var uncons2 = function(v) {
-    if (v instanceof CatNil) {
-      return Nothing.value;
-    }
-    ;
-    if (v instanceof CatCons) {
-      return new Just(new Tuple(v.value0, function() {
-        var $66 = $$null(v.value1);
-        if ($66) {
-          return CatNil.value;
+            down$a0 = $List("Cons", $TreeContext("ThreeRight", v2._1, v2._2, v2._3, v2._4, v2._5, v2._6), v1);
+            down$a1 = v2._7;
+            continue;
+          }
+          down$a0 = $List("Cons", $TreeContext("ThreeRight", v2._1, v2._2, v2._3, v2._4, v2._5, v2._6), v1);
+          down$a1 = v2._7;
+          continue;
         }
-        ;
-        return foldr2(link)(CatNil.value)(v.value1);
-      }()));
-    }
-    ;
-    throw new Error("Failed pattern match at Data.CatList (line 99, column 1 - line 99, column 61): " + [v.constructor.name]);
-  };
-  var empty3 = /* @__PURE__ */ function() {
-    return CatNil.value;
-  }();
-  var append2 = link;
-  var semigroupCatList = {
-    append: append2
-  };
-  var snoc2 = function(cat) {
-    return function(a) {
-      return append2(cat)(new CatCons(a, empty2));
+        fail();
+      }
+      return down$r;
     };
+    return down(Nil);
   };
 
-  // output/Control.Monad.Free/index.js
-  var $runtime_lazy3 = function(name15, moduleName, init) {
-    var state3 = 0;
-    var val;
-    return function(lineNumber) {
-      if (state3 === 2)
-        return val;
-      if (state3 === 1)
-        throw new ReferenceError(name15 + " was needed before it finished initializing (module " + moduleName + ", line " + lineNumber + ")", moduleName, lineNumber);
-      state3 = 1;
-      val = init();
-      state3 = 2;
-      return val;
-    };
-  };
-  var append3 = /* @__PURE__ */ append(semigroupCatList);
-  var Free = /* @__PURE__ */ function() {
-    function Free2(value0, value1) {
-      this.value0 = value0;
-      this.value1 = value1;
-    }
-    ;
-    Free2.create = function(value0) {
-      return function(value1) {
-        return new Free2(value0, value1);
-      };
-    };
-    return Free2;
-  }();
-  var Return = /* @__PURE__ */ function() {
-    function Return2(value0) {
-      this.value0 = value0;
-    }
-    ;
-    Return2.create = function(value0) {
-      return new Return2(value0);
-    };
-    return Return2;
-  }();
-  var Bind = /* @__PURE__ */ function() {
-    function Bind2(value0, value1) {
-      this.value0 = value0;
-      this.value1 = value1;
-    }
-    ;
-    Bind2.create = function(value0) {
-      return function(value1) {
-        return new Bind2(value0, value1);
-      };
-    };
-    return Bind2;
-  }();
-  var toView = function($copy_v) {
-    var $tco_done = false;
-    var $tco_result;
-    function $tco_loop(v) {
-      var runExpF = function(v22) {
-        return v22;
-      };
-      var concatF = function(v22) {
-        return function(r) {
-          return new Free(v22.value0, append3(v22.value1)(r));
-        };
-      };
-      if (v.value0 instanceof Return) {
-        var v2 = uncons2(v.value1);
-        if (v2 instanceof Nothing) {
-          $tco_done = true;
-          return new Return(v.value0.value0);
-        }
-        ;
-        if (v2 instanceof Just) {
-          $copy_v = concatF(runExpF(v2.value0.value0)(v.value0.value0))(v2.value0.value1);
-          return;
-        }
-        ;
-        throw new Error("Failed pattern match at Control.Monad.Free (line 227, column 7 - line 231, column 64): " + [v2.constructor.name]);
-      }
-      ;
-      if (v.value0 instanceof Bind) {
-        $tco_done = true;
-        return new Bind(v.value0.value0, function(a) {
-          return concatF(v.value0.value1(a))(v.value1);
-        });
-      }
-      ;
-      throw new Error("Failed pattern match at Control.Monad.Free (line 225, column 3 - line 233, column 56): " + [v.value0.constructor.name]);
-    }
-    ;
-    while (!$tco_done) {
-      $tco_result = $tco_loop($copy_v);
-    }
-    ;
-    return $tco_result;
-  };
-  var runFreeM = function(dictFunctor) {
-    var map12 = map(dictFunctor);
-    return function(dictMonadRec) {
-      var Monad0 = dictMonadRec.Monad0();
-      var map22 = map(Monad0.Bind1().Apply0().Functor0());
-      var pure1 = pure(Monad0.Applicative0());
-      var tailRecM3 = tailRecM(dictMonadRec);
-      return function(k) {
-        var go2 = function(f) {
-          var v = toView(f);
-          if (v instanceof Return) {
-            return map22(Done.create)(pure1(v.value0));
-          }
-          ;
-          if (v instanceof Bind) {
-            return map22(Loop.create)(k(map12(v.value1)(v.value0)));
-          }
-          ;
-          throw new Error("Failed pattern match at Control.Monad.Free (line 194, column 10 - line 196, column 37): " + [v.constructor.name]);
-        };
-        return tailRecM3(go2);
-      };
-    };
-  };
-  var fromView = function(f) {
-    return new Free(f, empty3);
-  };
-  var freeMonad = {
-    Applicative0: function() {
-      return freeApplicative;
-    },
-    Bind1: function() {
-      return freeBind;
-    }
-  };
-  var freeFunctor = {
-    map: function(k) {
-      return function(f) {
-        return bindFlipped(freeBind)(function() {
-          var $189 = pure(freeApplicative);
-          return function($190) {
-            return $189(k($190));
-          };
-        }())(f);
-      };
-    }
-  };
-  var freeBind = {
-    bind: function(v) {
-      return function(k) {
-        return new Free(v.value0, snoc2(v.value1)(k));
-      };
-    },
-    Apply0: function() {
-      return $lazy_freeApply(0);
-    }
-  };
-  var freeApplicative = {
-    pure: function($191) {
-      return fromView(Return.create($191));
-    },
-    Apply0: function() {
-      return $lazy_freeApply(0);
-    }
-  };
-  var $lazy_freeApply = /* @__PURE__ */ $runtime_lazy3("freeApply", "Control.Monad.Free", function() {
-    return {
-      apply: ap(freeMonad),
-      Functor0: function() {
-        return freeFunctor;
-      }
-    };
-  });
-  var pure3 = /* @__PURE__ */ pure(freeApplicative);
-  var liftF = function(f) {
-    return fromView(new Bind(f, function($192) {
-      return pure3($192);
-    }));
-  };
+  // output-es/Data.Nullable/foreign.js
+  function nullable(a, r, f) {
+    return a == null ? r : f(a);
+  }
 
-  // output/Pha.App.Internal/foreign.js
+  // output-es/Pha.App.Internal/foreign.js
   var TEXT_NODE = 3;
   var merge = (a, b) => ({ ...a, ...b });
-  var compose2 = (f, g) => f && g ? (x) => f(g(x)) : f || g;
+  var compose = (f, g) => f && g ? (x) => f(g(x)) : f || g;
   var patchProperty = (node, key2, oldValue, newValue, listener, isSvg, mapf) => {
     if (key2 === "style") {
       for (let k in merge(oldValue, newValue)) {
@@ -2370,7 +1773,7 @@
   var createNode = (vnode, listener, isSvg, mapf) => {
     const node = vnode.type === TEXT_NODE ? document.createTextNode(vnode.tag) : (isSvg = isSvg || vnode.tag === "svg") ? document.createElementNS("http://www.w3.org/2000/svg", vnode.tag) : document.createElement(vnode.tag);
     const props = vnode.props;
-    const mapf2 = compose2(mapf, vnode.mapf);
+    const mapf2 = compose(mapf, vnode.mapf);
     for (let k in props) {
       patchProperty(node, k, null, props[k], listener, isSvg, mapf2);
     }
@@ -2398,7 +1801,7 @@
         node
       );
       if (oldVNode) {
-        parent2.removeChild(oldVNode.node);
+        oldVNode.node.remove();
       }
     } else {
       const oldVProps = oldVNode.props;
@@ -2407,7 +1810,7 @@
       const newVKids = newVNode.children;
       let oldTail = oldVKids.length - 1;
       let newTail = newVKids.length - 1;
-      mapf = compose2(mapf, newVNode.mapf);
+      mapf = compose(mapf, newVNode.mapf);
       isSvg = isSvg || newVNode.tag === "svg";
       for (let i in merge(oldVProps, newVProps)) {
         if ((i === "value" || i === "selected" || i === "checked" ? node[i] : oldVProps[i]) !== newVProps[i]) {
@@ -2427,7 +1830,7 @@
           );
         }
         for (let i = newTail + 1; i <= oldTail; i++) {
-          node.removeChild(oldVKids[i].html.node);
+          oldVKids[i].html.node.remove();
         }
       } else {
         let oldHead = 0;
@@ -2461,14 +1864,14 @@
           }
         } else if (newHead > newTail) {
           while (oldHead <= oldTail) {
-            node.removeChild(oldVKids[oldHead].html.node);
+            oldVKids[oldHead].html.node.remove();
             oldHead++;
           }
         } else {
-          const keyed2 = {};
+          const keyed = {};
           const newKeyed = {};
           for (let i = oldHead; i <= oldTail; i++) {
-            keyed2[oldVKids[i].key] = oldVKids[i].html;
+            keyed[oldVKids[i].key] = oldVKids[i].html;
           }
           while (newHead <= newTail) {
             const { key: oldKey, html: oldVKid } = oldVKids[oldHead] || { key: null, html: null };
@@ -2482,7 +1885,7 @@
               newKeyed[newKey] = true;
               oldHead++;
             } else {
-              const vkid = keyed2[newKey];
+              const vkid = keyed[newKey];
               if (vkid != null) {
                 patch(
                   node,
@@ -2500,9 +1903,9 @@
             }
             newHead++;
           }
-          for (let i in keyed2) {
+          for (let i in keyed) {
             if (!newKeyed[i]) {
-              node.removeChild(keyed2[i].node);
+              keyed[i].node.remove();
             }
           }
         }
@@ -2532,185 +1935,130 @@
     ...vnode,
     children: vnode.children && vnode.children.map(({ key: key2, html }) => ({ key: key2, html: copyVNode(html) }))
   });
-  var getAction = (target5) => (type) => () => target5.actions[type];
-  var unsafePatch = (parent2) => (node) => (oldVDom) => (newVDom) => (listener) => () => patch(parent2, node, oldVDom, newVDom, (e) => listener(e)());
+  var getAction = (target, type) => target.actions[type];
+  var unsafePatch = patch;
   var unsafeLinkNode = (node) => (vdom) => {
     vdom.node = node;
     return vdom;
   };
 
-  // output/Pha.Html.Core/foreign.js
-  var _h = (tag, ps, children2, keyed2 = false) => {
-    const style2 = {};
-    const props = { style: style2 };
-    const vdom = { tag, children: children2, props, node: null, keyed: keyed2 };
+  // output-es/Pha.Html.Core/foreign.js
+  var _h = (tag, ps, children2, keyed = false) => {
+    const style = {};
+    const props = { style };
+    const vdom = { tag, children: children2, props, node: null, keyed };
     const n = ps.length;
     for (let i = 0; i < n; i++) {
       const [t, k, v] = ps[i];
       if (t == 1)
         props[k] = v;
       else if (t === 2)
-        props.class = (props.class ? props.class + " " : "") + k;
+        props.class = props.class ? props.class + " " + k : k;
       else if (t === 3)
-        style2[k] = v;
+        style[k] = v;
     }
     return vdom;
   };
-  var elem2 = (tag) => (ps) => (children2) => _h(tag, ps, children2.map((html) => ({ key: null, html })));
-  var keyed = (tag) => (ps) => (children2) => _h(tag, ps, children2, true);
-  var createTextVNode = (text6) => ({
-    tag: text6,
+  var elemImpl = (tag, ps, children2) => _h(tag, ps, children2.map((html) => ({ key: null, html })));
+  var keyedImpl = (tag, ps, children2) => _h(tag, ps, children2, true);
+  var createTextVNode = (text2) => ({
+    tag: text2,
     props: {},
     children: [],
     type: 3
   });
   var class_ = (cls) => [2, cls];
   var noProp = [-1];
-  var unsafeOnWithEffect = (k) => (v) => [1, "on" + k, v];
+  var unsafeOnWithEffectImpl = (k, v) => [1, "on" + k, v];
   var text = createTextVNode;
-  var lazy = (view2) => (val) => ({ memo: [val], type: view2 });
+  var lazyImpl = (view2, val) => ({ memo: [val], type: view2 });
 
-  // output/Web.Event.Event/foreign.js
-  function _currentTarget(e) {
-    return e.currentTarget;
-  }
-  function type_(e) {
-    return e.type;
-  }
-
-  // output/Data.Nullable/foreign.js
-  function nullable(a, r, f) {
-    return a == null ? r : f(a);
-  }
-
-  // output/Data.Nullable/index.js
-  var toMaybe = function(n) {
-    return nullable(n, Nothing.value, Just.create);
-  };
-
-  // output/Web.Event.Event/index.js
-  var currentTarget = function($5) {
-    return toMaybe(_currentTarget($5));
-  };
-
-  // output/Pha.Html.Core/index.js
-  var class$prime = function(c) {
-    return function(b) {
-      if (b) {
-        return class_(c);
-      }
-      ;
-      return noProp;
-    };
-  };
-
-  // output/Pha.Update/index.js
-  var lmap2 = /* @__PURE__ */ lmap(bifunctorTuple);
-  var State = /* @__PURE__ */ function() {
-    function State2(value0) {
-      this.value0 = value0;
-    }
-    ;
-    State2.create = function(value0) {
-      return new State2(value0);
-    };
-    return State2;
-  }();
-  var Lift = /* @__PURE__ */ function() {
-    function Lift2(value0) {
-      this.value0 = value0;
-    }
-    ;
-    Lift2.create = function(value0) {
-      return new Lift2(value0);
-    };
-    return Lift2;
-  }();
-  var Update = function(x) {
-    return x;
-  };
-  var monadUpdate = freeMonad;
-  var monadStateUpdate = {
-    state: function($32) {
-      return Update(liftF(State.create($32)));
-    },
-    Monad0: function() {
-      return monadUpdate;
-    }
-  };
-  var monadEffectUpdate = function(dictMonadEffect) {
-    return {
-      liftEffect: function() {
-        var $33 = liftEffect(dictMonadEffect);
-        return function($34) {
-          return Update(liftF(Lift.create($33($34))));
-        };
-      }(),
-      Monad0: function() {
-        return monadUpdate;
-      }
-    };
-  };
-  var monadAffUpdate = function(dictMonadAff) {
-    var monadEffectUpdate1 = monadEffectUpdate(dictMonadAff.MonadEffect0());
-    return {
-      liftAff: function() {
-        var $35 = liftAff(dictMonadAff);
-        return function($36) {
-          return Update(liftF(Lift.create($35($36))));
-        };
-      }(),
-      MonadEffect0: function() {
-        return monadEffectUpdate1;
-      }
-    };
-  };
-  var functorUpdateF = function(dictFunctor) {
-    var map7 = map(dictFunctor);
-    return {
-      map: function(v) {
-        return function(v1) {
-          if (v1 instanceof State) {
-            return new State(function() {
-              var $37 = lmap2(v);
-              return function($38) {
-                return $37(v1.value0($38));
-              };
-            }());
-          }
-          ;
-          if (v1 instanceof Lift) {
-            return new Lift(map7(v)(v1.value0));
-          }
-          ;
-          throw new Error("Failed pattern match at Pha.Update (line 22, column 1 - line 24, column 36): " + [v.constructor.name, v1.constructor.name]);
-        };
-      }
-    };
-  };
-  var bindUpdate = freeBind;
-  var delay2 = function(dictMonadAff) {
-    var $39 = liftAff(monadAffUpdate(dictMonadAff));
-    return function($40) {
-      return $39(delay($40));
-    };
-  };
-
-  // output/Unsafe.Reference/foreign.js
+  // output-es/Unsafe.Reference/foreign.js
   function reallyUnsafeRefEq(a) {
     return function(b) {
       return a === b;
     };
   }
 
-  // output/Unsafe.Reference/index.js
-  var unsafeRefEq = reallyUnsafeRefEq;
+  // output-es/Pha.Update.Internal/index.js
+  var $UpdateF = (tag, _1, _2) => ({ tag, _1, _2 });
+  var identity9 = (x) => x;
+  var monadEffectUpdate = (dictMonadEffect) => ({
+    liftEffect: (x) => $Free(
+      $FreeView(
+        "Bind",
+        $UpdateF("Lift", dictMonadEffect.liftEffect(x)),
+        (x$1) => $Free($FreeView("Return", x$1), CatNil)
+      ),
+      CatNil
+    ),
+    Monad0: () => freeMonad
+  });
+  var monadAffUpdate = (dictMonadAff) => {
+    const monadEffectUpdate1 = monadEffectUpdate(dictMonadAff.MonadEffect0());
+    return {
+      liftAff: (x) => $Free(
+        $FreeView(
+          "Bind",
+          $UpdateF("Lift", dictMonadAff.liftAff(x)),
+          (x$1) => $Free($FreeView("Return", x$1), CatNil)
+        ),
+        CatNil
+      ),
+      MonadEffect0: () => monadEffectUpdate1
+    };
+  };
+  var functorUpdateF = (dictFunctor) => ({
+    map: (v) => (v1) => {
+      if (v1.tag === "State") {
+        return $UpdateF(
+          "State",
+          (x) => {
+            const $0 = v1._1(x);
+            return $Tuple(v($0._1), $0._2);
+          }
+        );
+      }
+      if (v1.tag === "Lift") {
+        return $UpdateF("Lift", dictFunctor.map(v)(v1._1));
+      }
+      if (v1.tag === "Subscribe") {
+        return $UpdateF("Subscribe", v1._1, (x) => v(v1._2(x)));
+      }
+      if (v1.tag === "Unsubscribe") {
+        return $UpdateF("Unsubscribe", v1._1, v(v1._2));
+      }
+      fail();
+    }
+  });
 
-  // output/Web.DOM.Document/foreign.js
-  var getEffProp = function(name15) {
+  // output-es/Web.Internal.FFI/foreign.js
+  function _unsafeReadProtoTagged(nothing, just, name2, value) {
+    if (typeof window !== "undefined") {
+      var ty = window[name2];
+      if (ty != null && value instanceof ty) {
+        return just(value);
+      }
+    }
+    var obj = value;
+    while (obj != null) {
+      var proto = Object.getPrototypeOf(obj);
+      var constructorName = proto.constructor.name;
+      if (constructorName === name2) {
+        return just(value);
+      } else if (constructorName === "Object") {
+        return nothing;
+      }
+      obj = proto;
+    }
+    return nothing;
+  }
+
+  // output-es/Web.DOM.Document/foreign.js
+  var getEffProp = function(name2) {
     return function(doc) {
       return function() {
-        return doc[name15];
+        return doc[name2];
       };
     };
   };
@@ -2729,98 +2077,25 @@
     };
   }
 
-  // output/Web.Internal.FFI/foreign.js
-  function _unsafeReadProtoTagged(nothing, just, name15, value12) {
-    if (typeof window !== "undefined") {
-      var ty = window[name15];
-      if (ty != null && value12 instanceof ty) {
-        return just(value12);
-      }
-    }
-    var obj = value12;
-    while (obj != null) {
-      var proto = Object.getPrototypeOf(obj);
-      var constructorName = proto.constructor.name;
-      if (constructorName === name15) {
-        return just(value12);
-      } else if (constructorName === "Object") {
-        return nothing;
-      }
-      obj = proto;
-    }
-    return nothing;
-  }
-
-  // output/Web.Internal.FFI/index.js
-  var unsafeReadProtoTagged = function(name15) {
-    return function(value12) {
-      return _unsafeReadProtoTagged(Nothing.value, Just.create, name15, value12);
-    };
-  };
-
-  // output/Web.DOM.Element/foreign.js
-  var getProp = function(name15) {
-    return function(doctype) {
-      return doctype[name15];
-    };
-  };
-  var _namespaceURI = getProp("namespaceURI");
-  var _prefix = getProp("prefix");
-  var localName = getProp("localName");
-  var tagName = getProp("tagName");
-
-  // output/Web.DOM.ParentNode/foreign.js
-  var getEffProp2 = function(name15) {
+  // output-es/Web.DOM.Node/foreign.js
+  var getEffProp2 = function(name2) {
     return function(node) {
       return function() {
-        return node[name15];
+        return node[name2];
       };
     };
   };
-  var children = getEffProp2("children");
-  var _firstElementChild = getEffProp2("firstElementChild");
-  var _lastElementChild = getEffProp2("lastElementChild");
-  var childElementCount = getEffProp2("childElementCount");
-  function _querySelector(selector) {
-    return function(node) {
-      return function() {
-        return node.querySelector(selector);
-      };
-    };
-  }
-
-  // output/Web.DOM.ParentNode/index.js
-  var map3 = /* @__PURE__ */ map(functorEffect);
-  var querySelector = function(qs) {
-    var $2 = map3(toMaybe);
-    var $3 = _querySelector(qs);
-    return function($4) {
-      return $2($3($4));
-    };
-  };
-
-  // output/Web.DOM.Element/index.js
-  var toNode = unsafeCoerce2;
-
-  // output/Web.DOM.Node/foreign.js
-  var getEffProp3 = function(name15) {
-    return function(node) {
-      return function() {
-        return node[name15];
-      };
-    };
-  };
-  var baseURI = getEffProp3("baseURI");
-  var _ownerDocument = getEffProp3("ownerDocument");
-  var _parentNode = getEffProp3("parentNode");
-  var _parentElement = getEffProp3("parentElement");
-  var childNodes = getEffProp3("childNodes");
-  var _firstChild = getEffProp3("firstChild");
-  var _lastChild = getEffProp3("lastChild");
-  var _previousSibling = getEffProp3("previousSibling");
-  var _nextSibling = getEffProp3("nextSibling");
-  var _nodeValue = getEffProp3("nodeValue");
-  var textContent = getEffProp3("textContent");
+  var baseURI = getEffProp2("baseURI");
+  var _ownerDocument = getEffProp2("ownerDocument");
+  var _parentNode = getEffProp2("parentNode");
+  var _parentElement = getEffProp2("parentElement");
+  var childNodes = getEffProp2("childNodes");
+  var _firstChild = getEffProp2("firstChild");
+  var _lastChild = getEffProp2("lastChild");
+  var _previousSibling = getEffProp2("previousSibling");
+  var _nextSibling = getEffProp2("nextSibling");
+  var _nodeValue = getEffProp2("nodeValue");
+  var textContent = getEffProp2("textContent");
   function appendChild(node) {
     return function(parent2) {
       return function() {
@@ -2829,208 +2104,202 @@
     };
   }
 
-  // output/Web.DOM.Node/index.js
-  var map4 = /* @__PURE__ */ map(functorEffect);
-  var parentNode = /* @__PURE__ */ function() {
-    var $6 = map4(toMaybe);
-    return function($7) {
-      return $6(_parentNode($7));
+  // output-es/Web.DOM.ParentNode/foreign.js
+  var getEffProp3 = function(name2) {
+    return function(node) {
+      return function() {
+        return node[name2];
+      };
     };
-  }();
+  };
+  var children = getEffProp3("children");
+  var _firstElementChild = getEffProp3("firstElementChild");
+  var _lastElementChild = getEffProp3("lastElementChild");
+  var childElementCount = getEffProp3("childElementCount");
+  function _querySelector(selector) {
+    return function(node) {
+      return function() {
+        return node.querySelector(selector);
+      };
+    };
+  }
 
-  // output/Web.DOM.Text/index.js
-  var toNode2 = unsafeCoerce2;
+  // output-es/Web.DOM.ParentNode/index.js
+  var querySelector = (qs) => {
+    const $0 = _querySelector(qs);
+    return (x) => {
+      const $1 = $0(x);
+      return () => {
+        const a$p = $1();
+        return nullable(a$p, Nothing, Just);
+      };
+    };
+  };
 
-  // output/Web.HTML/foreign.js
+  // output-es/Web.Event.Event/foreign.js
+  function _currentTarget(e) {
+    return e.currentTarget;
+  }
+  function type_(e) {
+    return e.type;
+  }
+
+  // output-es/Web.HTML/foreign.js
   var windowImpl = function() {
     return window;
   };
 
-  // output/Web.HTML.HTMLDocument/index.js
-  var toParentNode = unsafeCoerce2;
-  var toDocument = unsafeCoerce2;
-
-  // output/Web.HTML.Window/foreign.js
+  // output-es/Web.HTML.Window/foreign.js
   function document2(window2) {
     return function() {
       return window2.document;
     };
   }
 
-  // output/Web.HTML.Window/index.js
-  var toEventTarget = unsafeCoerce2;
-
-  // output/Pha.App/index.js
-  var $runtime_lazy4 = function(name15, moduleName, init) {
-    var state3 = 0;
-    var val;
-    return function(lineNumber) {
-      if (state3 === 2)
-        return val;
-      if (state3 === 1)
-        throw new ReferenceError(name15 + " was needed before it finished initializing (module " + moduleName + ", line " + lineNumber + ")", moduleName, lineNumber);
-      state3 = 1;
-      val = init();
-      state3 = 2;
-      return val;
+  // output-es/Pha.App/index.js
+  var for_2 = /* @__PURE__ */ for_(applicativeEffect)(foldableMaybe);
+  var for_1 = /* @__PURE__ */ for_(applicativeAff)(foldableMaybe);
+  var runFreeM2 = /* @__PURE__ */ runFreeM(/* @__PURE__ */ functorUpdateF(functorAff))(monadRecAff);
+  var dispatchEvent = (iapp) => (ev) => (handler) => {
+    const $0 = handler(ev);
+    return () => {
+      const msg$p = $0();
+      return for_2(msg$p)(iapp.update(iapp))();
     };
   };
-  var bind2 = /* @__PURE__ */ bind(bindAff);
-  var liftEffect2 = /* @__PURE__ */ liftEffect(monadEffectAff);
-  var discard2 = /* @__PURE__ */ discard(discardUnit);
-  var discard1 = /* @__PURE__ */ discard2(bindAff);
-  var pure4 = /* @__PURE__ */ pure(applicativeAff);
-  var bind12 = /* @__PURE__ */ bind(bindEffect);
-  var unless2 = /* @__PURE__ */ unless(applicativeEffect);
-  var for_2 = /* @__PURE__ */ for_(applicativeEffect);
-  var for_1 = /* @__PURE__ */ for_2(foldableMaybe);
-  var for_22 = /* @__PURE__ */ for_2(foldableArray);
-  var mapFlipped2 = /* @__PURE__ */ mapFlipped(functorEffect);
-  var map5 = /* @__PURE__ */ map(functorEffect);
-  var map1 = /* @__PURE__ */ map(functorMaybe);
-  var interpret = function(dictMonad) {
-    var runFreeM2 = runFreeM(functorUpdateF(dictMonad.Bind1().Apply0().Functor0()))(monadRecAff);
-    return function(v) {
-      return function($$eval) {
-        return function(v1) {
-          var go2 = function(v2) {
-            if (v2 instanceof State) {
-              return bind2(liftEffect2(v.get))(function(st) {
-                var v3 = v2.value0(st);
-                return discard1(liftEffect2(v.put(v3.value1)))(function() {
-                  return pure4(v3.value0);
-                });
-              });
-            }
-            ;
-            if (v2 instanceof Lift) {
-              return $$eval(v2.value0);
-            }
-            ;
-            throw new Error("Failed pattern match at Pha.App (line 93, column 5 - line 97, column 15): " + [v2.constructor.name]);
-          };
-          return runFreeM2(go2)(v1);
-        };
-      };
-    };
-  };
-  var app$prime = function(v) {
-    var go2 = function(state3) {
-      return function(node) {
-        return function(vdom) {
-          var getState = read(state3);
-          var setState = function(newState) {
-            return function __do() {
-              var oldState = read(state3)();
-              return unless2(unsafeRefEq(oldState)(newState))(function __do2() {
-                write(newState)(state3)();
-                return render(v.view(newState))();
+  var render = (v) => (newVDom) => {
+    const $0 = v.node;
+    const $1 = v.vdom;
+    return () => {
+      const oldVDom = $1.value;
+      const node1 = $0.value;
+      const a$p = _parentNode(node1)();
+      return for_2(nullable(a$p, Nothing, Just))((pnode$p) => {
+        const vdom2 = copyVNode(newVDom);
+        return () => {
+          const node2 = unsafePatch(
+            pnode$p,
+            node1,
+            oldVDom,
+            vdom2,
+            (e) => {
+              const $2 = type_(e);
+              return for_2(nullable(_currentTarget(e), Nothing, Just))((target) => () => {
+                const fn = getAction(target, $2);
+                return dispatchEvent(v)(e)(fn)();
               })();
-            };
-          };
-          var render = function(newVDom) {
-            return function __do() {
-              var oldVDom = read(vdom)();
-              var node1 = read(node)();
-              var pnode = parentNode(node1)();
-              return for_1(pnode)(function(pnode$prime) {
-                var vdom2 = copyVNode(newVDom);
-                return function __do2() {
-                  var node2 = unsafePatch(pnode$prime)(node1)(oldVDom)(vdom2)(listener)();
-                  write(node2)(node)();
-                  return write(vdom2)(vdom)();
-                };
-              })();
-            };
-          };
-          var listener = function(e) {
-            var v1 = type_(e);
-            return for_1(currentTarget(e))(function(target5) {
-              return function __do() {
-                var fn = getAction(target5)(v1)();
-                return dispatchEvent2(e)(fn)();
-              };
-            });
-          };
-          var dispatchEvent2 = function(ev) {
-            return function(handler) {
-              return function __do() {
-                var msg1 = handler(ev)();
-                return for_1(msg1)($lazy_dispatch(79))();
-              };
-            };
-          };
-          var $lazy_dispatch = $runtime_lazy4("dispatch", "Pha.App", function() {
-            return v.update({
-              get: getState,
-              put: function(s) {
-                return setState(s);
-              }
-            });
-          });
-          var dispatch = $lazy_dispatch(72);
-          return function __do() {
-            render(v.view(v.init.model))();
-            for_22(v.subscriptions)(function(v1) {
-              return v1(dispatch);
-            })();
-            return for_1(v.init.msg)(dispatch)();
-          };
-        };
-      };
-    };
-    return function __do() {
-      var parentNode2 = mapFlipped2(bind12(windowImpl)(document2))(toParentNode)();
-      var selected2 = map5(map1(toNode))(querySelector(v.selector)(parentNode2))();
-      return for_1(selected2)(function(node_) {
-        return function __do2() {
-          var state3 = $$new(v.init.model)();
-          var emptyNode = mapFlipped2(bind12(mapFlipped2(bind12(windowImpl)(document2))(toDocument))(createTextNode("")))(toNode2)();
-          appendChild(emptyNode)(node_)();
-          var node = $$new(emptyNode)();
-          var vdom = $$new(unsafeLinkNode(emptyNode)(text("")))();
-          return go2(state3)(node)(vdom)();
+            }
+          );
+          $0.value = node2;
+          return $1.value = vdom2;
         };
       })();
     };
   };
-  var app = function(dictMonad) {
-    var interpret1 = interpret(dictMonad);
-    return function(v) {
-      var update$prime = function(helpers) {
-        return function(msg) {
-          return launchAff_(interpret1(helpers)(v["eval"])(v.update(msg)));
-        };
-      };
-      return app$prime({
-        init: v.init,
-        view: v.view,
-        subscriptions: v.subscriptions,
-        selector: v.selector,
-        update: update$prime
-      });
+  var setState = (v) => (newState) => {
+    const $0 = v.state;
+    return () => {
+      const oldState = $0.value;
+      const $1 = reallyUnsafeRefEq(oldState)(newState);
+      if (!$1) {
+        $0.value = newState;
+        return render(v)(v.view(newState))();
+      }
+      if ($1) {
+        return;
+      }
+      fail();
     };
   };
-
-  // output/Pha.Html.Elements/index.js
-  var span2 = /* @__PURE__ */ elem2("span");
-  var hr = function(attrs) {
-    return elem2("hr")(attrs)([]);
+  var interpret = (update2) => (v) => (v1) => {
+    const $0 = v.subscriptions;
+    return runFreeM2((v2) => {
+      if (v2.tag === "State") {
+        return _bind(_liftEffect((() => {
+          const $1 = v.state;
+          return () => $1.value;
+        })()))((st) => {
+          const v3 = v2._1(st);
+          const $1 = v3._1;
+          return _bind(_liftEffect(setState(v)(v3._2)))(() => _pure($1));
+        });
+      }
+      if (v2.tag === "Lift") {
+        return v2._1;
+      }
+      if (v2.tag === "Subscribe") {
+        return _bind(_liftEffect(v2._1((msg) => {
+          const $1 = _makeFiber(ffiUtil, interpret(update2)(v)(update2(msg)));
+          return () => {
+            const fiber = $1();
+            fiber.run();
+          };
+        })))((canceler) => _bind(_liftEffect((() => {
+          const $1 = v.freshId;
+          return () => {
+            const id = $1.value;
+            $1.value = id + 1 | 0;
+            return id;
+          };
+        })()))((id) => _bind(_liftEffect((() => {
+          const $1 = insert(ordInt)(id)(canceler);
+          return () => {
+            const $2 = $0.value;
+            $0.value = $1($2);
+          };
+        })()))(() => _pure(v2._2(id)))));
+      }
+      if (v2.tag === "Unsubscribe") {
+        const $1 = v2._2;
+        const $2 = v2._1;
+        return _bind(_liftEffect(() => $0.value))((subs) => _bind(for_1(lookup(ordInt)($2)(subs))(_liftEffect))(() => _pure($1)));
+      }
+      fail();
+    })(v1);
   };
-  var h3 = /* @__PURE__ */ elem2("h3");
-  var div2 = /* @__PURE__ */ elem2("div");
-  var button = /* @__PURE__ */ elem2("button");
-
-  // output/Pha.Html.Events/index.js
-  var pure5 = /* @__PURE__ */ pure(applicativeEffect);
-  var on2 = unsafeOnWithEffect;
-  var onClick = function(handler) {
-    return on2("click")(function($20) {
-      return pure5(Just.create(handler($20)));
+  var app$p = (v) => {
+    const $0 = v.init.model;
+    const $1 = v.init.msg;
+    const $2 = v.selector;
+    const $3 = v.update;
+    const $4 = v.view;
+    return () => {
+      const $5 = windowImpl();
+      const parentNode = document2($5)();
+      const a$p = querySelector($2)(parentNode)();
+      return for_2(a$p.tag === "Just" ? $Maybe("Just", a$p._1) : Nothing)((node_) => () => {
+        const state = { value: $0 };
+        const $6 = windowImpl();
+        const $7 = document2($6)();
+        const emptyNode = createTextNode("")($7)();
+        appendChild(emptyNode)(node_)();
+        const node = { value: emptyNode };
+        const vdom = { value: unsafeLinkNode(emptyNode)(text("")) };
+        const subscriptions = { value: Leaf2 };
+        const freshId = { value: 0 };
+        const iapp = { view: $4, update: $3, state, node, vdom, subscriptions, freshId };
+        render(iapp)($4($0))();
+        return for_2($1)(iapp.update(iapp))();
+      })();
+    };
+  };
+  var app = (v) => {
+    const $0 = v.update;
+    return app$p({
+      init: v.init,
+      view: v.view,
+      selector: v.selector,
+      update: (iapp) => (msg) => {
+        const $1 = _makeFiber(ffiUtil, interpret($0)(iapp)($0(msg)));
+        return () => {
+          const fiber = $1();
+          fiber.run();
+        };
+      }
     });
   };
 
-  // output/Web.Event.EventTarget/foreign.js
+  // output-es/Web.Event.EventTarget/foreign.js
   function eventListener(fn) {
     return function() {
       return function(event) {
@@ -3041,164 +2310,191 @@
   function addEventListener(type) {
     return function(listener) {
       return function(useCapture) {
-        return function(target5) {
+        return function(target) {
           return function() {
-            return target5.addEventListener(type, listener, useCapture);
+            return target.addEventListener(type, listener, useCapture);
+          };
+        };
+      };
+    };
+  }
+  function removeEventListener(type) {
+    return function(listener) {
+      return function(useCapture) {
+        return function(target) {
+          return function() {
+            return target.removeEventListener(type, listener, useCapture);
           };
         };
       };
     };
   }
 
-  // output/Web.UIEvent.KeyboardEvent/foreign.js
+  // output-es/Web.UIEvent.KeyboardEvent/foreign.js
   function key(e) {
     return e.key;
   }
 
-  // output/Web.UIEvent.KeyboardEvent/index.js
-  var fromEvent = /* @__PURE__ */ unsafeReadProtoTagged("KeyboardEvent");
-
-  // output/Pha.Subscriptions/index.js
-  var bind3 = /* @__PURE__ */ bind(bindEffect);
-  var pure6 = /* @__PURE__ */ pure(applicativeEffect);
-  var mapFlipped3 = /* @__PURE__ */ mapFlipped(functorEffect);
-  var bindFlipped2 = /* @__PURE__ */ bindFlipped(bindMaybe);
-  var map6 = /* @__PURE__ */ map(functorMaybe);
-  var makeSubscription = function(sub2) {
-    return function(d) {
-      return function(dispatch) {
-        return sub2(dispatch)(d);
-      };
-    };
-  };
-  var on3 = function(n) {
-    return function(d) {
-      var handleEvent = function(dispatch) {
-        return function(decoder) {
-          return function(ev) {
-            return function __do() {
-              var v = decoder(ev)();
-              if (v instanceof Nothing) {
-                return unit;
+  // output-es/Pha.Subscriptions/index.js
+  var eventListener2 = (name2) => (target) => (decoder) => $Free(
+    $FreeView(
+      "Bind",
+      $UpdateF(
+        "Subscribe",
+        (dispatch) => {
+          const $0 = eventListener((ev) => {
+            const $02 = decoder(ev);
+            return () => {
+              const v = $02();
+              if (v.tag === "Nothing") {
+                return;
               }
-              ;
-              if (v instanceof Just) {
-                return dispatch(v.value0)();
+              if (v.tag === "Just") {
+                return dispatch(v._1)();
               }
-              ;
-              throw new Error("Failed pattern match at Pha.Subscriptions (line 26, column 24 - line 28, column 36): " + [v.constructor.name]);
+              fail();
             };
+          });
+          return () => {
+            const listener = $0();
+            addEventListener(name2)(listener)(false)(target)();
+            return removeEventListener(name2)(listener)(false)(target);
           };
-        };
-      };
-      var fn = function(dispatch) {
-        return function(v) {
-          return function __do() {
-            var listener = eventListener(handleEvent(dispatch)(v.decoder))();
-            return bind3(mapFlipped3(windowImpl)(toEventTarget))(addEventListener(v.name)(listener)(false))();
-          };
-        };
-      };
-      return makeSubscription(fn)({
-        name: n,
-        decoder: d
-      });
+        },
+        identity9
+      ),
+      (x) => $Free($FreeView("Return", x), CatNil)
+    ),
+    CatNil
+  );
+  var onKeyDown = (dictMonadEffect) => {
+    const liftEffect = monadEffectUpdate(dictMonadEffect).liftEffect;
+    return (f) => {
+      const $0 = liftEffect(() => windowImpl());
+      return $Free(
+        $0._1,
+        link($0._2)($CatList(
+          "CatCons",
+          (target) => eventListener2("keydown")(target)((ev) => {
+            const $1 = _unsafeReadProtoTagged(Nothing, Just, "KeyboardEvent", ev);
+            if ($1.tag === "Just") {
+              const $2 = f(key($1._1));
+              return () => $2;
+            }
+            return () => Nothing;
+          }),
+          $CatQueue(Nil, Nil)
+        ))
+      );
     };
   };
-  var onKeyDown = function(f) {
-    return on3("keydown")(function(ev) {
-      return pure6(bindFlipped2(f)(map6(key)(fromEvent(ev))));
-    });
-  };
 
-  // output/Example.Counter2/index.js
-  var modify_2 = /* @__PURE__ */ modify_(monadStateUpdate);
-  var discard3 = /* @__PURE__ */ discard(discardUnit)(bindUpdate);
-  var delay3 = /* @__PURE__ */ delay2(monadAffAff);
-  var show2 = /* @__PURE__ */ show(showInt);
-  var append4 = /* @__PURE__ */ append(semigroupArray);
-  var mapFlipped4 = /* @__PURE__ */ mapFlipped(functorArray);
-  var mod2 = /* @__PURE__ */ mod(euclideanRingInt);
-  var div3 = /* @__PURE__ */ div(euclideanRingInt);
-  var Increment = /* @__PURE__ */ function() {
-    function Increment2() {
-    }
-    ;
-    Increment2.value = new Increment2();
-    return Increment2;
-  }();
-  var DelayedIncrement = /* @__PURE__ */ function() {
-    function DelayedIncrement2() {
-    }
-    ;
-    DelayedIncrement2.value = new DelayedIncrement2();
-    return DelayedIncrement2;
-  }();
-  var update = function(v) {
-    if (v instanceof Increment) {
-      return modify_2(function(v1) {
-        return v1 + 1 | 0;
-      });
-    }
-    ;
-    if (v instanceof DelayedIncrement) {
-      return discard3(delay3(1e3))(function() {
-        return modify_2(function(v1) {
-          return v1 + 1 | 0;
-        });
-      });
-    }
-    ;
-    throw new Error("Failed pattern match at Example.Counter2 (line 24, column 1 - line 24, column 37): " + [v.constructor.name]);
-  };
-  var spanCounter = function(v) {
-    return span2([])([text(show2(v))]);
-  };
-  var view = function(counter) {
-    return div2([])([div2([class_("counter")])([text(show2(counter))]), button([onClick(function(v) {
-      return Increment.value;
-    })])([text("Increment")]), button([onClick(function(v) {
-      return DelayedIncrement.value;
-    })])([text("Delayed Increment")]), div2([])([span2([])([text("green when the counter is even")]), div2([class_("box"), class$prime("even")(even(counter))])([])]), h3([])([text("press I to increment the counter")]), hr([]), h3([])([text("keyed")]), keyed("div")([])(append4(mapFlipped4(range(0)(mod2(counter)(4)))(function(i) {
-      return {
-        key: "r" + show2(i),
-        html: text("r" + show2(i))
-      };
-    }))(append4([{
-      key: "test",
-      html: text("test")
-    }])(mapFlipped4(range(0)(mod2(counter)(4)))(function(i) {
-      return {
-        key: "q" + show2(i),
-        html: text("q" + show2(i))
-      };
-    })))), hr([]), h3([])([text("non keyed")]), div2([])(append4(mapFlipped4(range(0)(mod2(counter)(4)))(function(i) {
-      return text(show2(i));
-    }))(append4([text("test")])(mapFlipped4(range(0)(mod2(counter)(4)))(function(i) {
-      return text(show2(i));
-    })))), hr([]), h3([])([text("lazy")]), lazy(spanCounter)(div3(counter)(2)), hr([]), h3([])([text("duplicate")]), div2([])(replicate(mod2(counter)(4))(text("t")))]);
-  };
-  var model = 0;
-  var keyDownHandler = function(v) {
+  // output-es/Example.Counter2/index.js
+  var $Msg = (tag) => ({ tag });
+  var onKeyDown2 = /* @__PURE__ */ onKeyDown(monadEffectAff);
+  var delay = /* @__PURE__ */ (() => {
+    const $0 = monadAffUpdate(monadAffAff).liftAff;
+    return (x) => $0(_delay(Right, x));
+  })();
+  var Init = /* @__PURE__ */ $Msg("Init");
+  var Increment = /* @__PURE__ */ $Msg("Increment");
+  var DelayedIncrement = /* @__PURE__ */ $Msg("DelayedIncrement");
+  var spanCounter = (v) => elemImpl("span", [], [text(showIntImpl(v))]);
+  var view = (counter) => elemImpl(
+    "div",
+    [],
+    [
+      elemImpl("div", [class_("counter")], [text(showIntImpl(counter))]),
+      elemImpl("button", [unsafeOnWithEffectImpl("click", (x) => () => $Maybe("Just", Increment))], [text("Increment")]),
+      elemImpl(
+        "button",
+        [unsafeOnWithEffectImpl("click", (x) => () => $Maybe("Just", DelayedIncrement))],
+        [text("Delayed Increment")]
+      ),
+      elemImpl(
+        "div",
+        [],
+        [
+          elemImpl("span", [], [text("green when the counter is even")]),
+          elemImpl("div", [class_("box"), (counter & 1) === 0 ? class_("even") : noProp], [])
+        ]
+      ),
+      elemImpl("h3", [], [text("press I to increment the counter")]),
+      elemImpl("hr", [], []),
+      elemImpl("h3", [], [text("keyed")]),
+      keyedImpl(
+        "div",
+        [],
+        concatArray(arrayMap((i) => ({ key: "r" + showIntImpl(i), html: text("r" + showIntImpl(i)) }))(range(0)(intMod(counter)(4))))(concatArray([
+          { key: "test", html: text("test") }
+        ])(arrayMap((i) => ({ key: "q" + showIntImpl(i), html: text("q" + showIntImpl(i)) }))(range(0)(intMod(counter)(4)))))
+      ),
+      elemImpl("hr", [], []),
+      elemImpl("h3", [], [text("non keyed")]),
+      elemImpl(
+        "div",
+        [],
+        concatArray(arrayMap((x) => text(showIntImpl(x)))(range(0)(intMod(counter)(4))))(concatArray([
+          text("test")
+        ])(arrayMap((x) => text(showIntImpl(x)))(range(0)(intMod(counter)(4)))))
+      ),
+      elemImpl("hr", [], []),
+      elemImpl("h3", [], [text("lazy")]),
+      lazyImpl(spanCounter, intDiv(counter)(2)),
+      elemImpl("hr", [], []),
+      elemImpl("h3", [], [text("duplicate")]),
+      elemImpl("div", [], replicate(intMod(counter)(4))(text("t")))
+    ]
+  );
+  var keyDownHandler = (v) => {
     if (v === "i") {
-      return new Just(Increment.value);
+      return $Maybe("Just", Increment);
     }
-    ;
-    return Nothing.value;
+    return Nothing;
   };
-  var main = /* @__PURE__ */ function() {
-    return app(monadAff)({
-      init: {
-        model,
-        msg: Nothing.value
-      },
-      view,
-      update,
-      "eval": identity(categoryFn),
-      subscriptions: [onKeyDown(keyDownHandler)],
-      selector: "#root"
-    });
-  }();
+  var update = (v) => {
+    if (v.tag === "Init") {
+      const $0 = onKeyDown2(keyDownHandler);
+      return $Free(
+        $0._1,
+        link($0._2)($CatList(
+          "CatCons",
+          (x) => $Free($FreeView("Return", void 0), CatNil),
+          $CatQueue(Nil, Nil)
+        ))
+      );
+    }
+    if (v.tag === "Increment") {
+      return $Free(
+        $FreeView(
+          "Bind",
+          $UpdateF("State", (s) => $Tuple(void 0, s + 1 | 0)),
+          (x) => $Free($FreeView("Return", x), CatNil)
+        ),
+        CatNil
+      );
+    }
+    if (v.tag === "DelayedIncrement") {
+      const $0 = delay(1e3);
+      return $Free(
+        $0._1,
+        link($0._2)($CatList(
+          "CatCons",
+          () => $Free(
+            $FreeView(
+              "Bind",
+              $UpdateF("State", (s) => $Tuple(void 0, s + 1 | 0)),
+              (x) => $Free($FreeView("Return", x), CatNil)
+            ),
+            CatNil
+          ),
+          $CatQueue(Nil, Nil)
+        ))
+      );
+    }
+    fail();
+  };
+  var main = /* @__PURE__ */ app({ init: { model: 0, msg: /* @__PURE__ */ $Maybe("Just", Init) }, view, update, selector: "#root" });
 
   // <stdin>
   main();

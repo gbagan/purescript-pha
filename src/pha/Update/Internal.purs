@@ -16,13 +16,14 @@ import Control.Monad.Trans.Class (class MonadTrans)
 import Unsafe.Reference (unsafeRefEq)
 
 newtype SubscriptionId = SubscriptionId Int
+
 derive newtype instance Eq SubscriptionId
 derive newtype instance Ord SubscriptionId
 
 type Subscription msg = (msg → Effect Unit) → Effect (Effect Unit)
 
-data UpdateF model msg m a =
-    State (model → Tuple a model)
+data UpdateF model msg m a
+  = State (model → Tuple a model)
   | Lift (m a)
   | Subscribe ((msg → Effect Unit) → Effect (Effect Unit)) (SubscriptionId → a)
   | Unsubscribe SubscriptionId a
@@ -57,35 +58,36 @@ instance MonadAff m ⇒ MonadAff (Update model msg m) where
 instance MonadAsk r m => MonadAsk r (Update model msg m) where
   ask = Update $ liftF $ Lift ask
 
-subscribe ∷ ∀model msg m. Subscription msg → Update model msg m SubscriptionId
+subscribe ∷ ∀ model msg m. Subscription msg → Update model msg m SubscriptionId
 subscribe f = Update $ liftF $ Subscribe f identity
 
-unsubscribe ∷ ∀model msg m. SubscriptionId → Update model msg m Unit
+unsubscribe ∷ ∀ model msg m. SubscriptionId → Update model msg m Unit
 unsubscribe id = Update $ liftF $ Unsubscribe id unit
 
-mapMessage ∷ ∀model msg msg' m. (msg → msg') → Update model msg m ~> Update model msg' m
+mapMessage ∷ ∀ model msg msg' m. (msg → msg') → Update model msg m ~> Update model msg' m
 mapMessage f (Update m) = Update $ m # hoistFree case _ of
   State k → State k
   Lift x → Lift x
   Subscribe g a → Subscribe (\dispatch → g \msg → dispatch (f msg)) a
   Unsubscribe id a → Unsubscribe id a
 
-mapModel ∷ ∀model model' msg m. Lens' model model' → Update model' msg m ~> Update model msg m
+mapModel ∷ ∀ model model' msg m. Lens' model model' → Update model' msg m ~> Update model msg m
 mapModel lens (Update m) = Update $ m # hoistFree case _ of
-    State k → State \s →
-        let s2 = view lens s
-            Tuple a s3 = k s2
-        in
-        if unsafeRefEq s2 s3 then
-            Tuple a s
-        else
-            Tuple a (set lens s3 s)
+  State k → State \s →
+    let
+      s2 = view lens s
+      Tuple a s3 = k s2
+    in
+      if unsafeRefEq s2 s3 then
+        Tuple a s
+      else
+        Tuple a (set lens s3 s)
 
-    Lift x → Lift x
-    Subscribe x a → Subscribe x a
-    Unsubscribe id a → Unsubscribe id a
+  Lift x → Lift x
+  Subscribe x a → Subscribe x a
+  Unsubscribe id a → Unsubscribe id a
 
-hoist ∷ ∀model msg m m'. (m ~> m') → Update model msg m ~> Update model msg m'
+hoist ∷ ∀ model msg m m'. (m ~> m') → Update model msg m ~> Update model msg m'
 hoist f (Update m) = Update $ m # hoistFree case _ of
   State k → State k
   Lift x → Lift (f x)

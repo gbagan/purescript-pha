@@ -9,6 +9,7 @@ import Data.Map as Map
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
 import Effect (Effect)
+import Effect.Uncurried(mkEffectFn1, runEffectFn2, runEffectFn5)
 import Effect.Aff (Aff, launchAff_)
 import Effect.Class (liftEffect)
 import Effect.Ref (Ref)
@@ -38,13 +39,15 @@ newtype IApp model msg = IApp
   , view ∷ model → Html msg
   }
 
-app' ∷ ∀msg model.
-  { init ∷ {model ∷ model, msg ∷ Maybe msg}
-  , view ∷ model → Html msg
-  , update ∷ IApp model msg → msg → Effect Unit
-  , selector ∷ String
-  } → Effect Unit
-app' {init: {model, msg}, update, view, selector} = do
+app'
+  ∷ ∀ msg model
+  . { init ∷ { model ∷ model, msg ∷ Maybe msg }
+    , view ∷ model → Html msg
+    , update ∷ IApp model msg → msg → Effect Unit
+    , selector ∷ String
+    }
+  → Effect Unit
+app' { init: { model, msg }, update, view, selector } = do
   parentNode ← window >>= document <#> toParentNode
   selected ← map El.toNode <$> querySelector (QuerySelector selector) parentNode
   for_ selected \node_ → do
@@ -55,69 +58,67 @@ app' {init: {model, msg}, update, view, selector} = do
     vdom ← Ref.new $ I.unsafeLinkNode emptyNode (text "")
     subscriptions ← Ref.new $ Map.empty
     freshId ← Ref.new 0
-    let iapp = IApp {view, update, state, node, vdom, subscriptions, freshId}
+    let iapp = IApp { view, update, state, node, vdom, subscriptions, freshId }
     render iapp (view model)
-    for_ msg (dispatch iapp) 
+    for_ msg (dispatch iapp)
 
-render ∷ ∀model msg. IApp model msg → Html msg → Effect Unit
-render iapp@(IApp {vdom, node}) newVDom = do
+render ∷ ∀ model msg. IApp model msg → Html msg → Effect Unit
+render iapp@(IApp { vdom, node }) newVDom = do
   oldVDom ← Ref.read vdom
   node1 ← Ref.read node
   pnode ← Node.parentNode node1
   for_ pnode \pnode' → do
     let vdom2 = I.copyVNode newVDom
-    node2 ← I.unsafePatch pnode' node1 oldVDom vdom2 listener
+    node2 ← runEffectFn5 I.unsafePatch pnode' node1 oldVDom vdom2 listener
     Ref.write node2 node
     Ref.write vdom2 vdom
   where
-  listener e = do
-      let EventType t = Ev.type_ e
-      for_ (Ev.currentTarget e) \target → do
-        fn ← I.getAction target t
-        dispatchEvent iapp e fn
+  listener = mkEffectFn1 \e → do
+    let EventType t = Ev.type_ e
+    for_ (Ev.currentTarget e) \target → do
+      fn ← runEffectFn2 I.getAction target t
+      dispatchEvent iapp e fn
 
-getState ∷ ∀model msg. IApp model msg → Effect model
-getState (IApp {state}) = Ref.read state
+getState ∷ ∀ model msg. IApp model msg → Effect model
+getState (IApp { state }) = Ref.read state
 
-setState ∷ ∀model msg. IApp model msg → model → Effect Unit
-setState iapp@(IApp {state, view}) newState = do
+setState ∷ ∀ model msg. IApp model msg → model → Effect Unit
+setState iapp@(IApp { state, view }) newState = do
   oldState ← Ref.read state
   unless (unsafeRefEq oldState newState) do
     Ref.write newState state
     render iapp $ view newState
-        
-dispatch ∷ ∀model msg. IApp model msg → msg → Effect Unit
--- eta expansion pour casser la dépendance cyclique
-dispatch iapp@(IApp {update}) = update iapp
 
-dispatchEvent ∷ ∀model msg. IApp model msg → Event → EventHandler msg → Effect Unit
+dispatch ∷ ∀ model msg. IApp model msg → msg → Effect Unit
+-- eta expansion pour casser la dépendance cyclique
+dispatch iapp@(IApp { update }) = update iapp
+
+dispatchEvent ∷ ∀ model msg. IApp model msg → Event → EventHandler msg → Effect Unit
 dispatchEvent iapp ev handler = do
   msg' ← handler ev
   for_ msg' (dispatch iapp)
 
-    -- getFreshId ∷ Effect Int
-
-    -- subscribe cancel = do
-
-getFreshId ∷ ∀model msg. IApp model msg → Effect SubscriptionId
-getFreshId (IApp {freshId}) = do
+getFreshId ∷ ∀ model msg. IApp model msg → Effect SubscriptionId
+getFreshId (IApp { freshId }) = do
   id ← Ref.read freshId
-  Ref.write (id+1) freshId
+  Ref.write (id + 1) freshId
   pure $ SubscriptionId id
 
-interpret ∷ ∀model msg.
-    (msg → Update model msg Aff Unit)
-    → IApp model msg
-    → Update model msg Aff Unit
-    → Aff Unit
-interpret update iapp@(IApp {subscriptions}) (Update m) = runFreeM go m where
+interpret
+  ∷ ∀ model msg
+  . (msg → Update model msg Aff Unit)
+  → IApp model msg
+  → Update model msg Aff Unit
+  → Aff Unit
+interpret update iapp@(IApp { subscriptions }) (Update m) = runFreeM go m
+  where
   go (State k) = do
     st ← liftEffect $ getState iapp
     let Tuple a st2 = k st
     liftEffect $ setState iapp st2
     pure a
   go (Lift a) = a
-  go (Subscribe f next) = do 
+  go (Subscribe f next) = do
     canceler ← liftEffect $ f \msg → launchAff_ $ interpret update iapp (update msg)
     id ← liftEffect $ getFreshId iapp
     liftEffect $ Ref.modify_ (Map.insert id canceler) subscriptions
@@ -136,16 +137,18 @@ interpret update iapp@(IApp {subscriptions}) (Update m) = runFreeM go m where
 -- |  } → Effect Unit
 -- | ```
 
-app ∷ ∀msg model.
-  { init ∷ {model ∷ model, msg ∷ Maybe msg}
-  , view ∷ model → Html msg
-  , update ∷ msg → Update model msg Aff Unit
-  , selector ∷ String
-  } → Effect Unit
+app
+  ∷ ∀ msg model
+  . { init ∷ { model ∷ model, msg ∷ Maybe msg }
+    , view ∷ model → Html msg
+    , update ∷ msg → Update model msg Aff Unit
+    , selector ∷ String
+    }
+  → Effect Unit
 
-app {init, view, update, selector} = app' {init, view, selector, update: update'}
-    where
-    update' iapp msg = launchAff_ $ interpret update iapp (update msg)
+app { init, view, update, selector } = app' { init, view, selector, update: update' }
+  where
+  update' iapp msg = launchAff_ $ interpret update iapp (update msg)
 
 -- | ```purescript
 -- | sandbox ∷ ∀msg model. 
@@ -156,16 +159,18 @@ app {init, view, update, selector} = app' {init, view, selector, update: update'
 -- |   } → Effect Unit
 -- | ```
 
-sandbox ∷ ∀msg model. 
-  { init ∷ model
-  , view ∷ model → Html msg
-  , update ∷ msg → model → model
-  , selector ∷ String
-  } → Effect Unit
+sandbox
+  ∷ ∀ msg model
+  . { init ∷ model
+    , view ∷ model → Html msg
+    , update ∷ msg → model → model
+    , selector ∷ String
+    }
+  → Effect Unit
 
-sandbox {init, view, update, selector} =
+sandbox { init, view, update, selector } =
   app'
-    { init: {model: init, msg: Nothing}
+    { init: { model: init, msg: Nothing }
     , view
     , update: \iapp msg → do
         st ← getState iapp

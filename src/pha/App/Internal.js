@@ -9,7 +9,7 @@ const compose = (f, g) => f && g ? x => f(g(x)) : f || g
 const patchProperty = (node, key, newValue) => {
     if (key === "value" || key === "selected" || key === "checked") {
         node[key] = newValue;
-    } else if (newValue == null || (key === "class" && !newValue)) {
+    } else if (newValue == null || newValue === false || (key === "class" && !newValue)) {
         node.removeAttribute(key)
     } else {
         node.setAttribute(key, newValue)

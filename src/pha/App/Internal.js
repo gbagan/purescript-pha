@@ -4,25 +4,26 @@
 
 const TEXT_NODE = 3
 
-const merge = (a, b) => ({...a, ...b})
 const compose = (f, g) => f && g ? x => f(g(x)) : f || g
 
-const patchProperty = (node, key, oldValue, newValue, listener, mapf) => {
-    if (key[0] === "o" && key[1] === "n") {
-        const key2 = key.slice(2)
-        if (!node.actions)
-            node.actions = {}
-        node.actions[key2] = mapf && newValue ? mapf(newValue) : newValue
-        if (!newValue) {
-            node.removeEventListener(key2, listener)
-        } else if (!oldValue) {
-            node.addEventListener(key2, listener)
-        }
-    }
-    else if (newValue == null || (key === "class" && !newValue)) {
+const patchProperty = (node, key, newValue) => {
+    if (key === "value" || key === "selected" || key === "checked") {
+        node[key] = newValue;
+    } else if (newValue == null || (key === "class" && !newValue)) {
         node.removeAttribute(key)
     } else {
         node.setAttribute(key, newValue)
+    }
+}
+
+const patchEvent = (node, key, oldValue, newValue, listener, mapf) => {
+    if (!node.actions)
+        node.actions = {}
+    node.actions[key] = mapf && newValue ? mapf(newValue) : newValue
+    if (!newValue) {
+        node.removeEventListener(key, listener)
+    } else if (!oldValue) {
+        node.addEventListener(key, listener)
     }
 }
 
@@ -34,11 +35,9 @@ const createNode = (vnode, listener, isSvg, mapf) => {
                 ? document.createElementNS("http://www.w3.org/2000/svg", vnode.tag)
                 : document.createElement(vnode.tag)
     const props = vnode.props
+    const events = vnode.events
     const mapf2 = compose(mapf, vnode.mapf)
 
-    for (let k in props) {
-        patchProperty(node, k, null, props[k], listener, mapf2)
-    }
     for (let i = 0, len = vnode.children.length; i < len; i++) {
         node.appendChild(
             createNode(
@@ -49,13 +48,22 @@ const createNode = (vnode, listener, isSvg, mapf) => {
             )
         )
     }
+
+    for (let k in props) {
+        patchProperty(node, k, props[k])
+    }
+    for (let k in events) {
+        patchEvent(node, k, null, events[k], listener, mapf2)
+    }
+
     vnode.node = node
     return node
 }
 
 const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
-    if (oldVNode === newVNode) {
-    } else if (oldVNode != null && oldVNode.type === TEXT_NODE && newVNode.type === TEXT_NODE) {
+    if (oldVNode === newVNode) return
+    
+    if (oldVNode != null && oldVNode.type === TEXT_NODE && newVNode.type === TEXT_NODE) {
         if (oldVNode.tag !== newVNode.tag)
             node.nodeValue = newVNode.tag
     } else if (oldVNode == null || oldVNode.tag !== newVNode.tag) {
@@ -67,9 +75,6 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
             oldVNode.node.remove()
         }
     } else {
-        const oldVProps = oldVNode.props
-        const newVProps = newVNode.props
-
         const oldVKids = oldVNode.children
         const newVKids = newVNode.children
         let oldTail = oldVKids.length - 1
@@ -77,12 +82,6 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
 
         mapf = compose(mapf, newVNode.mapf)
         isSvg = isSvg || newVNode.tag === "svg"
-
-        for (let i in merge(oldVProps, newVProps)) {
-            if (oldVProps[i] !== newVProps[i]) {
-                patchProperty(node, i, oldVProps[i], newVProps[i], listener, mapf)
-            }
-        }
 
         if(!newVNode.keyed) { 
             for (let i = 0; i <= oldTail && i <= newTail; i++) {
@@ -192,6 +191,25 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
                 }
             }
         }
+
+        const oldVProps = oldVNode.props
+        const newVProps = newVNode.props
+
+        for (let i in {...oldVProps, ...newVProps}) {
+            if (oldVProps[i] !== newVProps[i]) {
+                patchProperty(node, i, newVProps[i])
+            }
+        }
+
+        const oldEvents = oldVNode.events
+        const newEvents = newVNode.events
+
+        for (let i in {...oldVProps, ...newVProps}) {
+            if (oldEvents[i] !== newEvents[i]) {
+                patchEvent(node, i, oldVProps[i], newVProps[i], listener, mapf)
+            }
+        }
+
     }
     newVNode.node = node
     return node

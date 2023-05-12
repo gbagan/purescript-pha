@@ -3,11 +3,14 @@ const compose = (f, g) => f && g ? x => f(g(x)) : f || g
 const _h = (tag, ps, children, keyed=false) => {
     const style = []
     const props = {}
-    const vdom = {tag, children, props, node: null, keyed}
+    const events = {}
+    const vdom = {tag, children, props, events, node: null, keyed}
     const n = ps.length
     for (let i = 0; i < n; i++) {
         const [t, k, v] = ps[i]
-        if (t == 1)
+        if (t === 0)
+            events[k] = v
+        else if (t === 1)
             props[k] = v
         else if (t === 2)
             props.class = props.class ? props.class + " " + k : k
@@ -33,7 +36,7 @@ export const mapView = (mapf, vnode) => ({...vnode, mapf: compose(vnode.mapf, ma
 export const attrImpl = (k, v) => [1, k, v]
 export const class_ = cls => [2, cls]
 export const noProp = [-1]
-export const unsafeOnWithEffectImpl = (k, v) => [1, "on"+k, v]
+export const unsafeOnWithEffectImpl = (k, v) => [0, k, v]
 export const styleImpl = (k, v) => [3, k, v]
 export const text = createTextVNode
 export const lazyImpl = (view, val) => ({ memo: [val], type: view})

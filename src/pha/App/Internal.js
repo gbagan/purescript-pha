@@ -38,6 +38,14 @@ const createNode = (vnode, listener, isSvg, mapf) => {
     const events = vnode.events
     const mapf2 = compose(mapf, vnode.mapf)
 
+
+    for (let k in props) {
+        patchProperty(node, k, props[k])
+    }
+    for (let k in events) {
+        patchEvent(node, k, null, events[k], listener, mapf2)
+    }
+
     for (let i = 0, len = vnode.children.length; i < len; i++) {
         node.appendChild(
             createNode(
@@ -48,14 +56,6 @@ const createNode = (vnode, listener, isSvg, mapf) => {
             )
         )
     }
-
-    for (let k in props) {
-        patchProperty(node, k, props[k])
-    }
-    for (let k in events) {
-        patchEvent(node, k, null, events[k], listener, mapf2)
-    }
-
     vnode.node = node
     return node
 }
@@ -75,6 +75,24 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
             oldVNode.node.remove()
         }
     } else {
+        const oldVProps = oldVNode.props
+        const newVProps = newVNode.props
+
+        for (let i in {...oldVProps, ...newVProps}) {
+            if (oldVProps[i] !== newVProps[i]) {
+                patchProperty(node, i, newVProps[i])
+            }
+        }
+
+        const oldEvents = oldVNode.events
+        const newEvents = newVNode.events
+
+        for (let i in {...oldVProps, ...newVProps}) {
+            if (oldEvents[i] !== newEvents[i]) {
+                patchEvent(node, i, oldVProps[i], newVProps[i], listener, mapf)
+            }
+        }
+
         const oldVKids = oldVNode.children
         const newVKids = newVNode.children
         let oldTail = oldVKids.length - 1
@@ -191,25 +209,6 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
                 }
             }
         }
-
-        const oldVProps = oldVNode.props
-        const newVProps = newVNode.props
-
-        for (let i in {...oldVProps, ...newVProps}) {
-            if (oldVProps[i] !== newVProps[i]) {
-                patchProperty(node, i, newVProps[i])
-            }
-        }
-
-        const oldEvents = oldVNode.events
-        const newEvents = newVNode.events
-
-        for (let i in {...oldVProps, ...newVProps}) {
-            if (oldEvents[i] !== newEvents[i]) {
-                patchEvent(node, i, oldVProps[i], newVProps[i], listener, mapf)
-            }
-        }
-
     }
     newVNode.node = node
     return node

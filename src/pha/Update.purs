@@ -10,6 +10,7 @@ import Control.Monad.State.Class (get, gets, put, modify, modify_) as Exports
 import Effect.Aff (Milliseconds)
 import Effect.Aff as Aff
 import Effect.Aff.Class (class MonadAff, liftAff)
+import Effect.Aff (Milliseconds(..)) as Exports
 import Effect.Aff.Class (liftAff) as Exports
 import Effect.Class (liftEffect) as Exports
 

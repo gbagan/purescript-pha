@@ -19,7 +19,7 @@ const patchProperty = (node, key, oldValue, newValue, listener, mapf) => {
             node.addEventListener(key2, listener)
         }
     }
-    else if (newValue == null || newValue === false || (key === "class" && !newValue)) {
+    else if (newValue == null || (key === "class" && !newValue)) {
         node.removeAttribute(key)
     } else {
         node.setAttribute(key, newValue)
@@ -79,13 +79,9 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
         isSvg = isSvg || newVNode.tag === "svg"
 
         for (let i in merge(oldVProps, newVProps)) {
-            /*
-            if (
-                (i === "value" || i === "selected" || i === "checked"
-                    ? node[i]
-                    : oldVProps[i]) !== newVProps[i]
-            )*/
+            if (oldVProps[i] !== newVProps[i]) {
                 patchProperty(node, i, oldVProps[i], newVProps[i], listener, mapf)
+            }
         }
 
         if(!newVNode.keyed) { 

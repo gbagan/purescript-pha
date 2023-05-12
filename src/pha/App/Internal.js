@@ -208,12 +208,10 @@ const propsChanged = (a, b) => {
     return false
 }
 
-const evalMemo = (f, memo) => memo.reduce((g, v) => g(v), f)
-
 const getVNode = (newVNode, oldVNode) => {
     if (typeof newVNode.html.type === "function") {
         if (!oldVNode || oldVNode.memo == null || propsChanged(oldVNode.memo, newVNode.html.memo)) {
-            oldVNode = copyVNode(evalMemo(newVNode.html.type, newVNode.html.memo))
+            oldVNode = copyVNode(newVNode.html.type(...newVNode.html.memo))
             oldVNode.memo = newVNode.html.memo
         }
         newVNode.html = oldVNode

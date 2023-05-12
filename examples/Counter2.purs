@@ -3,14 +3,13 @@ import Prelude hiding (div)
 import Data.Int (even)
 import Data.Maybe (Maybe(..))
 import Data.Array ((..), replicate)
-import Data.Time.Duration (Milliseconds(..))
 import Effect (Effect)
 import Effect.Aff (Aff)
 import Pha.Html (Html)
 import Pha.Html as H
 import Pha.Html.Events as E
 import Pha.App (app)
-import Pha.Update (Update, modify_, delay)
+import Pha.Update (Update, Milliseconds(..), modify_, delay)
 import Pha.Subscriptions (onKeyDown)
 
 type Model = Int

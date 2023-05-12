@@ -13,6 +13,8 @@ module Pha.Html.Core
   , lazy
   , lazy2
   , lazy3
+  , lazy4
+  , lazy5
   , maybe
   , module E
   , on_
@@ -24,7 +26,7 @@ module Pha.Html.Core
   where
 import Prelude hiding (when)
 import Effect (Effect)
-import Data.Function.Uncurried (Fn2, Fn3, Fn4, runFn2, runFn3, runFn4)
+import Data.Function.Uncurried (Fn2, Fn3, Fn4, Fn5, Fn6, mkFn2, mkFn3, mkFn4, mkFn5, runFn2, runFn3, runFn4, runFn5, runFn6)
 import Data.Maybe (Maybe(..))
 import Data.Maybe as M
 import Web.Event.Event (Event) as E
@@ -82,14 +84,22 @@ lazy ∷ ∀a msg. (a → Html msg) → a → Html msg
 lazy f a = runFn2 lazyImpl f a
 
 lazy2 ∷ ∀a b msg. (a → b → Html msg) → a → b → Html msg
-lazy2 f a b = runFn3 lazy2Impl f a b
+lazy2 f a b = runFn3 lazy2Impl (mkFn2 f) a b
 
 lazy3 ∷ ∀a b c msg. (a → b → c → Html msg) → a → b → c → Html msg
-lazy3 f a b c = runFn4 lazy3Impl f a b c
+lazy3 f a b c = runFn4 lazy3Impl (mkFn3 f) a b c
+
+lazy4 ∷ ∀a b c d msg. (a → b → c → d → Html msg) → a → b → c → d → Html msg
+lazy4 f a b c d = runFn5 lazy4Impl (mkFn4 f) a b c d
+
+lazy5 ∷ ∀a b c d e msg. (a → b → c → d → e → Html msg) → a → b → c → d → e → Html msg
+lazy5 f a b c d = runFn6 lazy5Impl (mkFn5 f) a b c d
 
 foreign import lazyImpl ∷ ∀a msg. Fn2 (a → Html msg) a (Html msg)
-foreign import lazy2Impl ∷ ∀a b msg. Fn3 (a → b → Html msg) a b (Html msg)
-foreign import lazy3Impl ∷ ∀a b c msg. Fn4 (a → b → c → Html msg) a b c (Html msg)
+foreign import lazy2Impl ∷ ∀a b msg. Fn3 (Fn2 a b (Html msg)) a b (Html msg)
+foreign import lazy3Impl ∷ ∀a b c msg. Fn4 (Fn3 a b c (Html msg)) a b c (Html msg)
+foreign import lazy4Impl ∷ ∀a b c d msg. Fn5 (Fn4 a b c d (Html msg)) a b c d (Html msg)
+foreign import lazy5Impl ∷ ∀a b c d e msg. Fn6 (Fn5 a b c d e (Html msg)) a b c d e (Html msg)
 
 -- | ```purescript
 -- | when true f = f unit

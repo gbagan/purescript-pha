@@ -39,3 +39,5 @@ export const text = createTextVNode
 export const lazyImpl = (view, val) => ({ memo: [val], type: view})
 export const lazy2Impl = (view, val1, val2) => ({ memo: [val1, val2], type: view})
 export const lazy3Impl = (view, val1, val2, val3) => ({ memo: [val1, val2, val3], type: view})
+export const lazy4Impl = (view, val1, val2, val3, val4) => ({ memo: [val1, val2, val3, val4], type: view})
+export const lazy5Impl = (view, val1, val2, val3, val4, val5) => ({ memo: [val1, val2, val3, val4, val5], type: view})

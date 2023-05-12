@@ -79,13 +79,13 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
         isSvg = isSvg || newVNode.tag === "svg"
 
         for (let i in merge(oldVProps, newVProps)) {
+            /*
             if (
                 (i === "value" || i === "selected" || i === "checked"
                     ? node[i]
                     : oldVProps[i]) !== newVProps[i]
-            ) {
+            )*/
                 patchProperty(node, i, oldVProps[i], newVProps[i], listener, mapf)
-            }
         }
 
         if(!newVNode.keyed) { 

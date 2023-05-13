@@ -1,23 +1,39 @@
+/*
+0: property
+1: attribute
+2: event
+3: class
+4: style
+
+
+*/
+
+
 const compose = (f, g) => f && g ? x => f(g(x)) : f || g
 
 const _h = (tag, ps, children, keyed=false) => {
     const style = []
     const props = {}
+    const attrs = {}
     const events = {}
-    const vdom = {tag, children, props, events, node: null, keyed}
+    const vdom = {tag, children, props, attrs, events, node: null, keyed}
     const n = ps.length
     for (let i = 0; i < n; i++) {
         const [t, k, v] = ps[i]
         if (t === 0)
-            events[k] = v
-        else if (t === 1)
             props[k] = v
+        else if (t === 1)
+            attrs[k] = v
         else if (t === 2)
-            props.class = props.class ? props.class + " " + k : k
+            events[k] = v
         else if (t === 3)
+            attrs.class = attrs.class ? attrs.class + " " + k : k
+        else if (t === 4)
             style.push(k + ":" + v)
     }
-    props.style = style.join(";")
+    const style_ = style.join(";")
+    if (style_)
+        attrs.style = style_
     return vdom
 }
 
@@ -33,11 +49,12 @@ const createTextVNode = text => ({
 })
 
 export const mapView = (mapf, vnode) => ({...vnode, mapf: compose(vnode.mapf, mapf)})
+export const propImpl = (k, v) => [0, k, v]
 export const attrImpl = (k, v) => [1, k, v]
-export const class_ = cls => [2, cls]
+export const unsafeOnWithEffectImpl = (k, v) => [2, k, v]
+export const class_ = cls => [3, cls]
 export const noProp = [-1]
-export const unsafeOnWithEffectImpl = (k, v) => [0, k, v]
-export const styleImpl = (k, v) => [3, k, v]
+export const styleImpl = (k, v) => [4, k, v]
 export const text = createTextVNode
 export const lazyImpl = (view, val) => ({ memo: [val], type: view})
 export const lazy2Impl = (view, val1, val2) => ({ memo: [val1, val2], type: view})

@@ -1742,9 +1742,10 @@
   var TEXT_NODE = 3;
   var compose = (f, g) => f && g ? (x) => f(g(x)) : f || g;
   var patchProperty = (node, key2, newValue) => {
-    if (key2 === "value" || key2 === "selected" || key2 === "selectedIndex") {
-      node[key2] = newValue;
-    } else if (newValue == null || key2 === "class" && !newValue) {
+    node[key2] = newValue;
+  };
+  var patchAttribute = (node, key2, newValue) => {
+    if (newValue == null || key2 === "class" && !newValue) {
       node.removeAttribute(key2);
     } else {
       node.setAttribute(key2, newValue);
@@ -1763,8 +1764,18 @@
   var createNode = (vnode, listener, isSvg, mapf) => {
     const node = vnode.type === TEXT_NODE ? document.createTextNode(vnode.tag) : (isSvg = isSvg || vnode.tag === "svg") ? document.createElementNS("http://www.w3.org/2000/svg", vnode.tag) : document.createElement(vnode.tag);
     const props = vnode.props;
+    const attrs = vnode.attrs;
     const events = vnode.events;
     const mapf2 = compose(mapf, vnode.mapf);
+    for (let k in props) {
+      patchProperty(node, k, props[k]);
+    }
+    for (let k in attrs) {
+      patchAttribute(node, k, attrs[k]);
+    }
+    for (let k in events) {
+      patchEvent(node, k, null, events[k], listener, mapf2);
+    }
     for (let i = 0, len = vnode.children.length; i < len; i++) {
       node.appendChild(
         createNode(
@@ -1775,18 +1786,13 @@
         )
       );
     }
-    for (let k in props) {
-      patchProperty(node, k, props[k]);
-    }
-    for (let k in events) {
-      patchEvent(node, k, null, events[k], listener, mapf2);
-    }
     vnode.node = node;
     return node;
   };
   var patch = (parent2, node, oldVNode, newVNode, listener, isSvg, mapf) => {
-    if (oldVNode === newVNode) {
-    } else if (oldVNode != null && oldVNode.type === TEXT_NODE && newVNode.type === TEXT_NODE) {
+    if (oldVNode === newVNode)
+      return;
+    if (oldVNode != null && oldVNode.type === TEXT_NODE && newVNode.type === TEXT_NODE) {
       if (oldVNode.tag !== newVNode.tag)
         node.nodeValue = newVNode.tag;
     } else if (oldVNode == null || oldVNode.tag !== newVNode.tag) {
@@ -1798,6 +1804,27 @@
         oldVNode.node.remove();
       }
     } else {
+      const oldProps = oldVNode.props;
+      const newProps = newVNode.props;
+      for (let i in { ...oldProps, ...newProps }) {
+        if (oldProps[i] !== newProps[i]) {
+          patchProperty(node, i, newProps[i]);
+        }
+      }
+      const oldAttrs = oldVNode.attrs;
+      const newAttrs = newVNode.attrs;
+      for (let i in { ...oldAttrs, ...newAttrs }) {
+        if (oldAttrs[i] !== newAttrs[i]) {
+          patchAttribute(node, i, newAttrs[i]);
+        }
+      }
+      const oldEvents = oldVNode.events;
+      const newEvents = newVNode.events;
+      for (let i in { ...oldEvents, ...newEvents }) {
+        if (oldEvents[i] !== newEvents[i]) {
+          patchEvent(node, i, oldEvents[i], newEvents[i], listener, mapf);
+        }
+      }
       const oldVKids = oldVNode.children;
       const newVKids = newVNode.children;
       let oldTail = oldVKids.length - 1;
@@ -1897,20 +1924,6 @@
           }
         }
       }
-      const oldVProps = oldVNode.props;
-      const newVProps = newVNode.props;
-      for (let i in { ...oldVProps, ...newVProps }) {
-        if (oldVProps[i] !== newVProps[i]) {
-          patchProperty(node, i, newVProps[i]);
-        }
-      }
-      const oldEvents = oldVNode.events;
-      const newEvents = newVNode.events;
-      for (let i in { ...oldVProps, ...newVProps }) {
-        if (oldEvents[i] !== newEvents[i]) {
-          patchEvent(node, i, oldVProps[i], newVProps[i], listener, mapf);
-        }
-      }
     }
     newVNode.node = node;
     return node;
@@ -1946,21 +1959,26 @@
   var _h = (tag, ps, children2, keyed = false) => {
     const style = [];
     const props = {};
+    const attrs = {};
     const events = {};
-    const vdom = { tag, children: children2, props, events, node: null, keyed };
+    const vdom = { tag, children: children2, props, attrs, events, node: null, keyed };
     const n = ps.length;
     for (let i = 0; i < n; i++) {
       const [t, k, v] = ps[i];
       if (t === 0)
-        events[k] = v;
-      else if (t === 1)
         props[k] = v;
+      else if (t === 1)
+        attrs[k] = v;
       else if (t === 2)
-        props.class = props.class ? props.class + " " + k : k;
+        events[k] = v;
       else if (t === 3)
+        attrs.class = attrs.class ? attrs.class + " " + k : k;
+      else if (t === 4)
         style.push(k + ":" + v);
     }
-    props.style = style.join(";");
+    const style_ = style.join(";");
+    if (style_)
+      attrs.style = style_;
     return vdom;
   };
   var elemImpl = (tag, ps, children2) => _h(tag, ps, children2.map((html) => ({ key: null, html })));
@@ -1971,9 +1989,9 @@
     children: [],
     type: 3
   });
-  var class_ = (cls) => [2, cls];
-  var unsafeOnWithEffectImpl = (k, v) => [0, k, v];
-  var styleImpl = (k, v) => [3, k, v];
+  var unsafeOnWithEffectImpl = (k, v) => [2, k, v];
+  var class_ = (cls) => [3, cls];
+  var styleImpl = (k, v) => [4, k, v];
   var text = createTextVNode;
   var lazyImpl = (view2, val) => ({ memo: [val], type: view2 });
 

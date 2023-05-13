@@ -7,9 +7,11 @@ const TEXT_NODE = 3
 const compose = (f, g) => f && g ? x => f(g(x)) : f || g
 
 const patchProperty = (node, key, newValue) => {
-    if (key === "value" || key === "selected" || key === "checked") {
-        node[key] = newValue;
-    } else if (newValue == null || newValue === false || (key === "class" && !newValue)) {
+    node[key] = newValue;
+}
+
+const patchAttribute = (node, key, newValue) => {
+    if (newValue == null || (key === "class" && !newValue)) {
         node.removeAttribute(key)
     } else {
         node.setAttribute(key, newValue)
@@ -35,12 +37,16 @@ const createNode = (vnode, listener, isSvg, mapf) => {
                 ? document.createElementNS("http://www.w3.org/2000/svg", vnode.tag)
                 : document.createElement(vnode.tag)
     const props = vnode.props
+    const attrs = vnode.attrs
     const events = vnode.events
     const mapf2 = compose(mapf, vnode.mapf)
 
 
     for (let k in props) {
         patchProperty(node, k, props[k])
+    }
+    for (let k in attrs) {
+        patchAttribute(node, k, attrs[k])
     }
     for (let k in events) {
         patchEvent(node, k, null, events[k], listener, mapf2)
@@ -75,21 +81,30 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
             oldVNode.node.remove()
         }
     } else {
-        const oldVProps = oldVNode.props
-        const newVProps = newVNode.props
+        const oldProps = oldVNode.props
+        const newProps = newVNode.props
 
-        for (let i in {...oldVProps, ...newVProps}) {
-            if (oldVProps[i] !== newVProps[i]) {
-                patchProperty(node, i, newVProps[i])
+        for (let i in {...oldProps, ...newProps}) {
+            if (oldProps[i] !== newProps[i]) {
+                patchProperty(node, i, newProps[i])
+            }
+        }
+
+        const oldAttrs = oldVNode.attrs
+        const newAttrs = newVNode.attrs
+
+        for (let i in {...oldAttrs, ...newAttrs}) {
+            if (oldAttrs[i] !== newAttrs[i]) {
+                patchAttribute(node, i, newAttrs[i])
             }
         }
 
         const oldEvents = oldVNode.events
         const newEvents = newVNode.events
 
-        for (let i in {...oldVProps, ...newVProps}) {
+        for (let i in {...oldEvents, ...newEvents}) {
             if (oldEvents[i] !== newEvents[i]) {
-                patchEvent(node, i, oldVProps[i], newVProps[i], listener, mapf)
+                patchEvent(node, i, oldEvents[i], newEvents[i], listener, mapf)
             }
         }
 

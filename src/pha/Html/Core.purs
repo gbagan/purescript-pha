@@ -18,6 +18,7 @@ module Pha.Html.Core
   , maybe
   , module E
   , on_
+  , prop
   , style
   , text
   , unsafeOnWithEffect
@@ -43,7 +44,12 @@ foreign import data Prop ∷ Type → Type
 attr ∷ ∀msg. String → String → Prop msg
 attr key val = runFn2 attrImpl key val
 
+prop ∷ ∀msg. String → String → Prop msg
+prop key val = runFn2 propImpl key val
+
 foreign import attrImpl ∷ ∀msg. Fn2 String String (Prop msg)
+
+foreign import propImpl ∷ ∀msg. Fn2 String String (Prop msg)
 
 foreign import class_ ∷ ∀msg. String → Prop msg
 

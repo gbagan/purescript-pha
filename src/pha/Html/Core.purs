@@ -44,12 +44,12 @@ foreign import data Prop ∷ Type → Type
 attr ∷ ∀msg. String → String → Prop msg
 attr key val = runFn2 attrImpl key val
 
-prop ∷ ∀msg. String → String → Prop msg
+prop ∷ ∀msg value. String → value → Prop msg
 prop key val = runFn2 propImpl key val
 
 foreign import attrImpl ∷ ∀msg. Fn2 String String (Prop msg)
 
-foreign import propImpl ∷ ∀msg. Fn2 String String (Prop msg)
+foreign import propImpl ∷ ∀msg value. Fn2 String value (Prop msg)
 
 foreign import class_ ∷ ∀msg. String → Prop msg
 

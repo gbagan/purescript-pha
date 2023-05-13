@@ -1,25 +1,33 @@
 module Pha.Html.Attributes where
 import Prelude
 import Pha.Html.Core (Prop, attr, prop)
-import Unsafe.Coerce (unsafeCoerce)
+
+action ∷ ∀msg. String → Prop msg
+action = attr "action"
 
 alt ∷ ∀msg. String → Prop msg
 alt = attr "alt"
 
+charset ∷ ∀msg. String → Prop msg
+charset = attr "charset"
+
 checked ∷ ∀msg. Boolean → Prop msg
-checked b = prop "checked" (unsafeCoerce b)
+checked b = prop "checked" b
 
 cols ∷ ∀msg. Int → Prop msg
 cols = attr "cols" <<< show
 
+colSpan  ∷ ∀msg. Int → Prop msg
+colSpan = attr "colSpan" <<< show
+
 disabled ∷ ∀msg. Boolean → Prop msg
-disabled b = prop "disabled" (unsafeCoerce b)
+disabled b = prop "disabled" b
 
 download ∷ ∀msg. String → Prop msg
 download = attr "download"
 
 hidden ∷ ∀msg. Boolean → Prop msg
-hidden b = attr "hidden" (unsafeCoerce b)
+hidden b = prop "hidden" b
 
 href ∷ ∀msg. String → Prop msg
 href = attr "href"
@@ -39,20 +47,30 @@ min = attr "min" <<< show
 minlength ∷ ∀msg. Int → Prop msg
 minlength = attr "minlength" <<< show
 
+name ∷ ∀msg. String → Prop msg
+name = attr "name"
+
 placeholder ∷ ∀msg. String → Prop msg
 placeholder = attr "placeholder"
 
 readonly ∷ ∀msg. Boolean → Prop msg
-readonly b = prop "selected" (unsafeCoerce b)
+readonly b = prop "selected" b
+
+rel ∷ ∀msg. String → Prop msg
+rel = attr "rel"
+
 
 required ∷ ∀msg. Boolean → Prop msg
-required b = prop "selected" (unsafeCoerce b)
+required b = prop "selected" b
 
 rows ∷ ∀msg. Int → Prop msg
 rows = attr "rows" <<< show
 
+rowSpan  ∷ ∀msg. Int → Prop msg
+rowSpan = attr "rowSpan" <<< show
+
 selected ∷ ∀msg. Boolean → Prop msg
-selected b = prop "selected" (unsafeCoerce b)
+selected b = prop "selected" b
 
 size ∷ ∀msg. Int → Prop msg
 size = attr "size" <<< show

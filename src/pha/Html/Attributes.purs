@@ -106,28 +106,28 @@ type_ = attr "type"
 
 -- SVG
 
-x ∷ ∀msg. Number → Prop msg
-x = attr "x" <<< show
-y ∷ ∀msg. Number → Prop msg
-y = attr "y" <<< show
-x1 ∷ ∀msg. Number → Prop msg
-x1 = attr "x1" <<< show
-y1 ∷ ∀msg. Number → Prop msg
-y1 = attr "y1" <<< show
-x2 ∷ ∀msg. Number → Prop msg
-x2 = attr "x2" <<< show
-y2 ∷ ∀msg. Number → Prop msg
-y2 = attr "y2" <<< show
-cx ∷ ∀msg. Number → Prop msg
-cx = attr "cx" <<< show
-cy ∷ ∀msg. Number → Prop msg
-cy = attr "cy" <<< show
-r ∷ ∀msg. Number → Prop msg
-r = attr "r" <<< show
-rx ∷ ∀msg. Number → Prop msg
-rx = attr "rx" <<< show
-ry ∷ ∀msg. Number → Prop msg
-ry = attr "ry" <<< show
+x ∷ ∀msg a. IsLength a => a → Prop msg
+x = attr "x" <<< toString
+y ∷ ∀msg a. IsLength a => a → Prop msg
+y = attr "y" <<< toString
+x1 ∷ ∀msg a. IsLength a => a → Prop msg
+x1 = attr "x1" <<< toString
+y1 ∷ ∀msg a. IsLength a => a → Prop msg
+y1 = attr "y1" <<< toString
+x2 ∷ ∀msg a. IsLength a => a → Prop msg
+x2 = attr "x2" <<< toString
+y2 ∷ ∀msg a. IsLength a => a → Prop msg
+y2 = attr "y2" <<< toString
+cx ∷ ∀msg a. IsLength a => a → Prop msg
+cx = attr "cx" <<< toString
+cy ∷ ∀msg a. IsLength a => a → Prop msg
+cy = attr "cy" <<< toString
+r ∷ ∀msg a. IsLength a => a → Prop msg
+r = attr "r" <<< toString
+rx ∷ ∀msg a. IsLength a => a → Prop msg
+rx = attr "rx" <<< toString
+ry ∷ ∀msg a. IsLength a => a → Prop msg
+ry = attr "ry" <<< toString
 
 d ∷ ∀msg. String → Prop msg
 d = attr "d"
@@ -138,15 +138,24 @@ height ∷ ∀msg i. IsLength i => i → Prop msg
 height i = attr "height" (toString i)
 stroke ∷ ∀msg. String → Prop msg
 stroke = attr "stroke"
+
 opacity ∷ ∀msg. Number → Prop msg
 opacity = attr "opacity" <<< show
+
 fill ∷ ∀msg. String → Prop msg
 fill = attr "fill"
+
 viewBox ∷ ∀msg. Int → Int → Int → Int → Prop msg
 viewBox a b c d2 = attr "viewBox" $ show a <> " " <> show b <> " " <> show c <> " " <> show d2
+
 transform ∷ ∀msg. String → Prop msg
 transform = attr "transform"
+
 strokeWidth ∷ ∀msg. Number → Prop msg
 strokeWidth = attr "stroke-width" <<< show
+
 strokeDasharray ∷ ∀msg. String → Prop msg
 strokeDasharray = attr "stroke-dasharray"
+
+fontSize ∷ ∀msg a. IsLength a => a → Prop msg
+fontSize = attr "font-size" <<< toString

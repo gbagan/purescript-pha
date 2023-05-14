@@ -2,6 +2,27 @@ module Pha.Html.Attributes where
 import Prelude
 import Pha.Html.Core (Prop, attr, prop)
 
+class IsLength :: Type → Constraint
+class IsLength a where
+  toString :: a -> String
+
+instance IsLength Int where
+  toString = show
+
+instance IsLength Number where
+  toString = show
+
+
+newtype Px = Px Number
+
+instance IsLength Px where
+  toString (Px a) = show a <> "px"
+
+newtype Pc = Pc Number
+
+instance IsLength Pc where
+  toString (Pc a) = show (a * 100.0) <> "%"
+
 action ∷ ∀msg. String → Prop msg
 action = attr "action"
 
@@ -118,10 +139,10 @@ ry = attr "ry" <<< show
 d ∷ ∀msg. String → Prop msg
 d = attr "d"
 
-width ∷ ∀msg. String → Prop msg
-width = attr "width"
-height ∷ ∀msg. String → Prop msg
-height = attr "height"
+width ∷ ∀msg i. IsLength i => i → Prop msg
+width i = attr "width" (toString i)
+height ∷ ∀msg i. IsLength i => i → Prop msg
+height i = attr "height" (toString i)
 stroke ∷ ∀msg. String → Prop msg
 stroke = attr "stroke"
 opacity ∷ ∀msg. Number → Prop msg

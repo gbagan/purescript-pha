@@ -23,6 +23,10 @@
   var showIntImpl = function(n) {
     return n.toString();
   };
+  var showNumberImpl = function(n) {
+    var str = n.toString();
+    return isNaN(str + ".0") ? str : str + ".0";
+  };
 
   // output-es/Data.Ordering/index.js
   var $Ordering = (tag) => ({ tag });
@@ -581,6 +585,11 @@
       var yy = Math.abs(y);
       return (x % yy + yy) % yy;
     };
+  };
+
+  // output-es/Data.Int/foreign.js
+  var toNumber = function(n) {
+    return n;
   };
 
   // output-es/Partial/foreign.js
@@ -1989,6 +1998,7 @@
     children: [],
     type: 3
   });
+  var attrImpl = (k, v) => [1, k, v];
   var unsafeOnWithEffectImpl = (k, v) => [2, k, v];
   var class_ = (cls) => [3, cls];
   var styleImpl = (k, v) => [4, k, v];
@@ -2438,7 +2448,15 @@
         [],
         [
           elemImpl("span", [], [text("green when the counter is even")]),
-          elemImpl("div", [class_("box"), styleImpl("background-color", (counter & 1) === 0 ? "blue" : "red")], [])
+          elemImpl(
+            "div",
+            [
+              class_("box"),
+              attrImpl("width", showNumberImpl(toNumber(counter)) + "px"),
+              styleImpl("background-color", (counter & 1) === 0 ? "blue" : "red")
+            ],
+            []
+          )
         ]
       ),
       elemImpl("h3", [], [text("press I to increment the counter")]),

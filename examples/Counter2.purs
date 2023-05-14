@@ -7,7 +7,9 @@ import Effect (Effect)
 import Effect.Aff (Aff)
 import Pha.Html (Html)
 import Pha.Html as H
+import Pha.Html.Attributes as P
 import Pha.Html.Events as E
+import Pha.Html.Util (px')
 import Pha.App (app)
 import Pha.Update (Update, Milliseconds(..), modify_, delay)
 import Pha.Subscriptions (onKeyDown)
@@ -40,6 +42,7 @@ view counter =
         [ H.span [] [H.text "green when the counter is even"]
         , H.div
             [ H.class_ "box"
+            , P.width (px' counter)
             , H.style "background-color" $ if even counter then "blue" else "red"
             ] []
         ]

@@ -4,7 +4,7 @@ import Pha.Html.Core (Prop, attr, prop)
 
 class IsLength :: Type → Constraint
 class IsLength a where
-  toString :: a -> String
+  toString :: a → String
 
 instance IsLength Int where
   toString = show
@@ -12,16 +12,9 @@ instance IsLength Int where
 instance IsLength Number where
   toString = show
 
+instance IsLength String where
+  toString = identity
 
-newtype Px = Px Number
-
-instance IsLength Px where
-  toString (Px a) = show a <> "px"
-
-newtype Pc = Pc Number
-
-instance IsLength Pc where
-  toString (Pc a) = show (a * 100.0) <> "%"
 
 action ∷ ∀msg. String → Prop msg
 action = attr "action"

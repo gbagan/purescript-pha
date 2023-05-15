@@ -1,5 +1,5 @@
 const objEq = (a, b) => {
-    if (a === null && b !== null)
+    if (a === undefined)
         return false
     for (let x in a)
         if (a[x] !== b[x])
@@ -7,14 +7,20 @@ const objEq = (a, b) => {
     return true
 }
 
-export const memoized = sel => f => {
-    let a = null;
-    let res = null;
+export const memoizedImpl = sel => f => {
+    let u = undefined;
+    let a = undefined;
+    let res = undefined;
     return v => {
+        if (u === v)
+            return res
         const b = sel(v);
-        if (a === b)
+        if (a === b) {
+            u = v;
             return res;
+        }
         else {
+            u = v;
             a = b;
             res = f(b);
             return res;
@@ -23,8 +29,8 @@ export const memoized = sel => f => {
 }
 
 export const memoizedObj = sel => f => {
-    let a = null;
-    let res = null;
+    let a = undefined;
+    let res = undefined;
     return v => {
         const b = sel(v);
         if (objEq(a, b))

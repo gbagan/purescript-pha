@@ -3,26 +3,26 @@ module Pha.Html.Core
   , Html
   , KeyedHtml
   , Prop
-  , attr
-  , class'
-  , class_
   , elem
-  , empty
-  , fromMaybe
   , keyed
+  , text
+  , attr
+  , prop
+  , style
+  , class_
+  , class'
+  , empty
   , lazy
   , lazy2
   , lazy3
   , lazy4
   , lazy5
-  , maybe
-  , module E
-  , on_
-  , prop
-  , style
-  , text
-  , unsafeOnWithEffect
   , when
+  , fromMaybe
+  , maybe
+  , on_
+  , unsafeOnWithEffect
+  , module E
   )
   where
 import Prelude hiding (when)

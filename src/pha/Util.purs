@@ -1,4 +1,4 @@
-module Util (memoized, memoized') where
+module Pha.Util (memoized, memoized') where
 
 foreign import memoized :: forall a b c. (a -> b) -> (b -> c) -> a -> c
 

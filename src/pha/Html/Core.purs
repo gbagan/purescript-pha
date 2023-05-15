@@ -5,6 +5,7 @@ module Pha.Html.Core
   , Prop
   , attr
   , class'
+  , class_
   , elem
   , empty
   , fromMaybe

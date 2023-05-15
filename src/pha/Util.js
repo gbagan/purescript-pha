@@ -7,38 +7,32 @@ const objEq = (a, b) => {
     return true
 }
 
-export const memoizedImpl = sel => f => {
+export const memoizeImpl = f => g => {
     let u = undefined;
     let a = undefined;
     let res = undefined;
     return v => {
         if (u === v)
             return res
-        const b = sel(v);
-        if (a === b) {
-            u = v;
+        const b = f(v);
+        u = v;
+        if (a === b)
             return res;
-        }
-        else {
-            u = v;
-            a = b;
-            res = f(b);
-            return res;
-        }
+        a = b;
+        res = g(b);
+        return res;
     }
 }
 
-export const memoizedObj = sel => f => {
+export const memoizeObj = f => g => {
     let a = undefined;
     let res = undefined;
     return v => {
-        const b = sel(v);
+        const b = f(v);
         if (objEq(a, b))
             return res;
-        else {
-            a = b;
-            res = f(b);
-            return res;
-        }
+        a = b;
+        res = g(b);
+        return res;
     }
 }

@@ -116,6 +116,8 @@ line props = elem "line" props []
 
 use ∷ ∀msg. Array (Prop msg) → Html msg
 use props = elem "use" props []
-    
+
+
+-- | Create a SVG text element
 text_ ∷ ∀msg. String → Array (Prop msg) → Html msg
 text_ t props = elem "text" props [text t]

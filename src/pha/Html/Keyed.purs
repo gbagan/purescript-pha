@@ -35,6 +35,9 @@ nav = keyed "nav"
 ol ∷ ∀msg. Array (Prop msg) → Array (KeyedHtml msg) → Html msg
 ol = keyed "ol"
 
+select ∷ ∀msg. Array (Prop msg) → Array (KeyedHtml msg) → Html msg
+select = keyed "select"
+
 section ∷ ∀msg. Array (Prop msg) → Array (KeyedHtml msg) → Html msg
 section = keyed "section"
 

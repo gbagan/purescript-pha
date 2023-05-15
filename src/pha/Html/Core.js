@@ -4,10 +4,7 @@
 2: event
 3: class
 4: style
-
-
 */
-
 
 const compose = (f, g) => f && g ? x => f(g(x)) : f || g
 

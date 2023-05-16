@@ -29,6 +29,9 @@ p = keyed "p"
 main ∷ ∀msg. Array (Prop msg) → Array (KeyedHtml msg) → Html msg
 main = keyed "main"
 
+menu ∷ ∀msg. Array (Prop msg) → Array (KeyedHtml msg) → Html msg
+menu = keyed "menu"
+
 nav ∷ ∀msg. Array (Prop msg) → Array (KeyedHtml msg) → Html msg
 nav = keyed "nav"
 

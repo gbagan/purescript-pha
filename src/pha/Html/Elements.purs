@@ -5,24 +5,44 @@ import Pha.Html.Core (Html, Prop, elem)
 a ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 a = elem "a"
 
+abbr ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+abbr = elem "abbr"
+
+area ∷ ∀msg. Array (Prop msg) → Html msg
+area attrs = elem "area" attrs []
+
+article ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+article = elem "article"
+
+aside ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+aside = elem "aside"
+
+audio ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+audio = elem "audio"
+
+b ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+b = elem "b"
+
 br ∷ ∀msg. Html msg
 br = elem "br" [] []
 
 button ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 button = elem "button"
 
+canvas ∷ ∀msg. Array (Prop msg) → Html msg
+canvas attrs = elem "canvas" attrs []
+
 div ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 div = elem "div"
 
+em ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+em = elem "em"
 
 footer ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 footer = elem "footer"
 
 form ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 form = elem "form"
-
-img ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-img = elem "img"
     
 h1 ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 h1 = elem "h1"
@@ -48,6 +68,12 @@ header = elem "header"
 hr ∷ ∀msg. Array (Prop msg) → Html msg
 hr attrs = elem "hr" attrs []
 
+i ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+i = elem "i"
+
+img ∷ ∀msg. Array (Prop msg) → Html msg
+img attrs = elem "img" attrs []
+
 input ∷ ∀msg. Array (Prop msg) → Html msg
 input attrs = elem "input" attrs []
 
@@ -57,11 +83,14 @@ label = elem "label"
 li ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 li = elem "li"
 
-p ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-p = elem "p"
+link ∷ ∀msg. Array (Prop msg) → Html msg
+link attrs = elem "link" attrs []
 
 main ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 main = elem "main"
+
+menu ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+menu = elem "menu"
 
 nav ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 nav = elem "nav"
@@ -71,6 +100,12 @@ ol = elem "ol"
 
 option ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 option = elem "option"
+
+p ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+p = elem "p"
+
+pre ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+pre = elem "pre"
 
 section ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 section = elem "section"
@@ -105,14 +140,11 @@ g = elem "g"
 image ∷ ∀msg. Array (Prop msg) → Html msg
 image attrs = elem "image" attrs []
 
-rect ∷ ∀msg. Array (Prop msg) → Html msg
-rect props = elem "rect" props []
+line ∷  ∀msg. Array (Prop msg) → Html msg
+line props = elem "line" props []
     
 path ∷ ∀msg. Array (Prop msg) → Html msg
 path props = elem "path" props []
-    
-line ∷  ∀msg. Array (Prop msg) → Html msg
-line props = elem "line" props []
 
 polygon ∷  ∀msg. Array (Prop msg) → Html msg
 polygon props = elem "polygon" props []
@@ -120,8 +152,8 @@ polygon props = elem "polygon" props []
 polyline ∷  ∀msg. Array (Prop msg) → Html msg
 polyline props = elem "polyline" props []
 
-use ∷ ∀msg. Array (Prop msg) → Html msg
-use props = elem "use" props []
+rect ∷ ∀msg. Array (Prop msg) → Html msg
+rect props = elem "rect" props []
 
 -- | Create a SVG text element
 text_ ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
@@ -132,3 +164,6 @@ textPath = elem "textPath"
 
 tspan ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 tspan = elem "tspan"
+
+use ∷ ∀msg. Array (Prop msg) → Html msg
+use props = elem "use" props []

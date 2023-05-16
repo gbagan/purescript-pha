@@ -25,6 +25,7 @@ import Pha.Html.Core (Prop, EventHandler, unsafeOnWithEffect)
 import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event (Event)
 import Web.Event.Event as Event
+import Web.HTML.HTMLTextAreaElement as TextArea
 import Web.HTML.HTMLInputElement as HTMLInput
 import Web.HTML.HTMLSelectElement as HTMLSelect
 import Web.PointerEvent (PointerEvent)
@@ -91,8 +92,11 @@ onValueChange f = on "change" fn
       Just target → Just <$> f <$> HTMLInput.value target
       Nothing →
         case Event.currentTarget ev >>= HTMLSelect.fromEventTarget of
-          Nothing → pure Nothing
           Just target → Just <$> f <$> HTMLSelect.value target
+          Nothing →
+            case Event.currentTarget ev >>= TextArea.fromEventTarget of
+              Just target → Just <$> f <$> TextArea.value target
+              Nothing → pure Nothing
 
 onChecked ∷ ∀ msg. (Boolean → msg) → Prop msg
 onChecked f = on "change" fn

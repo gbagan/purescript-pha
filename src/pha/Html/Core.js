@@ -40,7 +40,6 @@ export const keyedImpl = (tag, ps, children) => _h(tag, ps, children, true)
 
 const createTextVNode = text => ({
     tag: text,
-    props: {},
     children: [],
     type: 3
 })

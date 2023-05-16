@@ -14,8 +14,8 @@ export const memoizeImpl = f => g => {
     return v => {
         if (u === v)
             return res
-        const b = f(v);
         u = v;
+        const b = f(v);
         if (a === b)
             return res;
         a = b;
@@ -25,9 +25,13 @@ export const memoizeImpl = f => g => {
 }
 
 export const memoizeObj = f => g => {
+    let u = undefined;
     let a = undefined;
     let res = undefined;
     return v => {
+        if (u === v)
+            return res;
+        u = v;
         const b = f(v);
         if (objEq(a, b))
             return res;

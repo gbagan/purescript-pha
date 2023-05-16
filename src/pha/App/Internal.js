@@ -212,7 +212,6 @@ const patch = (parent, node, oldVNode, newVNode, listener, isSvg, mapf) => {
                     // dans certaines situations, removeChild est appelé ici et
                     // dans le cas juste après
                     console.log("3", oldVKids[oldHead].html.node)
-                    newKeyed[oldVKids[oldHead].key] = true
                     node.removeChild(oldVKids[oldHead].html.node)
                     oldHead++
                 }

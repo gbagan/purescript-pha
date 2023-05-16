@@ -1,6 +1,6 @@
 module Pha.Html.Elements where
 
-import Pha.Html.Core (Html, Prop, elem, text)
+import Pha.Html.Core (Html, Prop, elem)
 
 a ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 a = elem "a"
@@ -114,10 +114,21 @@ path props = elem "path" props []
 line ∷  ∀msg. Array (Prop msg) → Html msg
 line props = elem "line" props []
 
+polygon ∷  ∀msg. Array (Prop msg) → Html msg
+polygon props = elem "polygon" props []
+
+polyline ∷  ∀msg. Array (Prop msg) → Html msg
+polyline props = elem "polyline" props []
+
 use ∷ ∀msg. Array (Prop msg) → Html msg
 use props = elem "use" props []
 
-
 -- | Create a SVG text element
-text_ ∷ ∀msg. String → Array (Prop msg) → Html msg
-text_ t props = elem "text" props [text t]
+text_ ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+text_ = elem "text"
+
+textPath ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+textPath = elem "textPath"
+
+tspan ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+tspan = elem "tspan"

@@ -122,6 +122,10 @@ cx ∷ ∀msg a. IsLength a => a → Prop msg
 cx = attr "cx" <<< toString
 cy ∷ ∀msg a. IsLength a => a → Prop msg
 cy = attr "cy" <<< toString
+dx ∷ ∀msg a. IsLength a => a → Prop msg
+dx = attr "dx" <<< toString
+dy ∷ ∀msg a. IsLength a => a → Prop msg
+dy = attr "dy" <<< toString
 r ∷ ∀msg a. IsLength a => a → Prop msg
 r = attr "r" <<< toString
 rx ∷ ∀msg a. IsLength a => a → Prop msg
@@ -134,8 +138,10 @@ d = attr "d"
 
 width ∷ ∀msg i. IsLength i => i → Prop msg
 width i = attr "width" (toString i)
+
 height ∷ ∀msg i. IsLength i => i → Prop msg
 height i = attr "height" (toString i)
+
 stroke ∷ ∀msg. String → Prop msg
 stroke = attr "stroke"
 
@@ -144,6 +150,12 @@ opacity = attr "opacity" <<< show
 
 fill ∷ ∀msg. String → Prop msg
 fill = attr "fill"
+
+fontSize ∷ ∀msg a. IsLength a => a → Prop msg
+fontSize = attr "font-size" <<< toString
+
+points ∷ ∀msg. String → Prop msg
+points = attr "points"
 
 viewBox ∷ ∀msg. Int → Int → Int → Int → Prop msg
 viewBox a b c d2 = attr "viewBox" $ show a <> " " <> show b <> " " <> show c <> " " <> show d2
@@ -156,6 +168,3 @@ strokeWidth = attr "stroke-width" <<< show
 
 strokeDasharray ∷ ∀msg. String → Prop msg
 strokeDasharray = attr "stroke-dasharray"
-
-fontSize ∷ ∀msg a. IsLength a => a → Prop msg
-fontSize = attr "font-size" <<< toString

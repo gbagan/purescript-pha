@@ -28,7 +28,7 @@ module Pha.Html.Core
 import Prelude hiding (when)
 import Effect (Effect)
 import Data.Function.Uncurried (Fn2, Fn3, Fn4, Fn5, Fn6, mkFn2, mkFn3, mkFn4, mkFn5, runFn2, runFn3, runFn4, runFn5, runFn6)
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe)
 import Data.Maybe as M
 import Web.Event.Event (Event) as E
 import Web.Event.Event (Event)

@@ -3,6 +3,7 @@ module Pha.Html.Events
   , onClick
   , onAuxClick
   , onContextMenu
+  , onContextMenuPrevent
   , onPointerDown
   , onPointerEnter
   , onPointerLeave
@@ -27,10 +28,10 @@ import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event (Event)
 import Web.Event.Event as Event
 import Web.Event.EventTarget (EventTarget)
-import Web.HTML.HTMLInputElement as HTMLInput 
-import Web.UIEvent.MouseEvent (MouseEvent)
+import Web.HTML.HTMLInputElement as HTMLInput
 import Web.PointerEvent (PointerEvent)
 import Web.UIEvent.FocusEvent (FocusEvent)
+import Web.UIEvent.MouseEvent (MouseEvent)
 
 on ∷ ∀ msg. String → EventHandler msg → Prop msg
 on = unsafeOnWithEffect
@@ -53,6 +54,10 @@ onAuxClick handler = on "auxclick" (pure <<< Just <<< handler <<< mouseCoerce)
 onContextMenu ∷ ∀ msg. (MouseEvent → msg) → Prop msg
 onContextMenu handler = on "contextmenu" (pure <<< Just <<< handler <<< mouseCoerce)
 
+onContextMenuPrevent ∷ ∀ msg. (MouseEvent → msg)  → Prop msg
+onContextMenuPrevent handler = on "contextmenu" \ev → do
+  Event.preventDefault ev
+  pure <<< Just <<< handler <<< mouseCoerce $ ev
 
 onPointerUp ∷ ∀ msg. (PointerEvent → msg) → Prop msg
 onPointerUp handler = on "pointerup" (pure <<< Just <<< handler <<< pointerCoerce)

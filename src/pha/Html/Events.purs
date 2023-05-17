@@ -27,12 +27,16 @@ import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event (Event)
 import Web.Event.Event as Event
 import Web.Event.EventTarget (EventTarget)
-import Web.HTML.HTMLInputElement as HTMLInput
+import Web.HTML.HTMLInputElement as HTMLInput 
+import Web.UIEvent.MouseEvent (MouseEvent)
 import Web.PointerEvent (PointerEvent)
 import Web.UIEvent.FocusEvent (FocusEvent)
 
 on ∷ ∀ msg. String → EventHandler msg → Prop msg
 on = unsafeOnWithEffect
+
+mouseCoerce ∷ Event → MouseEvent
+mouseCoerce = unsafeCoerce
 
 pointerCoerce ∷ Event → PointerEvent
 pointerCoerce = unsafeCoerce
@@ -40,11 +44,15 @@ pointerCoerce = unsafeCoerce
 focusCoerce ∷ Event → FocusEvent
 focusCoerce = unsafeCoerce
 
-onClick ∷ ∀ msg. (PointerEvent → msg) → Prop msg
-onClick handler = on "click" (pure <<< Just <<< handler <<< unsafeCoerce)
+onClick ∷ ∀ msg. (MouseEvent → msg) → Prop msg
+onClick handler = on "click" (pure <<< Just <<< handler <<< mouseCoerce)
 
-onAuxClick ∷ ∀ msg. (PointerEvent → msg) → Prop msg
-onAuxClick handler = on "auxclick" (pure <<< Just <<< handler <<< unsafeCoerce)
+onAuxClick ∷ ∀ msg. (MouseEvent → msg) → Prop msg
+onAuxClick handler = on "auxclick" (pure <<< Just <<< handler <<< mouseCoerce)
+
+onContextMenu ∷ ∀ msg. (MouseEvent → msg) → Prop msg
+onContextMenu handler = on "contextmenu" (pure <<< Just <<< handler <<< mouseCoerce)
+
 
 onPointerUp ∷ ∀ msg. (PointerEvent → msg) → Prop msg
 onPointerUp handler = on "pointerup" (pure <<< Just <<< handler <<< pointerCoerce)
@@ -67,10 +75,6 @@ onPointerOut handler = on "pointerout" (pure <<< Just <<< handler <<< pointerCoe
 onPointerMove ∷ ∀ msg. (PointerEvent → msg) → Prop msg
 onPointerMove handler = on "pointermove" (pure <<< Just <<< handler <<< pointerCoerce)
 
-onContextMenu ∷ ∀ msg. (PointerEvent → msg) → Prop msg
-onContextMenu handler = on "contextmenu" \ev → do
-  Event.preventDefault ev
-  pure $ Just $ handler $ unsafeCoerce ev
 
 onBlur ∷ ∀ msg. (FocusEvent → msg) → Prop msg
 onBlur handler = on "blur" (pure <<< Just <<< handler <<< focusCoerce)

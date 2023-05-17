@@ -27,9 +27,7 @@ import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event (Event)
 import Web.Event.Event as Event
 import Web.Event.EventTarget (EventTarget)
-import Web.HTML.HTMLTextAreaElement as TextArea
 import Web.HTML.HTMLInputElement as HTMLInput
-import Web.HTML.HTMLSelectElement as HTMLSelect
 import Web.PointerEvent (PointerEvent)
 import Web.UIEvent.FocusEvent (FocusEvent)
 

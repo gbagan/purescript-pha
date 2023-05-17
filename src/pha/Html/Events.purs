@@ -21,10 +21,12 @@ module Pha.Html.Events
 import Prelude hiding (div)
 
 import Data.Maybe (Maybe(..))
+import Effect.Uncurried (EffectFn3, runEffectFn3)
 import Pha.Html.Core (Prop, EventHandler, unsafeOnWithEffect)
 import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event (Event)
 import Web.Event.Event as Event
+import Web.Event.EventTarget (EventTarget)
 import Web.HTML.HTMLTextAreaElement as TextArea
 import Web.HTML.HTMLInputElement as HTMLInput
 import Web.HTML.HTMLSelectElement as HTMLSelect
@@ -84,19 +86,15 @@ onFocusIn handler = on "focusin" (pure <<< Just <<< handler <<< focusCoerce)
 onFocusOut ∷ ∀ msg. (FocusEvent → msg) → Prop msg
 onFocusOut handler = on "focusout" (pure <<< Just <<< handler <<< focusCoerce)
 
+foreign import valueImpl :: ∀ a. EffectFn3 EventTarget (Maybe a) (a -> Maybe a) String
+
 onValueChange ∷ ∀ msg. (String → msg) → Prop msg
 onValueChange f = on "change" fn
   where
   fn ev =
-    case Event.currentTarget ev >>= HTMLInput.fromEventTarget of
-      Just target → Just <$> f <$> HTMLInput.value target
-      Nothing →
-        case Event.currentTarget ev >>= HTMLSelect.fromEventTarget of
-          Just target → Just <$> f <$> HTMLSelect.value target
-          Nothing →
-            case Event.currentTarget ev >>= TextArea.fromEventTarget of
-              Just target → Just <$> f <$> TextArea.value target
-              Nothing → pure Nothing
+    case Event.currentTarget ev of
+      Just target → Just <<< f <$> runEffectFn3 valueImpl target Nothing Just
+      Nothing → pure Nothing
 
 onChecked ∷ ∀ msg. (Boolean → msg) → Prop msg
 onChecked f = on "change" fn

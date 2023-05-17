@@ -86,14 +86,14 @@ onFocusIn handler = on "focusin" (pure <<< Just <<< handler <<< focusCoerce)
 onFocusOut ∷ ∀ msg. (FocusEvent → msg) → Prop msg
 onFocusOut handler = on "focusout" (pure <<< Just <<< handler <<< focusCoerce)
 
-foreign import valueImpl :: ∀ a. EffectFn3 EventTarget (Maybe a) (a -> Maybe a) String
+foreign import valueImpl :: ∀ a. EffectFn3 EventTarget (Maybe a) (a -> Maybe a) (Maybe String)
 
 onValueChange ∷ ∀ msg. (String → msg) → Prop msg
 onValueChange f = on "change" fn
   where
   fn ev =
     case Event.currentTarget ev of
-      Just target → Just <<< f <$> runEffectFn3 valueImpl target Nothing Just
+      Just target → map f <$> runEffectFn3 valueImpl target Nothing Just
       Nothing → pure Nothing
 
 onChecked ∷ ∀ msg. (Boolean → msg) → Prop msg

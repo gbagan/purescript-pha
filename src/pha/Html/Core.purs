@@ -136,11 +136,16 @@ fromMaybe = M.fromMaybe empty
 
 maybe ∷ ∀a msg. Maybe a → (a → Html msg) → Html msg
 maybe = flip (M.maybe empty)
-    
+
+mapHandler :: ∀a b. (a → b) → EventHandler a → EventHandler b
+mapHandler fn handler ev = map (map fn) (handler ev)
+
+foreign import mapProp ∷ ∀a b. Fn2 (EventHandler a → EventHandler b) (Prop a) (Prop b)
+
+instance Functor Prop where
+  map fn pr = runFn2 mapProp (mapHandler fn) pr
+
 foreign import mapView ∷ ∀a b. Fn2 (EventHandler a → EventHandler b) (Html a) (Html b)
 
-instance functorHtml ∷ Functor Html where
-    map fn html = runFn2 mapView mapH html where
-        mapH handler ev = do
-            msg ← handler ev
-            pure (map fn msg)
+instance Functor Html where
+  map fn html = runFn2 mapView (mapHandler fn) html

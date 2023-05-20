@@ -131,6 +131,12 @@ svg = elem "svg"
 circle ∷ ∀msg. Array (Prop msg) → Html msg
 circle props = elem "circle" props []
 
+clipPath ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+clipPath = elem "clipPath"
+
+defs ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+defs = elem "defs"
+
 ellipse ∷ ∀msg. Array (Prop msg) → Html msg
 ellipse props = elem "ellipse" props []
 

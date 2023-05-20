@@ -45,6 +45,7 @@ const createTextVNode = text => ({
 })
 
 export const mapView = (mapf, vnode) => ({...vnode, mapf: compose(vnode.mapf, mapf)})
+export const mapProp = (mapf, prop) => prop[0] == 2 ? [2, mapf(prop[1])] : prop
 export const propImpl = (k, v) => [0, k, v]
 export const attrImpl = (k, v) => [1, k, v]
 export const unsafeOnWithEffectImpl = (k, v) => [2, k, v]

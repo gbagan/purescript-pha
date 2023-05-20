@@ -14,7 +14,7 @@ module Pha.Html.Events
   , onBlur
   , onFocus
   , onFocusIn
-  , onFocusOut
+    , onFocusOut
   , onChecked
   , onValueChange
   ) where
@@ -27,7 +27,7 @@ import Pha.Html.Core (Prop, EventHandler, unsafeOnWithEffect)
 import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event (Event)
 import Web.Event.Event as Event
-import Web.Event.EventTarget (EventTarget)
+import Web.Event.EventTarget (EventTarget)  
 import Web.HTML.HTMLInputElement as HTMLInput
 import Web.PointerEvent (PointerEvent)
 import Web.UIEvent.FocusEvent (FocusEvent)

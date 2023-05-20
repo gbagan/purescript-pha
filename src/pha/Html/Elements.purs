@@ -152,11 +152,14 @@ image attrs = elem "image" attrs []
 line ∷  ∀msg. Array (Prop msg) → Html msg
 line props = elem "line" props []
 
-pattern ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
-pattern = elem "pattern"
+linearGradient ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+linearGradient = elem "linearGradient"
 
 path ∷ ∀msg. Array (Prop msg) → Html msg
 path props = elem "path" props []
+
+pattern ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+pattern = elem "pattern"
 
 polygon ∷  ∀msg. Array (Prop msg) → Html msg
 polygon props = elem "polygon" props []

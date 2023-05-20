@@ -151,6 +151,9 @@ opacity = attr "opacity" <<< show
 fill ∷ ∀msg. String → Prop msg
 fill = attr "fill"
 
+fillOpacity ∷ ∀msg. Number → Prop msg
+fillOpacity = attr "fill-opacity" <<< show
+
 fontSize ∷ ∀msg a. IsLength a => a → Prop msg
 fontSize = attr "font-size" <<< toString
 

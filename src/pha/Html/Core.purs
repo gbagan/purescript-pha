@@ -8,6 +8,7 @@ module Pha.Html.Core
   , text
   , attr
   , prop
+  , noProp
   , style
   , class_
   , class'

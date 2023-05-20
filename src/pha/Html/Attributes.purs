@@ -133,6 +133,9 @@ rx = attr "rx" <<< toString
 ry ∷ ∀msg a. IsLength a => a → Prop msg
 ry = attr "ry" <<< toString
 
+clipPath ∷ ∀msg. String → Prop msg
+clipPath = attr "clip-path"
+
 d ∷ ∀msg. String → Prop msg
 d = attr "d"
 
@@ -141,9 +144,6 @@ width i = attr "width" (toString i)
 
 height ∷ ∀msg i. IsLength i => i → Prop msg
 height i = attr "height" (toString i)
-
-stroke ∷ ∀msg. String → Prop msg
-stroke = attr "stroke"
 
 opacity ∷ ∀msg. Number → Prop msg
 opacity = attr "opacity" <<< show
@@ -163,8 +163,14 @@ viewBox a b c d2 = attr "viewBox" $ show a <> " " <> show b <> " " <> show c <> 
 transform ∷ ∀msg. String → Prop msg
 transform = attr "transform"
 
-strokeWidth ∷ ∀msg. Number → Prop msg
-strokeWidth = attr "stroke-width" <<< show
+stroke ∷ ∀msg. String → Prop msg
+stroke = attr "stroke"
 
 strokeDasharray ∷ ∀msg. String → Prop msg
 strokeDasharray = attr "stroke-dasharray"
+
+strokeOpacity ∷ ∀msg. Number → Prop msg
+strokeOpacity = attr "stroke-opacity" <<< show
+
+strokeWidth ∷ ∀msg. Number → Prop msg
+strokeWidth = attr "stroke-width" <<< show

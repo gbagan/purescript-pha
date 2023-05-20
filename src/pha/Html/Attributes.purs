@@ -154,8 +154,20 @@ fill = attr "fill"
 fillOpacity ∷ ∀msg. Number → Prop msg
 fillOpacity = attr "fill-opacity" <<< show
 
+fillRule ∷ ∀msg. String → Prop msg
+fillRule = attr "fill-rule"
+
 fontSize ∷ ∀msg a. IsLength a => a → Prop msg
 fontSize = attr "font-size" <<< toString
+
+offset ∷ ∀msg. String → Prop msg
+offset = attr "offset"
+
+patternTransform ∷ ∀msg. String → Prop msg
+patternTransform = attr "pattern-transform"
+
+patternUnits ∷ ∀msg. String → Prop msg
+patternUnits = attr "pattern-units"
 
 points ∷ ∀msg. String → Prop msg
 points = attr "points"
@@ -165,6 +177,9 @@ viewBox a b c d2 = attr "viewBox" $ show a <> " " <> show b <> " " <> show c <> 
 
 transform ∷ ∀msg. String → Prop msg
 transform = attr "transform"
+
+stopColor ∷ ∀msg. String → Prop msg
+stopColor = attr "stop-color"
 
 stroke ∷ ∀msg. String → Prop msg
 stroke = attr "stroke"

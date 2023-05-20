@@ -140,6 +140,9 @@ defs = elem "defs"
 ellipse ∷ ∀msg. Array (Prop msg) → Html msg
 ellipse props = elem "ellipse" props []
 
+foreignObject ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+foreignObject = elem "foreignObject"
+
 g ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 g = elem "g"
 
@@ -148,7 +151,10 @@ image attrs = elem "image" attrs []
 
 line ∷  ∀msg. Array (Prop msg) → Html msg
 line props = elem "line" props []
-    
+
+pattern ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+pattern = elem "pattern"
+
 path ∷ ∀msg. Array (Prop msg) → Html msg
 path props = elem "path" props []
 
@@ -160,6 +166,9 @@ polyline props = elem "polyline" props []
 
 rect ∷ ∀msg. Array (Prop msg) → Html msg
 rect props = elem "rect" props []
+
+stop ∷ ∀msg. Array (Prop msg) → Html msg
+stop props = elem "stop" props []
 
 -- | Create a SVG text element
 text_ ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg

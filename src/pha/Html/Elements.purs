@@ -116,8 +116,17 @@ select = elem "select"
 span ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 span = elem "span"
 
+table ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+table = elem "table"
+
+td ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+td = elem "td"
+
 textarea ∷ ∀msg. Array (Prop msg) → Html msg
 textarea attrs = elem "textarea" attrs []
+
+tr ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
+tr = elem "tr"
 
 ul ∷ ∀msg. Array (Prop msg) → Array (Html msg) → Html msg
 ul = elem "ul"

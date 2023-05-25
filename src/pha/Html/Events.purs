@@ -1,16 +1,24 @@
 module Pha.Html.Events
   ( on
   , onClick
+  , onClick'
   , onAuxClick
   , onContextMenu
   , onContextMenuPrevent
   , onPointerDown
+  , onPointerDown'
   , onPointerEnter
+  , onPointerEnter'
   , onPointerLeave
+  , onPointerLeave'
   , onPointerMove
+  , onPointerMove'
   , onPointerOut
+  , onPointerOut'
   , onPointerOver
+  , onPointerOver'
   , onPointerUp
+  , onPointerUp'
   , onBlur
   , onFocus
   , onFocusIn
@@ -22,6 +30,7 @@ module Pha.Html.Events
 import Prelude hiding (div)
 
 import Data.Maybe (Maybe(..))
+import Effect (Effect)
 import Effect.Uncurried (EffectFn3, runEffectFn3)
 import Pha.Html.Core (Prop, EventHandler, unsafeOnWithEffect)
 import Unsafe.Coerce (unsafeCoerce)
@@ -48,6 +57,9 @@ focusCoerce = unsafeCoerce
 onClick ∷ ∀ msg. (MouseEvent → msg) → Prop msg
 onClick handler = on "click" (pure <<< Just <<< handler <<< mouseCoerce)
 
+onClick' ∷ ∀ msg. (MouseEvent → Effect (Maybe msg)) → Prop msg
+onClick' handler = on "click" (handler <<< mouseCoerce)
+
 onAuxClick ∷ ∀ msg. (MouseEvent → msg) → Prop msg
 onAuxClick handler = on "auxclick" (pure <<< Just <<< handler <<< mouseCoerce)
 
@@ -62,23 +74,44 @@ onContextMenuPrevent handler = on "contextmenu" \ev → do
 onPointerUp ∷ ∀ msg. (PointerEvent → msg) → Prop msg
 onPointerUp handler = on "pointerup" (pure <<< Just <<< handler <<< pointerCoerce)
 
+onPointerUp' ∷ ∀ msg. (PointerEvent → Effect (Maybe msg)) → Prop msg
+onPointerUp' handler = on "pointerup" (handler <<< pointerCoerce)
+
 onPointerDown ∷ ∀ msg. (PointerEvent → msg) → Prop msg
 onPointerDown handler = on "pointerdown" (pure <<< Just <<< handler <<< pointerCoerce)
+
+onPointerDown' ∷ ∀ msg. (PointerEvent → Effect (Maybe msg)) → Prop msg
+onPointerDown' handler = on "pointerdown" (handler <<< pointerCoerce)
 
 onPointerEnter ∷ ∀ msg. (PointerEvent → msg) → Prop msg
 onPointerEnter handler = on "pointerenter" (pure <<< Just <<< handler <<< pointerCoerce)
 
+onPointerEnter' ∷ ∀ msg. (PointerEvent → Effect (Maybe msg)) → Prop msg
+onPointerEnter' handler = on "pointerenter" (handler <<< pointerCoerce)
+
 onPointerLeave ∷ ∀ msg. (PointerEvent → msg) → Prop msg
 onPointerLeave handler = on "pointerleave" (pure <<< Just <<< handler <<< pointerCoerce)
+
+onPointerLeave' ∷ ∀ msg. (PointerEvent → Effect (Maybe msg)) → Prop msg
+onPointerLeave' handler = on "pointerleave" (handler <<< pointerCoerce)
 
 onPointerOver ∷ ∀ msg. (PointerEvent → msg) → Prop msg
 onPointerOver handler = on "pointerover" (pure <<< Just <<< handler <<< pointerCoerce)
 
+onPointerOver' ∷ ∀ msg. (PointerEvent → Effect (Maybe msg)) → Prop msg
+onPointerOver' handler = on "pointerover" (handler <<< pointerCoerce)
+
 onPointerOut ∷ ∀ msg. (PointerEvent → msg) → Prop msg
 onPointerOut handler = on "pointerout" (pure <<< Just <<< handler <<< pointerCoerce)
 
+onPointerOut' ∷ ∀ msg. (PointerEvent → Effect (Maybe msg)) → Prop msg
+onPointerOut' handler = on "pointerout" (handler <<< pointerCoerce)
+
 onPointerMove ∷ ∀ msg. (PointerEvent → msg) → Prop msg
 onPointerMove handler = on "pointermove" (pure <<< Just <<< handler <<< pointerCoerce)
+
+onPointerMove' ∷ ∀ msg. (PointerEvent → Effect (Maybe msg)) → Prop msg
+onPointerMove' handler = on "pointermove" (handler <<< pointerCoerce)
 
 
 onBlur ∷ ∀ msg. (FocusEvent → msg) → Prop msg

@@ -3,8 +3,7 @@ module Pha.Html.Util
 
 import Prelude
 
-import Pha.Html (Prop, style)
-import Pha.Html.Attributes (class IsLength, toString)
+import Pha.Svg.Attributes (class IsLength, toString)
 
 -- |  63.7 → "63.7px"
 px ∷ Number → String
@@ -25,9 +24,3 @@ translate x y = "translate(" <> toString x <> "," <> toString y <> ")"
 -- | rgbColor 128 64 30 → "rgb(128,64,30)"
 rgbColor ∷ Int → Int → Int → String
 rgbColor r g' b = "rgb(" <> show r <> "," <> show g' <> "," <> show b <> ")"
-
-styleWidth ∷ forall msg x. IsLength x => x → Prop msg
-styleWidth x = style "width" $ toString x
-
-styleHeight ∷ forall msg x. IsLength x => x → Prop msg
-styleHeight x = style "height" $ toString x

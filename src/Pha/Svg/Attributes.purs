@@ -83,7 +83,7 @@ patternUnits = attr "pattern-units"
 points ∷ ∀msg. String → Prop msg
 points = attr "points"
 
-viewBox ∷ ∀msg. Int → Int → Int → Int → Prop msg
+viewBox ∷ ∀msg. Number → Number → Number → Number → Prop msg
 viewBox a b c d2 = attr "viewBox" $ show a <> " " <> show b <> " " <> show c <> " " <> show d2
 
 transform ∷ ∀msg. String → Prop msg

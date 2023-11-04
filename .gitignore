@@ -11,3 +11,4 @@
 /.spago
 /yarn.lock
 /package-lock.json
+/examples/dist/bundle-counter2.js

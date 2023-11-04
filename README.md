@@ -81,7 +81,7 @@ https://github.com/gbagan/purescript-pha-examples/tree/master/src
 ### Some projects using purescript-pha
 
 - https://github.com/gbagan/valise-mam
-- https://github.com/gbagan/subtract-machine
+- https://github.com/gbagan/nim-machine
 - https://github.com/gbagan/neuron
 - https://github.com/gbagan/graphparams
 - https://github.com/gbagan/sudoku-solver
